@@ -1,0 +1,186 @@
+/* Product Details Page - Loveable & Cute Theme */
+
+.product-details-container {
+  padding: 4rem 1.5rem;
+  background-color: #fff0f5; /* soft pink background */
+  color: #4b2e2e;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  min-height: 100vh;
+}
+
+.product-details-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  max-width: 1100px;
+  margin: 0 auto;
+  gap: 3rem;
+  align-items: center;
+}
+
+.product-details-image img {
+  width: 100%;
+  max-height: 500px;
+  object-fit: cover;
+  border-radius: 1.5rem;
+  box-shadow: 0 8px 20px rgba(255, 192, 203, 0.3);
+}
+
+.product-details-info h1 {
+  font-size: 2.5rem;
+  color: #b91c1c;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.product-details-info .price {
+  font-size: 1.8rem;
+  color: #e91e63;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.product-details-info .description {
+  font-size: 1.1rem;
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.product-details-info .add-to-cart-btn {
+  background-color: #ffcce0; /* soft pink */
+  color: #fff;
+  border: none;
+  padding: 14px 28px;
+  font-size: 1.1rem;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  border-radius: 50px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 12px rgba(255, 182, 193, 0.4);
+  position: relative;
+}
+
+.product-details-info .add-to-cart-btn::before {
+  content: "💝";
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+}
+
+.product-details-info .add-to-cart-btn:hover {
+  background-color: #ff99cc;
+  transform: scale(1.05);
+  box-shadow: 0 8px 16px rgba(255, 105, 180, 0.4);
+}
+
+.product-details-info .add-to-cart-btn:hover::before {
+  transform: translateY(-50%) scale(1.3) rotate(8deg);
+}
+
+.product-details-info .add-to-cart-btn:active {
+  transform: scale(0.97);
+}
+
+.back-btn {
+  display: inline-block;
+  margin-top: 1.5rem;
+  background-color: #ffe0f0;
+  color: #b91c1c;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 30px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  font-weight: 600;
+  box-shadow: 0 4px 10px rgba(255, 192, 203, 0.4);
+  margin-left: 1rem;
+}
+
+.back-btn:hover {
+  background-color: #ff99cc;
+  color: white;
+  transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+  .product-details-wrapper {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .product-details-info h1 {
+    font-size: 2rem;
+  }
+
+  .product-details-info .price {
+    font-size: 1.5rem;
+  }
+
+  .product-details-info .add-to-cart-btn {
+    margin-top: 1rem;
+  }
+
+  .back-btn {
+    margin-left: 0;
+  }
+}
+
+/* 💖 Recommendations */
+.recommendations {
+  margin-top: 4rem;
+  text-align: center;
+}
+
+.recommendations h2 {
+  font-size: 2rem;
+  color: #b91c1c;
+  margin-bottom: 2rem;
+  font-weight: 700;
+}
+
+.recommendation-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 2rem;
+  justify-items: center;
+}
+
+.recommendation-grid .product-card {
+  background-color: #fffafc;
+  padding: 1.2rem;
+  border-radius: 1rem;
+  box-shadow: 0 6px 14px rgba(255, 182, 193, 0.2);
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.recommendation-grid .product-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 20px rgba(255, 105, 180, 0.2);
+}
+
+.recommendation-grid .product-card img {
+  width: 100%;
+  height: 10rem;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.recommendation-grid .product-card h3 {
+  font-size: 1.1rem;
+  color: #b91c1c;
+  margin-bottom: 0.3rem;
+}
+
+.recommendation-grid .product-card p {
+  color: #555;
+  font-size: 0.95rem;
+  margin-bottom: 0.8rem;
+}

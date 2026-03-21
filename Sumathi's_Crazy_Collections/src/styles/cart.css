@@ -1,0 +1,143 @@
+.cart-page {
+  padding: 6rem 1.5rem 4rem;
+  background: #fff5fa;
+  min-height: 100vh;
+}
+
+.cart-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.cart-header h2 {
+  font-size: 2.5rem;
+  color: #e91e63;
+}
+
+.cart-header p {
+  color: #6d4451;
+  margin-top: 0.5rem;
+}
+
+.cart-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.cart-items {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.cart-item {
+  background: #fff;
+  border-radius: 20px;
+  padding: 1.5rem;
+  display: grid;
+  grid-template-columns: 120px 1fr auto;
+  gap: 1.5rem;
+  align-items: center;
+  box-shadow: 0 8px 20px rgba(255, 182, 193, 0.2);
+}
+
+.cart-item img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 16px;
+}
+
+.cart-item-info h3 {
+  color: #e91e63;
+  margin-bottom: 0.3rem;
+}
+
+.cart-item-info .price {
+  color: #b8326a;
+  font-weight: 700;
+}
+
+.cart-item-total {
+  text-align: right;
+}
+
+.cart-item-total button {
+  margin-top: 0.4rem;
+  background: transparent;
+  border: none;
+  color: #e91e63;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.cart-quantity {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.8rem;
+  background: #fff0f7;
+  border-radius: 999px;
+  padding: 0.3rem 0.9rem;
+}
+
+.cart-quantity button {
+  border: none;
+  background: #ffb6c1;
+  color: white;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.cart-summary {
+  background: #fff;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 8px 20px rgba(255, 182, 193, 0.2);
+  height: fit-content;
+}
+
+.cart-summary h3 {
+  margin-bottom: 1.2rem;
+  color: #e91e63;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+  color: #6d4451;
+}
+
+.summary-row.total {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #b8326a;
+  margin-top: 1rem;
+}
+
+.summary-note {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: #906071;
+}
+
+@media (max-width: 900px) {
+  .cart-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .cart-item {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .cart-item-total {
+    text-align: center;
+  }
+}

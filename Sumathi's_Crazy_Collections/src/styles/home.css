@@ -1,0 +1,206 @@
+/* General Reset */
+.home-page {
+  background: #fff5f8;
+  font-family: "Poppins", sans-serif;
+  color: #444;
+}
+
+/* 🌸 Section Styles */
+.products-section {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.products-section h2 {
+  font-size: 2.2rem;
+  color: #ff7ca0;
+  margin-bottom: 0.5rem;
+}
+
+.products-section .subtitle {
+  font-size: 1rem;
+  color: #777;
+  margin-bottom: 2.5rem;
+}
+
+/* 🛍️ Product Grid */
+.products-grid {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  justify-content: center;
+}
+
+.product-card {
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 4px 10px rgba(255, 182, 193, 0.3);
+  transition: all 0.3s ease;
+  overflow: hidden;
+  text-align: center;
+  padding-bottom: 1rem;
+}
+
+.product-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 6px 14px rgba(255, 105, 135, 0.35);
+}
+
+.product-card .img-wrapper {
+  overflow: hidden;
+  border-bottom: 2px solid #ffe4ec;
+}
+
+.product-card img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.product-card:hover img {
+  transform: scale(1.05);
+}
+
+.product-card h3 {
+  font-size: 1.1rem;
+  margin: 0.8rem 0 0.3rem;
+  color: #444;
+}
+
+.price {
+  color: #ff4f7b;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+
+.desc {
+  color: #777;
+  font-size: 0.9rem;
+  padding: 0 1rem;
+}
+
+.add-to-cart-btn {
+  background: linear-gradient(90deg, #ff7ca0, #ffa6c9);
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  padding: 0.6rem 1.5rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.add-to-cart-btn:hover {
+  background: linear-gradient(90deg, #ff4f7b, #ff9ebb);
+  transform: scale(1.05);
+}
+
+/* 💌 Custom Order */
+.custom-order {
+  background: #ffe9f1;
+  text-align: center;
+  padding: 3.5rem 2rem;
+  border-top: 2px dashed #ffc3d8;
+  border-bottom: 2px dashed #ffc3d8;
+}
+
+.custom-order h2 {
+  color: #ff7ca0;
+  font-size: 2rem;
+}
+
+.custom-order p {
+  color: #666;
+  margin: 0.8rem 0 1.5rem;
+}
+
+.custom-btn {
+  display: inline-block;
+  background: linear-gradient(90deg, #ff7ca0, #ffb6c1);
+  color: white;
+  padding: 0.8rem 1.8rem;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: transform 0.3s ease;
+  font-weight: 500;
+}
+
+.custom-btn:hover {
+  transform: scale(1.05);
+}
+
+/* 🌷 Reviews Section */
+.reviews {
+  padding: 4rem 2rem;
+  text-align: center;
+  background: #fff;
+}
+
+.reviews h2 {
+  color: #ff7ca0;
+  margin-bottom: 2rem;
+}
+
+.review-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+}
+
+.review-card {
+  background: #fff0f6;
+  border-radius: 20px;
+  padding: 1.5rem;
+  max-width: 280px;
+  box-shadow: 0 3px 6px rgba(255, 182, 193, 0.3);
+  transition: transform 0.2s ease;
+}
+
+.review-card:hover {
+  transform: translateY(-5px);
+}
+
+.review-card p {
+  font-size: 0.95rem;
+  color: #555;
+  margin-bottom: 0.8rem;
+}
+
+.review-card h4 {
+  color: #ff4f7b;
+  font-weight: 600;
+}
+
+/* 🎀 Instagram CTA */
+.cta {
+  text-align: center;
+  background: linear-gradient(90deg, #ffb6c1, #ff8fab);
+  color: white;
+  padding: 3rem 2rem;
+}
+
+.cta h2 {
+  font-size: 1.8rem;
+}
+
+.cta p {
+  margin: 0.8rem 0 1.5rem;
+  font-weight: 500;
+}
+
+.insta-btn {
+  background: white;
+  color: #ff4f7b;
+  padding: 0.7rem 1.6rem;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.insta-btn:hover {
+  background: #fff5f8;
+  transform: scale(1.05);
+}
