@@ -32,10 +32,10 @@ const Contact = () => {
 
     emailjs
       .sendForm(
-        "service_4lpetkt",
-        "template_4ub9i3o",
+        "service_40e1bnr",
+        "template_5qo613f",
         e.target,
-        "Lwd5HxsRkUsjjY_lt"
+        "cZQOjQodmOO8ZoAo9"
       )
       .then(
         () => {
@@ -58,10 +58,10 @@ const Contact = () => {
 
     emailjs
       .sendForm(
-        "service_4lpetkt",
-        "template_es23kwy",
+        "service_40e1bnr",
+        "template_5qo613f",
         e.target,
-        "Lwd5HxsRkUsjjY_lt"
+        "cZQOjQodmOO8ZoAo9"
       )
       .then(
         () => {

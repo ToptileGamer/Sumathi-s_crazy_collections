@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Background -->
+  <rect width="64" height="64" rx="14" fill="#0F0F0F"></rect>
+
+  <!-- Glow Filter -->
+  <defs>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2.5" result="coloredBlur"></feGaussianBlur>
+      <feMerge>
+        <feMergeNode in="coloredBlur"></feMergeNode>
+        <feMergeNode in="SourceGraphic"></feMergeNode>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Shopping Bag -->
+  <g filter="url(#glow)">
+    <!-- Bag Body -->
+    <rect x="18" y="26" width="28" height="24" rx="6" fill="none" stroke="#C9A646" stroke-width="3"></rect>
+
+    <!-- Handle -->
+    <path d="M24 26C24 20 28 18 32 18C36 18 40 20 40 26" fill="none" stroke="#C9A646" stroke-width="3"></path>
+  </g>
+
+  <!-- Glow Animation -->
+  <style>
+    @keyframes glowPulse {
+      0% { opacity: 0.6; }
+      50% { opacity: 1; }
+      100% { opacity: 0.6; }
+    }
+    g {
+      animation: glowPulse 2s infinite ease-in-out;
+    }
+  </style>
+</svg>
