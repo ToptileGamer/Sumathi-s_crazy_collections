@@ -18,7 +18,7 @@ import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
 import useBlinkingTitle from "./pages/useBlinkingTitle";
-import { Analytics } from "@vercel/analytics/next";
+import { Analytics } from "@vercel/analytics/react";
 
 function App() {
   useBlinkingTitle();
@@ -47,6 +47,7 @@ function App() {
           </Routes>
         </main>
         <Footer />
+        <Analytics />
       </CartProvider>
     </Router>
   );
