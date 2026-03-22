@@ -18,7 +18,7 @@ import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
 import useBlinkingTitle from "./pages/useBlinkingTitle";
-import { Analytics } from "@vercel/analytics/react";
+
 
 function App() {
   useBlinkingTitle();
@@ -44,6 +44,7 @@ function App() {
             <Route path="/terms" element={<Terms />} />
 
             <Route path="*" element={<NotFound />} />
+            
           </Routes>
         </main>
         <Footer />
