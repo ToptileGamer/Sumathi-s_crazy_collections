@@ -20,7 +20,9 @@ const Profile = () => (
           Instagram
         </a>.
       </p>
-      <p>We truly appreciate your support! 🌷</p>
+      <p>We truly appreciate your support! 🌷
+        (And if you have any feedback or suggestions for the website, please let us know!)
+      </p>
     </div>
   </section>
 );

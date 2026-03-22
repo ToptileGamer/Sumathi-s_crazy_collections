@@ -6,7 +6,8 @@ const Footer = () => (
       <div>
         <h3>Sumathi's Crazy Collections</h3>
         <p>Handmade bracelets & earrings curated with love.</p>
-        <p className="footer-note">📍 Chennai, India • ✉️ hello@sumathiscollections.com</p>
+        <p className="footer-note">📍 Bangalore, India • ✉️ sumathiscrazycollection@gmail.com
+</p>
       </div>
       <div className="footer-links">
         <h4>Shop</h4>
