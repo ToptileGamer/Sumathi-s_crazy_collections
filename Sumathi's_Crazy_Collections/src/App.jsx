@@ -48,6 +48,13 @@ function App() {
           </Routes>
         </main>
         <Footer />
+        <AuthProvider>
+  <CartProvider>
+    <WishlistProvider>
+      <YourRouter />
+    </WishlistProvider>
+  </CartProvider>
+</AuthProvider>
         
       </CartProvider>
     </Router>
