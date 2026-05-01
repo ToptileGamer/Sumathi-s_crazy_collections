@@ -2,7 +2,7 @@ import Hero from "../components/Hero";
 import { Link } from "react-router-dom";
 import "../styles/home.css";
 import { bracelets } from "../data/products";
-import { useCart } from "../context/CartContext";
+import { useCart } from "../hooks/useCart";
 
 const Home = () => {
   const { addToCart } = useCart();

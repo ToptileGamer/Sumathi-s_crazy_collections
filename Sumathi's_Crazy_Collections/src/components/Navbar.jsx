@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { useCart } from "../context/CartContext";
+import { useCart } from "../hooks/useCart";
+
 
 const Navbar = () => {
   const [showMenu, setShowMenu] = useState(false);

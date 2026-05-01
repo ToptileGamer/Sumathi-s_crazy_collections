@@ -3,13 +3,15 @@ import { Link } from "react-router-dom";
 import "../styles/productDetails.css";
 import "../styles/cart.css";
 import { bracelets, earrings } from "../data/products";
-import { useCart } from "../context/CartContext";
+import { useCart } from "../hooks/useCart";
+import { useAuth } from "../hooks/useAuth";
 
 const Products = () => {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("all");
   const [sort, setSort] = useState("featured");
-  const { addToCart } = useCart();
+  const { add } = useCart();
+  const { user } = useAuth();
 
   const allProducts = useMemo(() => [...bracelets, ...earrings], []);
 
@@ -28,17 +30,19 @@ const Products = () => {
       );
     }
 
-    if (sort === "price-low") {
-      return [...data].sort((a, b) => a.price - b.price);
-    }
-    if (sort === "price-high") {
-      return [...data].sort((a, b) => b.price - a.price);
-    }
-    if (sort === "rating") {
-      return [...data].sort((a, b) => b.rating - a.rating);
-    }
+    if (sort === "price-low") return [...data].sort((a, b) => a.price - b.price);
+    if (sort === "price-high") return [...data].sort((a, b) => b.price - a.price);
+    if (sort === "rating") return [...data].sort((a, b) => b.rating - a.rating);
     return data;
   }, [allProducts, category, query, sort]);
+
+  const handleAddToCart = async (product) => {
+    if (!user) {
+      alert("Please log in to add items to your cart.");
+      return;
+    }
+    await add(product.id, 1);
+  };
 
   return (
     <section className="products-section px-6 py-12">
@@ -52,14 +56,14 @@ const Products = () => {
           type="search"
           placeholder="Search by name or tag..."
           value={query}
-          onChange={(event) => setQuery(event.target.value)}
+          onChange={(e) => setQuery(e.target.value)}
         />
-        <select value={category} onChange={(event) => setCategory(event.target.value)}>
+        <select value={category} onChange={(e) => setCategory(e.target.value)}>
           <option value="all">All categories</option>
           <option value="Bracelets">Bracelets</option>
           <option value="Earrings">Earrings</option>
         </select>
-        <select value={sort} onChange={(event) => setSort(event.target.value)}>
+        <select value={sort} onChange={(e) => setSort(e.target.value)}>
           <option value="featured">Featured</option>
           <option value="rating">Top rated</option>
           <option value="price-low">Price: Low to High</option>
@@ -76,7 +80,7 @@ const Products = () => {
               <p className="price">{product.displayPrice}</p>
               <p className="product-rating">⭐ {product.rating} • {product.reviews} reviews</p>
             </Link>
-            <button className="add-to-cart-btn" onClick={() => addToCart(product, 1)}>
+            <button className="add-to-cart-btn" onClick={() => handleAddToCart(product)}>
               Add to Cart
             </button>
           </div>

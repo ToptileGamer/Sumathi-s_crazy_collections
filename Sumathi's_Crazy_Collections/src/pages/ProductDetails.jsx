@@ -3,17 +3,18 @@ import { useLocation, useParams, useNavigate, Link } from "react-router-dom";
 import "../styles/productDetails.css";
 import "../styles/cart.css";
 import { allProducts, getProductBySlug } from "../data/products";
-import { useCart } from "../context/CartContext";
+import { useCart } from "../hooks/useCart";
+import { useAuth } from "../hooks/useAuth";
 
 const ProductDetails = () => {
   const { slug } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const { addToCart } = useCart();
+  const { add } = useCart();
+  const { user } = useAuth();
 
   const product = location.state?.product || getProductBySlug(slug);
 
-  // If direct access without state
   if (!product) {
     return (
       <div className="product-details-container text-center">
@@ -25,6 +26,14 @@ const ProductDetails = () => {
       </div>
     );
   }
+
+  const handleAddToCart = async (item) => {
+    if (!user) {
+      alert("Please log in to add items to your cart.");
+      return;
+    }
+    await add(item.id, 1);
+  };
 
   const recommendations = useMemo(
     () =>
@@ -38,7 +47,6 @@ const ProductDetails = () => {
   return (
     <div className="product-details-container">
       <div className="product-details-wrapper">
-        {/* Image and Info */}
         <div className="product-details-image">
           <img src={product.image} alt={product.name} />
         </div>
@@ -49,7 +57,7 @@ const ProductDetails = () => {
           <p className="description">{product.description}</p>
           <p className="product-rating">⭐ {product.rating} • {product.reviews} reviews</p>
 
-          <button className="add-to-cart-btn" onClick={() => addToCart(product, 1)}>
+          <button className="add-to-cart-btn" onClick={() => handleAddToCart(product)}>
             Add to Cart
           </button>
           <Link to="/cart" className="secondary-btn">Buy Now</Link>
@@ -57,7 +65,6 @@ const ProductDetails = () => {
         </div>
       </div>
 
-      {/* 💖 Recommendations */}
       <section className="recommendations">
         <h2>You may also like...</h2>
         <div className="recommendation-grid">
@@ -65,21 +72,14 @@ const ProductDetails = () => {
             <div
               key={item.slug}
               className="product-card"
-              onClick={() =>
-                navigate(`/product/${item.slug}`, {
-                  state: { product: item },
-                })
-              }
+              onClick={() => navigate(`/product/${item.slug}`, { state: { product: item } })}
             >
               <img src={item.image} alt={item.name} />
               <h3>{item.name}</h3>
               <p>{item.displayPrice}</p>
               <button
                 className="add-to-cart-btn"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  addToCart(item, 1);
-                }}
+                onClick={(e) => { e.stopPropagation(); handleAddToCart(item); }}
               >
                 Add to Cart
               </button>
