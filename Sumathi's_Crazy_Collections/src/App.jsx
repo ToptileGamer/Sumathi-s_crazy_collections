@@ -18,6 +18,8 @@ import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
 import useBlinkingTitle from "./pages/useBlinkingTitle";
 import Auth from "./pages/Auth";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+
 
 
 
@@ -54,6 +56,7 @@ function App() {
                 <Route path="/terms" element={<Terms />} />
                 <Route path="*" element={<NotFound />} />
                 <Route path="/login" element={<Auth />} />
+                <Route path="/admin" element={<AdminDashboard />} />
               </Routes>
             </main>
             <Footer />
