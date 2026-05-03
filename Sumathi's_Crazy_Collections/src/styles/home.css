@@ -204,3 +204,65 @@
   background: #fff5f8;
   transform: scale(1.05);
 }
+/* 🛍️ Categories */
+.categories {
+  text-align: center;
+  padding: 3rem 2rem;
+}
+
+.category-grid {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.category-card {
+  background: #fff;
+  padding: 1.2rem 2rem;
+  border-radius: 12px;
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  transition: all 0.25s ease;
+}
+
+.category-card:hover {
+  background: #ff4f7b;
+  color: white;
+}
+
+/* 💎 Why Us */
+.why-us {
+  background: #fff;
+  padding: 3rem 2rem;
+  text-align: center;
+}
+
+.why-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.why-grid div {
+  background: #fff5f8;
+  padding: 1rem;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+/* 🌸 About */
+.about {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: #fafafa;
+}
+
+.about p {
+  max-width: 600px;
+  margin: auto;
+  color: #555;
+}
