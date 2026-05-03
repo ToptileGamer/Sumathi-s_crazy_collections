@@ -1,48 +1,77 @@
-import { useMemo, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
-import "../styles/productDetails.css";
-import "../styles/cart.css";
-import { bracelets, earrings } from "../data/products";
 import { useCart } from "../hooks/useCart";
 import { useAuth } from "../hooks/useAuth";
+import { useWishlist } from "../hooks/useWishlist";
+import { getProducts, getCategories } from "../services/productService";
+import "../styles/productDetails.css";
+import "../styles/cart.css";
+
+const formatPrice = (n) =>
+  new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
+
+const getPrimaryImage = (product) =>
+  product.images?.find((i) => i.is_primary)?.url ??
+  product.images?.[0]?.url ??
+  "https://placehold.co/300x300?text=No+Image";
 
 const Products = () => {
-  const [query, setQuery] = useState("");
-  const [category, setCategory] = useState("all");
-  const [sort, setSort] = useState("featured");
-  const { add } = useCart();
-  const { user } = useAuth();
+  const { add }                  = useCart();
+  const { user }                 = useAuth();
+  const { toggle, isWishlisted } = useWishlist();
 
-  const allProducts = useMemo(() => [...bracelets, ...earrings], []);
+  const [products,   setProducts]   = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [total,      setTotal]      = useState(0);
+  const [loading,    setLoading]    = useState(true);
+  const [addingId,   setAddingId]   = useState(null);
+  const [query,      setQuery]      = useState("");
+  const [category,   setCategory]   = useState("all");
+  const [sort,       setSort]       = useState("created_at");
+  const [page,       setPage]       = useState(1);
+  const LIMIT = 12;
 
-  const filtered = useMemo(() => {
-    const normalized = query.trim().toLowerCase();
-    let data =
-      category === "all"
-        ? allProducts
-        : allProducts.filter((item) => item.category === category);
+  useEffect(() => {
+    getCategories().then(setCategories).catch(console.error);
+  }, []);
 
-    if (normalized) {
-      data = data.filter(
-        (item) =>
-          item.name.toLowerCase().includes(normalized) ||
-          item.tags.some((tag) => tag.includes(normalized))
-      );
+  const fetchProducts = useCallback(async () => {
+    setLoading(true);
+    try {
+      const { products: data, total: count } = await getProducts({
+        categorySlug: category === "all" ? null : category,
+        search:       query || null,
+        sortBy:       sort,
+        page,
+        limit:        LIMIT,
+      });
+      setProducts(data ?? []);
+      setTotal(count ?? 0);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
     }
+  }, [category, query, sort, page]);
 
-    if (sort === "price-low") return [...data].sort((a, b) => a.price - b.price);
-    if (sort === "price-high") return [...data].sort((a, b) => b.price - a.price);
-    if (sort === "rating") return [...data].sort((a, b) => b.rating - a.rating);
-    return data;
-  }, [allProducts, category, query, sort]);
+  useEffect(() => { fetchProducts(); }, [fetchProducts]);
+  useEffect(() => { setPage(1); }, [category, query, sort]);
 
-  const handleAddToCart = async (product) => {
-    if (!user) {
-      alert("Please log in to add items to your cart.");
-      return;
-    }
-    await add(product.id, 1);
+  const handleAddToCart = async (e, productId) => {
+    e.preventDefault();
+    if (!user) { alert("Please log in to add items to your cart."); return; }
+    setAddingId(productId);
+    try { await add(productId, 1); }
+    finally { setAddingId(null); }
   };
+
+  const handleWishlist = async (e, productId) => {
+    e.preventDefault();
+    if (!user) { alert("Please log in to save items."); return; }
+    await toggle(productId);
+  };
+
+  const totalPages = Math.ceil(total / LIMIT);
 
   return (
     <section className="products-section px-6 py-12">
@@ -52,45 +81,78 @@ const Products = () => {
       </div>
 
       <div className="products-toolbar">
-        <input
-          type="search"
-          placeholder="Search by name or tag..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
+        <input type="search" placeholder="Search by name or tag..."
+          value={query} onChange={(e) => setQuery(e.target.value)} />
         <select value={category} onChange={(e) => setCategory(e.target.value)}>
           <option value="all">All categories</option>
-          <option value="Bracelets">Bracelets</option>
-          <option value="Earrings">Earrings</option>
+          {categories.map((c) => <option key={c.id} value={c.slug}>{c.name}</option>)}
         </select>
         <select value={sort} onChange={(e) => setSort(e.target.value)}>
-          <option value="featured">Featured</option>
-          <option value="rating">Top rated</option>
-          <option value="price-low">Price: Low to High</option>
-          <option value="price-high">Price: High to Low</option>
+          <option value="created_at">Newest</option>
+          <option value="rating">Top Rated</option>
+          <option value="price_asc">Price: Low to High</option>
+          <option value="price_desc">Price: High to Low</option>
         </select>
       </div>
 
-      <div className="products-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {filtered.map((product) => (
-          <div key={product.slug} className="product-card border p-4 rounded shadow hover:shadow-lg transition">
-            <Link to={`/product/${product.slug}`} state={{ product }}>
-              <img src={product.image} alt={product.name} className="w-full h-48 object-cover mb-4" />
-              <h3 className="text-lg font-medium">{product.name}</h3>
-              <p className="price">{product.displayPrice}</p>
-              <p className="product-rating">⭐ {product.rating} • {product.reviews} reviews</p>
-            </Link>
-            <button className="add-to-cart-btn" onClick={() => handleAddToCart(product)}>
-              Add to Cart
-            </button>
-          </div>
-        ))}
-      </div>
+      {loading ? (
+        <div className="products-grid">
+          {Array.from({ length: 8 }).map((_, i) => <div key={i} className="product-skeleton" />)}
+        </div>
+      ) : (
+        <div className="products-grid">
+          {products.map((product) => (
+            <div key={product.id} className="product-card border p-4 rounded shadow hover:shadow-lg transition">
+              <Link to={`/product/${product.slug}`} state={{ product }}>
+                <div className="product-img-wrap" style={{ position: "relative" }}>
+                  <img src={getPrimaryImage(product)} alt={product.name} className="w-full h-48 object-cover mb-2" />
+                  {product.original_price && (
+                    <span className="product-badge">
+                      {Math.round((1 - product.price / product.original_price) * 100)}% OFF
+                    </span>
+                  )}
+                  <button className={`wishlist-icon ${isWishlisted(product.id) ? "wishlisted" : ""}`}
+                    onClick={(e) => handleWishlist(e, product.id)}>
+                    {isWishlisted(product.id) ? "♥" : "♡"}
+                  </button>
+                </div>
+                <p className="product-category-label">{product.category?.name}</p>
+                <h3 className="text-lg font-medium">{product.name}</h3>
+                <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                  <span className="price">{formatPrice(product.price)}</span>
+                  {product.original_price && (
+                    <span style={{ textDecoration: "line-through", color: "#aaa", fontSize: "0.85rem" }}>
+                      {formatPrice(product.original_price)}
+                    </span>
+                  )}
+                </div>
+                <p className="product-rating">⭐ {product.rating_avg ?? "—"} ({product.rating_count ?? 0})</p>
+              </Link>
+              <button className="add-to-cart-btn"
+                onClick={(e) => handleAddToCart(e, product.id)}
+                disabled={addingId === product.id || product.stock === 0}>
+                {product.stock === 0 ? "Out of Stock" : addingId === product.id ? "Adding..." : "Add to Cart"}
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
 
-      {filtered.length === 0 && (
+      {!loading && products.length === 0 && (
         <div className="empty-state">
           <h3>No products found</h3>
           <p>Try clearing your filters or search for something else.</p>
+          <button className="hero-btn" onClick={() => { setQuery(""); setCategory("all"); }}>Clear Filters</button>
+        </div>
+      )}
+
+      {totalPages > 1 && (
+        <div className="pagination">
+          <button disabled={page === 1} onClick={() => setPage((p) => p - 1)}>← Prev</button>
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+            <button key={p} className={page === p ? "active" : ""} onClick={() => setPage(p)}>{p}</button>
+          ))}
+          <button disabled={page === totalPages} onClick={() => setPage((p) => p + 1)}>Next →</button>
         </div>
       )}
     </section>

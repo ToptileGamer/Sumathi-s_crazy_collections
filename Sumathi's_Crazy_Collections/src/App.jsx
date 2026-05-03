@@ -17,6 +17,8 @@ import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
 import useBlinkingTitle from "./pages/useBlinkingTitle";
+import Auth from "./pages/Auth";
+
 
 
 // Supabase providers
@@ -51,6 +53,7 @@ function App() {
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/terms" element={<Terms />} />
                 <Route path="*" element={<NotFound />} />
+                <Route path="/login" element={<Auth />} />
               </Routes>
             </main>
             <Footer />
