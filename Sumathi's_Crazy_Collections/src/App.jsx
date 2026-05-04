@@ -26,6 +26,8 @@ import Terms             from "./pages/Terms";
 import NotFound          from "./pages/NotFound";
 import AdminDashboard    from "./pages/admin/AdminDashboard";
 
+
+
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
   if (loading) return <div style={{ padding: "4rem", textAlign: "center" }}>Loading...</div>;
@@ -66,6 +68,8 @@ function AppInner() {
           <Route path="/profile"            element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/admin"              element={<AdminRoute><AdminDashboard /></AdminRoute>} />
           <Route path="*"                   element={<NotFound />} />
+          
+
         </Routes>
       </main>
       <Footer />
