@@ -47,7 +47,6 @@ nav .logo {
   color: #e91e63;
   text-decoration: none;
   text-shadow: 0 2px 5px rgba(255, 105, 180, 0.3);
-  animation: float 3s ease-in-out infinite;
 }
 
 nav .nav-links {

@@ -143,7 +143,7 @@ const Contact = () => {
 
             {/* Number of Colors */}
             <label>
-              Number of Colors (1-5):
+              {/* Number of Colors (1-5): */}
               <input
                 type="number"
                 name="numColors"

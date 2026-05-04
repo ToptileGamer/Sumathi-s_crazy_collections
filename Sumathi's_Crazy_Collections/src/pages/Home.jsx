@@ -124,7 +124,7 @@ const Home = () => {
           </p>
           <div className="hero-btns">
             <Link to="/products" className="hero-btn">Shop Now →</Link>
-            <Link to="/about"    className="hero-btn-outline">Our Story</Link>
+            <Link to="/contact"    className="hero-btn-outline">Place Custom Order</Link>
           </div>
           <div className="hero-stats">
             <div><strong>500+</strong><span>Happy Customers</span></div>

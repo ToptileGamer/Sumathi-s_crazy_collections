@@ -1,3 +1,5 @@
+import "../styles/about.css";
+
 const About = () => (
   <section className="about-section">
     <h2>About Sumathi's Crazy Collections</h2>
