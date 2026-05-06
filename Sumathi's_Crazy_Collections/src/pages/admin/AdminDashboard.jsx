@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate }         from "react-router-dom";
 import { useAuth }             from "../../hooks/useAuth";
+import { getAllReturns, updateReturnStatus } from "../../services/returnService";
+
 
 // From adminService.js
 import { getDashboardStats, getAllOrders, getAllProducts, updateOrderStatus } from "../../services/adminService";
@@ -52,6 +54,7 @@ const AdminDashboard = () => {
     { id: "overview", label: "📊 Overview" },
     { id: "orders",   label: "📦 Orders"   },
     { id: "products", label: "🛍 Products"  },
+    { id: "returns", icon: "↩", label: "Returns" },
   ];
 
   return (
@@ -81,6 +84,8 @@ const AdminDashboard = () => {
         {tab === "overview" && <OverviewTab stats={stats} />}
         {tab === "orders"   && <OrdersTab />}
         {tab === "products" && <ProductsTab />}
+        {tab === "returns" && <ReturnsTab />}
+
       </main>
     </div>
   );
@@ -288,6 +293,7 @@ const ProductsTab = () => {
   const getPrimaryImg = (p) =>
     p.images?.find((i) => i.is_primary)?.url ?? p.images?.[0]?.url;
 
+  
   return (
     <div>
       <div className="admin-toolbar">
@@ -393,5 +399,85 @@ const ProductsTab = () => {
     </div>
   );
 };
+const RETURN_STATUSES = ["requested","approved","rejected","completed"];
+const RETURN_COLOR = {
+  requested: "#f59e0b",
+  approved:  "#10b981",
+  rejected:  "#ef4444",
+  completed: "#6366f1"
+};
+
+const ReturnsTab = () => {
+  const [returns,  setReturns]  = useState([]);
+  const [loading,  setLoading]  = useState(true);
+  const [updating, setUpdating] = useState(null);
+
+  useEffect(() => {
+    getAllReturns()
+      .then(setReturns)
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
+
+  const handleUpdate = async (id, status) => {
+    setUpdating(id);
+    try {
+      await updateReturnStatus(id, status);
+      setReturns(prev => prev.map(r => r.id === id ? { ...r, status } : r));
+    } catch(e) { console.error(e); }
+    finally { setUpdating(null); }
+  };
+
+  if (loading) return <div style={{ textAlign:"center", padding:"3rem", color:"#94a3b8" }}>Loading...</div>;
+
+  return (
+    <div>
+      <div style={{ marginBottom:"1.75rem" }}>
+        <h1 style={{ margin:0, fontSize:"1.5rem", fontWeight:700, color:"#0f172a" }}>Return Requests</h1>
+        <p style={{ margin:"0.3rem 0 0", color:"#94a3b8", fontSize:"0.875rem" }}>{returns.length} total</p>
+      </div>
+      {returns.length === 0
+        ? <div style={{ textAlign:"center", padding:"3rem", background:"#fff", borderRadius:16, color:"#94a3b8" }}>No return requests yet.</div>
+        : (
+          <div style={{ background:"#fff", borderRadius:16, overflow:"auto", boxShadow:"0 1px 4px rgba(0,0,0,0.06)" }}>
+            <table style={{ width:"100%", borderCollapse:"collapse", fontSize:"0.85rem" }}>
+              <thead>
+                <tr style={{ background:"#f8fafc" }}>
+                  {["Order #","Customer","Reason","Status","Date","Action"].map(h => (
+                    <th key={h} style={{ padding:"0.9rem 1rem", textAlign:"left", fontWeight:600, color:"#64748b", borderBottom:"1px solid #f1f5f9" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {returns.map(r => (
+                  <tr key={r.id} style={{ borderBottom:"1px solid #f8fafc" }}>
+                    <td style={{ padding:"0.9rem 1rem", fontFamily:"monospace", fontWeight:700, color:"#0f172a" }}>{r.order?.order_number ?? "—"}</td>
+                    <td style={{ padding:"0.9rem 1rem", color:"#334155" }}>{r.user?.full_name ?? "—"}</td>
+                    <td style={{ padding:"0.9rem 1rem", color:"#64748b", maxWidth:200 }}>{r.reason}</td>
+                    <td style={{ padding:"0.9rem 1rem" }}>
+                      <span style={{ padding:"0.22rem 0.7rem", borderRadius:20, background:RETURN_COLOR[r.status], color:"#fff", fontSize:"0.75rem", fontWeight:700 }}>
+                        {r.status}
+                      </span>
+                    </td>
+                    <td style={{ padding:"0.9rem 1rem", color:"#94a3b8", fontSize:"0.8rem" }}>
+                      {new Date(r.created_at).toLocaleDateString("en-IN")}
+                    </td>
+                    <td style={{ padding:"0.9rem 1rem" }}>
+                      <select value={r.status} disabled={updating === r.id}
+                        onChange={e => handleUpdate(r.id, e.target.value)}
+                        style={{ padding:"0.35rem 0.6rem", border:"1.5px solid #e2e8f0", borderRadius:8, fontSize:"0.78rem", background:"#fff", color:"#1a1a2e", cursor:"pointer", outline:"none" }}>
+                        {RETURN_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+                      </select>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+    </div>
+  );
+};
+
 
 export default AdminDashboard;

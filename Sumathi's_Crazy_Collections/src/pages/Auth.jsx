@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { signIn, signUp, signInWithGoogle } from "../services/authService";
+
 import "../styles/profile.css";
 
 const Auth = () => {
@@ -22,6 +23,7 @@ const Auth = () => {
       } else {
         await signUp({ email: form.email, password: form.password, fullName: form.fullName });
       }
+      <button onClick={() => resetPassword(form.email)}>Forgot password?</button>
       navigate("/profile");
     } catch (err) {
       setError(err.message);
@@ -29,6 +31,8 @@ const Auth = () => {
       setLoading(false);
     }
   };
+
+  
 
   const handleGoogle = async () => {
     try { await signInWithGoogle(); }

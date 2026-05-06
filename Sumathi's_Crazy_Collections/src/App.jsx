@@ -1,8 +1,9 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider }     from "./hooks/useAuth";
 import { CartProvider }     from "./hooks/useCart";
 import { WishlistProvider } from "./hooks/useWishlist";
 import { useAuth }          from "./hooks/useAuth";
+import { Analytics }        from "@vercel/analytics/react";
 
 import Navbar           from "./components/Navbar";
 import Footer           from "./components/Footer";
@@ -26,18 +27,16 @@ import Terms             from "./pages/Terms";
 import NotFound          from "./pages/NotFound";
 import AdminDashboard    from "./pages/admin/AdminDashboard";
 
-
-
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
-  if (loading) return <div style={{ padding: "4rem", textAlign: "center" }}>Loading...</div>;
+  if (loading) return <div style={{ padding: "4rem", textAlign: "center", color: "#888" }}>Loading...</div>;
   if (!user)   return <Navigate to="/login" replace />;
   return children;
 }
 
 function AdminRoute({ children }) {
   const { user, profile, loading } = useAuth();
-  if (loading) return <div style={{ padding: "4rem", textAlign: "center" }}>Loading...</div>;
+  if (loading) return <div style={{ padding: "4rem", textAlign: "center", color: "#888" }}>Loading...</div>;
   if (!user)   return <Navigate to="/login" replace />;
   if (profile?.role !== "admin") return <Navigate to="/" replace />;
   return children;
@@ -45,9 +44,13 @@ function AdminRoute({ children }) {
 
 function AppInner() {
   useBlinkingTitle();
+  const location = useLocation();
+  const isAdmin  = location.pathname.startsWith("/admin");
+
   return (
-    <Router>
-      <Navbar />
+    <>
+      {!isAdmin && <Navbar />}
+      {!isAdmin && <div className="navbar__spacer" />}
       <main className="min-h-screen bg-white text-gray-800">
         <Routes>
           <Route path="/"                   element={<Home />} />
@@ -68,12 +71,11 @@ function AppInner() {
           <Route path="/profile"            element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/admin"              element={<AdminRoute><AdminDashboard /></AdminRoute>} />
           <Route path="*"                   element={<NotFound />} />
-          
-
         </Routes>
       </main>
-      <Footer />
-    </Router>
+      {!isAdmin && <Footer />}
+      <Analytics />
+    </>
   );
 }
 
@@ -82,7 +84,9 @@ export default function App() {
     <AuthProvider>
       <CartProvider>
         <WishlistProvider>
-          <AppInner />
+          <Router>
+            <AppInner />
+          </Router>
         </WishlistProvider>
       </CartProvider>
     </AuthProvider>
