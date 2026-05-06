@@ -128,7 +128,7 @@ const Home = () => {
               </p>
               <div className="hero__actions">
                 <Link to="/products" className="btn btn--primary">Shop the Collection</Link>
-                <Link to="/about"    className="btn btn--ghost">Our Story →</Link>
+                <Link to="/contact"    className="btn btn--primary">Make custom order →</Link>
               </div>
               <div className="hero__trust">
                 <span>⭐ 4.8 Rating</span>
@@ -163,7 +163,7 @@ const Home = () => {
           </div>
         </div>
 
-        {/* ════ CATEGORIES ════ */}
+        {/* ════ CATEGORIES ════
         <section className="section">
           <div className="section__head">
             <div>
@@ -186,7 +186,7 @@ const Home = () => {
               </Link>
             ))}
           </div>
-        </section>
+        </section> */}
 
         {/* ════ FEATURED ════ */}
         <section className="section section--alt">

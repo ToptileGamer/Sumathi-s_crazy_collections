@@ -314,7 +314,6 @@ nav .nav-toggle {
 }
 
 .add-to-cart-btn::before {
-  content: "💖";
   position: absolute;
   left: 16px;
   top: 50%;
