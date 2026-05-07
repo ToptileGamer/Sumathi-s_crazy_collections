@@ -9,7 +9,7 @@ export async function getOrders(userId) {
       *,
       address:addresses(*),
       items:order_items(
-        id, product_name, product_image, price, quantity, line_total
+        id, product_id, product_name, product_image, price, quantity, line_total
       )
     `)
     .eq('user_id', userId)
@@ -26,7 +26,7 @@ export async function getOrder(orderId) {
       *,
       address:addresses(*),
       items:order_items(
-        id, product_name, product_image, price, quantity, line_total,
+        id, product_id, product_name, product_image, price, quantity, line_total,
         product:products(id, slug)
       )
     `)
@@ -92,4 +92,61 @@ export async function setDefaultAddress(userId, addressId) {
     .single();
   if (error) throw error;
   return data;
+}
+// Add this new function at bottom
+export async function createCODOrder({ cartItems, addressId, userId }) {
+  // Fetch real prices from DB (never trust client)
+  const productIds = cartItems.map(i => i.product_id);
+  const { data: products, error } = await supabase
+    .from("products")
+    .select("id, name, price, stock")
+    .in("id", productIds)
+    .eq("is_active", true);
+  if (error) throw error;
+
+  const productMap = Object.fromEntries(products.map(p => [p.id, p]));
+  let subtotal = 0;
+  const orderItems = [];
+
+  for (const item of cartItems) {
+    const product = productMap[item.product_id];
+    if (!product) throw new Error(`Product not found`);
+    if (product.stock < item.quantity) throw new Error(`${product.name} is out of stock`);
+    subtotal += product.price * item.quantity;
+    orderItems.push({
+      product_id:   product.id,
+      product_name: product.name,
+      price:        product.price,
+      quantity:     item.quantity,
+    });
+  }
+
+  const shippingAmount = subtotal >= 999 ? 0 : 99;
+  const totalAmount    = subtotal + shippingAmount;
+
+  // Create order
+  const { data: order, error: orderErr } = await supabase
+    .from("orders")
+    .insert({
+      user_id:         userId,
+      address_id:      addressId,
+      status:          "pending",
+      subtotal,
+      shipping_amount: shippingAmount,
+      total_amount:    totalAmount,
+      payment_method:  "cod",
+    })
+    .select().single();
+  if (orderErr) throw orderErr;
+
+  // Insert order items
+  const { error: itemsErr } = await supabase
+    .from("order_items")
+    .insert(orderItems.map(i => ({ ...i, order_id: order.id })));
+  if (itemsErr) throw itemsErr;
+
+  // Clear cart
+  await supabase.from("cart_items").delete().eq("user_id", userId);
+
+  return order;
 }

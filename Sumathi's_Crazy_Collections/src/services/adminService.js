@@ -25,10 +25,11 @@ export async function getAllOrders({ status = null, page = 1, limit = 20 } = {})
   let query = supabase
     .from('orders')
     .select(`
-      *,
-      user:profiles(full_name, id),
-      items:order_items(product_name, quantity, line_total)
-    `, { count: 'exact' })
+  *,
+  user:profiles(full_name, id),
+address:addresses(full_name, phone, line1, city, state, pincode),
+  items:order_items(product_name, quantity, line_total)
+`, { count: 'exact' })
     .order('created_at', { ascending: false })
     .range((page - 1) * limit, page * limit - 1);
 
