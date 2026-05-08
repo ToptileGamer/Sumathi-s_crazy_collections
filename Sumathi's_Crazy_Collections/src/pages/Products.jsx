@@ -4,6 +4,7 @@ import { useCart } from "../hooks/useCart";
 import { useAuth } from "../hooks/useAuth";
 import { useWishlist } from "../hooks/useWishlist";
 import { getProducts, getCategories } from "../services/productService";
+import { useSearchParams } from "react-router-dom";
 import "../styles/productDetails.css";
 import "../styles/cart.css";
 
@@ -53,6 +54,14 @@ const Products = () => {
       setLoading(false);
     }
   }, [category, query, sort, page]);
+
+  const [searchParams] = useSearchParams();
+
+// Read ?category=slug from URL on first load
+useEffect(() => {
+  const cat = searchParams.get("category");
+  if (cat) setCategory(cat);
+}, []);
 
   useEffect(() => { fetchProducts(); }, [fetchProducts]);
   useEffect(() => { setPage(1); }, [category, query, sort]);

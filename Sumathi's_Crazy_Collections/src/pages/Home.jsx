@@ -174,7 +174,7 @@ const Home = () => {
           </div>
           <div className="cat-grid">
             {categories.map((cat) => (
-              <Link key={cat.id} to={`/products`} className="cat-card">
+              <Link key={cat.id} to={`/products?category=${cat.slug}`} className="cat-card">
                 <div className="cat-card__icon">
                   {cat.slug === "bracelets" ? "📿" : cat.slug === "earrings" ? "💎" : "🛍"}
                 </div>

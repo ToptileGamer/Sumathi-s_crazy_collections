@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /admin
+Disallow: /cart
+Disallow: /checkout
+Disallow: /profile
 Sitemap: https://sumathi-s-crazy-collections.vercel.app/sitemap.xml
