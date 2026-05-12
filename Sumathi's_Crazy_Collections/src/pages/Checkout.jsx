@@ -133,7 +133,7 @@ const Checkout = () => {
       <section className="checkout-page">
         <div className="empty-state">
           <h3>Please log in first</h3>
-          <Link to="/login" className="hero-btn">
+          <Link to="/signup" className="hero-btn">
             Log In
           </Link>
         </div>

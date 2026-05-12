@@ -117,3 +117,12 @@
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 600px) {
+  .checkout-page {
+    padding-bottom: calc(6rem + env(safe-area-inset-bottom));
+  }
+  .payment-options label {
+    padding: 0.8rem 0; /* Increase touch target */
+  }
+}

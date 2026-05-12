@@ -3,13 +3,15 @@ import { useCart } from "../hooks/useCart";
 import { useAuth } from "../hooks/useAuth";
 import "../styles/cart.css";
 
+import defaultImg from "../assets/bracelets/bluewhite_panda.png";
+
 const formatPrice = (n) =>
   new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
 
 const getImage = (item) =>
   item.product?.images?.find((i) => i.is_primary)?.url ??
   item.product?.images?.[0]?.url ??
-  "https://placehold.co/80x80?text=?";
+  defaultImg;
 
 const Cart = () => {
   const { items, update, remove, subtotal, loading } = useCart();
@@ -27,7 +29,7 @@ const Cart = () => {
           <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>🛒</div>
           <h3>Please log in</h3>
           <p>Log in to view and manage your cart.</p>
-          <Link to="/login" className="hero-btn">Log In</Link>
+          <Link to="/signup" className="hero-btn">Sign Up / Log In</Link>
         </div>
       </section>
     );

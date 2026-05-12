@@ -496,3 +496,12 @@
   .cart-item img { width: 70px; height: 70px; }
   .cart-item-total { width: 100%; text-align: left; display: flex; justify-content: space-between; align-items: center; }
 }
+
+@media (max-width: 600px) {
+  .cart-page, .products-section, .product-details-container {
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom));
+  }
+  .cart-quantity button {
+    padding: 0.5rem 0.8rem; /* Larger touch target for quantity controls */
+  }
+}

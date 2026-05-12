@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { signIn, signUp, signInWithGoogle, resetPassword } from "../services/authService";
 
 import "../styles/profile.css";
 
 const Auth = () => {
   const navigate = useNavigate();
-  const [mode, setMode] = useState("login"); // "login" | "signup"
+  const location = useLocation();
+  const [mode, setMode] = useState(location.pathname === "/login" ? "login" : "signup"); // default to signup
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [form, setForm] = useState({ fullName: "", email: "", password: "" });
@@ -26,7 +27,7 @@ const Auth = () => {
         await signUp({ email: form.email, password: form.password, fullName: form.fullName });
       }
       <button onClick={() => resetPassword(form.email)}>Forgot password?</button>
-      navigate("/profile");
+      navigate("/");
     } catch (err) {
       setError(err.message);
     } finally {

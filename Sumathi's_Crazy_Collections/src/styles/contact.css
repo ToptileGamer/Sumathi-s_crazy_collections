@@ -334,3 +334,9 @@
   .confirmation-details { grid-template-columns: 1fr; }
   .order-tracker { gap: 0; }
 }
+@media (max-width: 600px) {
+  .checkout-page, .confirmation-page {
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom));
+  }
+  .address-radio { padding: 1.25rem 1rem; } /* bigger touch targets */
+}

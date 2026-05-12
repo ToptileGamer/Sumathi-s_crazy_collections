@@ -7,6 +7,7 @@ import { getProductBySlug, getProducts } from "../services/productService";
 import { getReviews, addReview, hasUserPurchased } from "../services/reviewService";
 import "../styles/productDetails.css";
 import "../styles/cart.css";
+import defaultImg from "../assets/bracelets/bluewhite_panda.png";
 
 const formatPrice = (n) =>
   new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
@@ -103,7 +104,7 @@ const ProductDetails = () => {
   );
 
   const images = product.images ?? [];
-  const primaryImg = images.find((i) => i.is_primary)?.url ?? images[0]?.url ?? "https://placehold.co/400x400?text=No+Image";
+  const primaryImg = images.find((i) => i.is_primary)?.url ?? images[0]?.url ?? defaultImg;
 
   return (
     <div className="product-details-container">
@@ -209,7 +210,7 @@ const ProductDetails = () => {
         )}
         {reviewDone && <p style={{ color: "#10b981" }}>✓ Thanks for your review!</p>}
         {!user && <p style={{ color: "#888" }}>
-          <Link to="/login" style={{ color: "#e91e8c" }}>Log in</Link> to write a review.
+          <Link to="/signup" style={{ color: "#e91e8c" }}>Sign up / Log in</Link> to write a review.
         </p>}
 
         {/* Review list */}
@@ -243,7 +244,7 @@ const ProductDetails = () => {
           <h2>You may also like...</h2>
           <div className="recommendation-grid">
             {related.map((item) => {
-              const img = item.images?.find((i) => i.is_primary)?.url ?? item.images?.[0]?.url;
+              const img = item.images?.find((i) => i.is_primary)?.url ?? item.images?.[0]?.url ?? defaultImg;
               return (
                 <div key={item.id} className="product-card"
                   onClick={() => navigate(`/product/${item.slug}`, { state: { product: item } })}>

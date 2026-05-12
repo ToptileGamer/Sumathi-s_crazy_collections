@@ -9,6 +9,7 @@ import {
   addAddress,
   deleteAddress,
   setDefaultAddress,
+  cancelOrder,
 } from "../services/orderService";
 import { requestReturn, getUserReturns } from "../services/returnService";
 import { addReview, getReviews } from "../services/reviewService";
@@ -41,6 +42,12 @@ const Profile = () => {
   const [returnReason, setReturnReason] = useState("");
   const [returning, setReturning] = useState(false);
   const [returnMsg, setReturnMsg] = useState("");
+  
+  const [cancelModal, setCancelModal] = useState(null); // holds order object
+  const [cancelReason, setCancelReason] = useState("");
+  const [cancelling, setCancelling] = useState(false);
+  const [cancelMsg, setCancelMsg] = useState("");
+
   const [addresses, setAddresses] = useState([]);
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -62,7 +69,7 @@ const Profile = () => {
   const [rated, setRated] = useState([]); // list of product_ids already rated
 
   useEffect(() => {
-    if (!loading && !user) navigate("/login");
+    if (!loading && !user) navigate("/signup");
   }, [user, loading, navigate]);
   useEffect(() => {
     if (profile)
@@ -129,6 +136,29 @@ const Profile = () => {
       setReturnMsg("❌ " + err.message);
     } finally {
       setReturning(false);
+    }
+  };
+
+  const handleCancelOrder = async (e) => {
+    e.preventDefault();
+    if (!cancelReason.trim()) return;
+    setCancelling(true);
+    try {
+      await cancelOrder(cancelModal.id);
+      setCancelMsg("✅ Order cancelled successfully.");
+      
+      // Update local orders list
+      setOrders(orders.map(o => o.id === cancelModal.id ? { ...o, status: 'cancelled' } : o));
+      
+      setTimeout(() => {
+        setCancelModal(null);
+        setCancelReason("");
+        setCancelMsg("");
+      }, 1500);
+    } catch (err) {
+      setCancelMsg("❌ " + err.message);
+    } finally {
+      setCancelling(false);
     }
   };
 
@@ -341,6 +371,24 @@ const Profile = () => {
                           ↩ Request Return
                         </button>
                       )}
+                    {["pending", "payment_initiated", "processing", "paid"].includes(order.status) && (
+                      <button
+                        onClick={() => setCancelModal(order)}
+                        style={{
+                          padding: "0.4rem 1rem",
+                          border: "1.5px solid #ef4444",
+                          color: "#ef4444",
+                          background: "none",
+                          borderRadius: 80,
+                          cursor: "pointer",
+                          fontSize: "0.82rem",
+                          fontWeight: 600,
+                          marginRight: "0.5rem"
+                        }}
+                      >
+                        ✕ Cancel Order
+                      </button>
+                    )}
                     {hasReturn(order.id) && (
                       <span
                         style={{
@@ -540,6 +588,14 @@ const Profile = () => {
               )}
             </div>
           </div>
+          {/* Add at bottom of settings tab in Profile.jsx */}
+<div style={{ marginTop:"1.5rem", paddingTop:"1.5rem", borderTop:"1px solid #f5f5f5" }}>
+  <p style={{ fontSize:"0.8rem", color:"#aaa", marginBottom:"0.5rem" }}>Danger Zone</p>
+  <Link to="/delete-account"
+    style={{ fontSize:"0.875rem", color:"#ef4444", fontWeight:600, textDecoration:"none" }}>
+    🗑️ Delete my account
+  </Link>
+</div>
         </div>
       )}
       {returnModal && (
@@ -675,6 +731,90 @@ const Profile = () => {
                   }}
                 >
                   Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      {cancelModal && (
+        <div
+          style={{
+            position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            zIndex: 1000, padding: "1rem",
+          }}
+          onClick={() => setCancelModal(null)}
+        >
+          <div
+            style={{
+              background: "#fff", borderRadius: 20, padding: "2rem",
+              width: "100%", maxWidth: 460, boxShadow: "0 20px 60px rgba(0,0,0,0.2)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 style={{ margin: "0 0 0.5rem", color: "#1a1a2e" }}>
+              Cancel Order
+            </h3>
+            <p style={{ margin: "0 0 1.25rem", color: "#888", fontSize: "0.875rem" }}>
+              Order #{cancelModal.order_number}
+            </p>
+            <form onSubmit={handleCancelOrder} style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+              <label style={{ fontWeight: 600, fontSize: "0.875rem", color: "#555" }}>
+                Reason for cancellation *
+              </label>
+              <select
+                value={cancelReason}
+                onChange={(e) => setCancelReason(e.target.value)}
+                required
+                style={{
+                  padding: "0.7rem 1rem", border: "1.5px solid #e2e8f0",
+                  borderRadius: 10, fontSize: "0.9rem", color: "#1a1a2e", outline: "none",
+                }}
+              >
+                <option value="">-- Select reason --</option>
+                <option>Order placed by mistake</option>
+                <option>Found better price elsewhere</option>
+                <option>Delivery time is too long</option>
+                <option>Changed my mind</option>
+                <option>Other</option>
+              </select>
+              <textarea
+                rows={3}
+                placeholder="Any additional details..."
+                style={{
+                  padding: "0.7rem 1rem", border: "1.5px solid #e2e8f0",
+                  borderRadius: 10, fontSize: "0.875rem", fontFamily: "inherit",
+                  resize: "vertical", outline: "none",
+                }}
+                onChange={(e) => {
+                  const base = cancelReason.split('\\n')[0];
+                  setCancelReason(base + (e.target.value ? '\\n' + e.target.value : ''));
+                }}
+              />
+              {cancelMsg && (
+                <p style={{ color: cancelMsg.startsWith("✅") ? "#10b981" : "#ef4444", fontSize: "0.84rem", margin: 0 }}>
+                  {cancelMsg}
+                </p>
+              )}
+              <div style={{ display: "flex", gap: "0.75rem", marginTop: "0.25rem" }}>
+                <button
+                  type="submit" disabled={cancelling}
+                  style={{
+                    flex: 1, padding: "0.75rem", background: "#ef4444", color: "#fff",
+                    border: "none", borderRadius: 10, fontWeight: 700, cursor: "pointer",
+                  }}
+                >
+                  {cancelling ? "Cancelling..." : "Confirm Cancellation"}
+                </button>
+                <button
+                  type="button" onClick={() => setCancelModal(null)}
+                  style={{
+                    padding: "0.75rem 1.25rem", border: "1.5px solid #e2e8f0", background: "none",
+                    borderRadius: 10, cursor: "pointer", color: "#555",
+                  }}
+                >
+                  Close
                 </button>
               </div>
             </form>

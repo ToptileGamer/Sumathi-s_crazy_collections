@@ -150,3 +150,15 @@ export async function createCODOrder({ cartItems, addressId, userId }) {
 
   return order;
 }
+
+// ── Cancel order ──────────────────────────────────────────
+export async function cancelOrder(orderId) {
+  const { data, error } = await supabase
+    .from("orders")
+    .update({ status: "cancelled" })
+    .eq("id", orderId)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}

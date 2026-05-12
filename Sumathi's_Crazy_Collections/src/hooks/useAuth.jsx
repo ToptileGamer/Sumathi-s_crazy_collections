@@ -30,7 +30,26 @@ export function AuthProvider({ children }) {
 
   async function fetchProfile(userId) {
     try {
-      const p = await getProfile(userId);
+      let p = await getProfile(userId);
+
+      if (p && !p.avatar_url && p.full_name) {
+        const firstName = p.full_name.split(' ')[0];
+        let gender = 'boy';
+        try {
+          const res = await fetch(`https://api.genderize.io?name=${firstName}`);
+          const gData = await res.json();
+          if (gData.gender === 'female') {
+            gender = 'girl';
+          }
+        } catch (err) {
+          // fallback
+        }
+        const avatar_url = `https://avatar.iran.liara.run/public/${gender}?username=${encodeURIComponent(p.full_name)}`;
+        
+        const { updateProfile } = await import('../services/authService');
+        p = await updateProfile(userId, { avatar_url });
+      }
+
       setProfile(p);
     } catch (_) {
       setProfile(null);

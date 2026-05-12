@@ -1,5 +1,10 @@
 {
-  "appId": "com.hayzentech.sumathiscrazycollections",
-  "appName": "Sumathi's Crazy Collection",
-  "webDir": "dist"
+  "appId": "com.hayzentech.solutions.sumathiscrazycollections",
+  "appName": "Sumathi's Crazy Collections",
+  "webDir": "dist",
+  "plugins": {
+    "App": {
+      "launchUrl": "com.hayzentech.solutions.sumathiscrazycollections://"
+    }
+  }
 }

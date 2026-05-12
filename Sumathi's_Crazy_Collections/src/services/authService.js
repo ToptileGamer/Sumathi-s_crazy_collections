@@ -1,12 +1,30 @@
 // src/services/authService.js
 import { supabase } from '../lib/supabaseClient';
+import { Capacitor } from "@capacitor/core";
+import { Browser } from "@capacitor/browser";
+import { App } from "@capacitor/app";
+
 
 // ── Sign Up ───────────────────────────────────────────────
 export async function signUp({ email, password, fullName }) {
+  const firstName = fullName.split(' ')[0];
+  let gender = 'boy';
+  try {
+    const res = await fetch(`https://api.genderize.io?name=${firstName}`);
+    const gData = await res.json();
+    if (gData.gender === 'female') {
+      gender = 'girl';
+    }
+  } catch (err) {
+    // fallback
+  }
+
+  const avatar_url = `https://avatar.iran.liara.run/public/${gender}?username=${encodeURIComponent(fullName)}`;
+
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: { data: { full_name: fullName } },
+    options: { data: { full_name: fullName, avatar_url } },
   });
   if (error) throw error;
   return data;
@@ -19,14 +37,6 @@ export async function signIn({ email, password }) {
   return data;
 }
 
-// ── Google OAuth ──────────────────────────────────────────
-export async function signInWithGoogle() {
-  const { error } = await supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: { redirectTo: `${window.location.origin}/auth/callback` },
-  });
-  if (error) throw error;
-}
 
 // ── Sign Out ──────────────────────────────────────────────
 export async function signOut() {
@@ -85,4 +95,37 @@ export async function resetPassword(email) {
     redirectTo: `${window.location.origin}/auth/reset-password`,
   });
   if (error) throw error;
+}
+
+export async function signInWithGoogle() {
+  const isNative = Capacitor.isNativePlatform();
+
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: isNative
+        ? "com.hayzentech.solutions.sumathiscrazycollections://login-callback"
+        : `${window.location.origin}/`,
+      skipBrowserRedirect: isNative,
+    },
+  });
+
+  if (error) throw error;
+
+  if (isNative && data?.url) {
+    await Browser.open({ url: data.url, windowName: "_self" });
+  }
+}
+
+// ── Handle Auth Redirect for Native Apps ──────────────────
+if (Capacitor.isNativePlatform()) {
+  App.addListener('appUrlOpen', async (event) => {
+    const url = new URL(event.url);
+    const code = url.searchParams.get('code');
+
+    if (code) {
+      await supabase.auth.exchangeCodeForSession(code);
+      await Browser.close();
+    }
+  });
 }

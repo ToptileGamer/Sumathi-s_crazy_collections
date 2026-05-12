@@ -370,10 +370,14 @@
 
 /* ── Responsive ── */
 @media (max-width: 600px) {
-  .profile-section { padding: 1rem; }
+  .profile-section { 
+    padding: 1rem;
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom));
+  }
   .profile-header   { padding: 1rem; }
   .tab-content      { padding: 1.25rem; }
   .addr-form        { grid-template-columns: 1fr; }
   .addr-form button { grid-column: span 1; }
-  .wishlist-grid    { grid-template-columns: repeat(2, 1fr); }
+  .wishlist-grid    { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+  .wishlist-actions button { min-height: 44px; padding: 0.5rem; } /* better touch targets */
 }

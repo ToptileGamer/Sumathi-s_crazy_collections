@@ -1,5 +1,228 @@
-.about-section{
-    text-align: center;
-    margin-top: 100px;
-    padding: auto;
+/* Premium About Page Styles */
+.about-page-container {
+  background: var(--bg);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.about-hero-section {
+  position: relative;
+  padding: 8rem 2rem 6rem;
+  background: linear-gradient(135deg, var(--brand-light) 0%, #fff 100%);
+  text-align: center;
+  overflow: hidden;
+}
+
+.about-hero-section::before {
+  content: '';
+  position: absolute;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: radial-gradient(circle, rgba(233,30,140,0.05) 0%, transparent 60%);
+  animation: rotate 30s linear infinite;
+  z-index: 0;
+}
+
+.about-hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  margin: 0 auto;
+  animation: fadeUp 0.8s ease;
+}
+
+.about-title {
+  font-family: var(--font-display);
+  font-size: 3.5rem;
+  color: var(--dark);
+  margin-bottom: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.about-subtitle {
+  font-size: 1.25rem;
+  color: var(--text-light);
+  line-height: 1.8;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.about-mission-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 6rem 2rem;
+  align-items: center;
+}
+
+.mission-content {
+  animation: fadeIn 1s ease;
+}
+
+.mission-content h2 {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  color: var(--brand);
+  margin-bottom: 1.5rem;
+}
+
+.mission-content p {
+  font-size: 1.1rem;
+  color: var(--text-light);
+  line-height: 1.9;
+  margin-bottom: 1.5rem;
+}
+
+.mission-image-wrapper {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  transform: rotate(-2deg);
+  transition: transform var(--transition);
+}
+
+.mission-image-wrapper:hover {
+  transform: rotate(0deg) scale(1.02);
+}
+
+.mission-image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.mission-image-wrapper::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-radius: var(--radius-lg);
+  pointer-events: none;
+}
+
+.about-team-section {
+  background: var(--bg-warm);
+  padding: 6rem 2rem;
+  text-align: center;
+}
+
+.about-team-section h2 {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  color: var(--dark);
+  margin-bottom: 3.5rem;
+}
+
+.about-team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.about-team-card {
+  background: #fff;
+  padding: 3rem 2rem;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  transition: all var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.about-team-card:hover {
+  transform: translateY(-10px);
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(233,30,140,0.2);
+}
+
+.about-team-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 4px;
+  background: linear-gradient(90deg, var(--brand), var(--brand-dark));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+
+.about-team-card:hover::before {
+  transform: scaleX(1);
+}
+
+.team-icon {
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
+  animation: float 4s ease-in-out infinite;
+}
+
+.about-team-card h3 {
+  font-size: 1.4rem;
+  color: var(--dark);
+  margin-bottom: 1rem;
+}
+
+.about-team-card p {
+  color: var(--text-light);
+  line-height: 1.7;
+}
+
+.about-stats-section {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 2rem;
+  padding: 5rem 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.stat-card {
+  text-align: center;
+}
+
+.stat-card h4 {
+  font-size: 3.5rem;
+  font-family: var(--font-display);
+  color: var(--brand);
+  margin-bottom: 0.5rem;
+  text-shadow: 2px 2px 0px var(--brand-light);
+}
+
+.stat-card p {
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--dark-2);
+}
+
+/* Responsive Design */
+@media (max-width: 900px) {
+  .about-mission-section {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+  .mission-image-wrapper {
+    transform: rotate(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .about-title {
+    font-size: 2.5rem;
+  }
+  .about-hero-section {
+    padding: 6rem 1.5rem 4rem;
+  }
+  .stat-card h4 {
+    font-size: 2.8rem;
+  }
 }

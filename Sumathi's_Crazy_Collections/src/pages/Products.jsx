@@ -8,13 +8,15 @@ import { useSearchParams } from "react-router-dom";
 import "../styles/productDetails.css";
 import "../styles/cart.css";
 
+import defaultImg from "../assets/bracelets/bluewhite_panda.png";
+
 const formatPrice = (n) =>
   new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
 
 const getPrimaryImage = (product) =>
   product.images?.find((i) => i.is_primary)?.url ??
   product.images?.[0]?.url ??
-  "https://placehold.co/300x300?text=No+Image";
+  defaultImg;
 
 const Products = () => {
   const { add }                  = useCart();
@@ -111,10 +113,10 @@ useEffect(() => {
       ) : (
         <div className="products-grid">
           {products.map((product) => (
-            <div key={product.id} className="product-card border p-4 rounded shadow hover:shadow-lg transition">
+            <div key={product.id} className="product-card">
               <Link to={`/product/${product.slug}`} state={{ product }}>
-                <div className="product-img-wrap" style={{ position: "relative" }}>
-                  <img src={getPrimaryImage(product)} alt={product.name} className="w-full h-48 object-cover mb-2" />
+                <div className="product-img-wrap">
+                  <img src={getPrimaryImage(product)} alt={product.name} />
                   {product.original_price && (
                     <span className="product-badge">
                       {Math.round((1 - product.price / product.original_price) * 100)}% OFF
@@ -126,8 +128,8 @@ useEffect(() => {
                   </button>
                 </div>
                 <p className="product-category-label">{product.category?.name}</p>
-                <h3 className="text-lg font-medium">{product.name}</h3>
-                <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                <h3>{product.name}</h3>
+                <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", padding: "0 1rem" }}>
                   <span className="price">{formatPrice(product.price)}</span>
                   {product.original_price && (
                     <span style={{ textDecoration: "line-through", color: "#aaa", fontSize: "0.85rem" }}>

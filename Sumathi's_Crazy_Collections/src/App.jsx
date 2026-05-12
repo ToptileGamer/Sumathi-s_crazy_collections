@@ -5,40 +5,46 @@ import { WishlistProvider } from "./hooks/useWishlist";
 import { useAuth }          from "./hooks/useAuth";
 import { Analytics }        from "@vercel/analytics/react";
 import { useState } from "react";
+import { App as CapApp } from "@capacitor/app";
+import { useEffect } from "react";
 
 import Navbar           from "./components/Navbar";
 import Footer           from "./components/Footer";
 import useBlinkingTitle from "./pages/useBlinkingTitle";
 
-import Home              from "./pages/Home";
-import Products          from "./pages/Products";
-import ProductDetails    from "./pages/ProductDetails";
-import Cart              from "./pages/Cart";
-import Checkout          from "./pages/Checkout";
-import OrderConfirmation from "./pages/OrderConfirmation";
-import Profile           from "./pages/Profile";
-import Auth              from "./pages/Auth";
-import About             from "./pages/About";
-import Contact           from "./pages/Contact";
-import FAQ               from "./pages/FAQ";
-import Shipping          from "./pages/Shipping";
-import Returns           from "./pages/Returns";
-import Privacy           from "./pages/Privacy";
-import Terms             from "./pages/Terms";
-import NotFound          from "./pages/NotFound";
-import AdminDashboard    from "./pages/admin/AdminDashboard";
+import { lazy, Suspense } from "react";
+
+const Home              = lazy(() => import("./pages/Home"));
+const Products          = lazy(() => import("./pages/Products"));
+const ProductDetails    = lazy(() => import("./pages/ProductDetails"));
+const Cart              = lazy(() => import("./pages/Cart"));
+const Checkout          = lazy(() => import("./pages/Checkout"));
+const OrderConfirmation = lazy(() => import("./pages/OrderConfirmation"));
+const Profile           = lazy(() => import("./pages/Profile"));
+const Auth              = lazy(() => import("./pages/Auth"));
+const About             = lazy(() => import("./pages/About"));
+const Contact           = lazy(() => import("./pages/Contact"));
+const FAQ               = lazy(() => import("./pages/FAQ"));
+const Shipping          = lazy(() => import("./pages/Shipping"));
+const Returns           = lazy(() => import("./pages/Returns"));
+const Privacy           = lazy(() => import("./pages/Privacy"));
+const Terms             = lazy(() => import("./pages/Terms"));
+const NotFound          = lazy(() => import("./pages/NotFound"));
+const AdminDashboard    = lazy(() => import("./pages/admin/AdminDashboard"));
+const DeleteAccount     = lazy(() => import("./pages/DeleteAccount"));
+
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
   if (loading) return <div style={{ padding: "4rem", textAlign: "center", color: "#888" }}>Loading...</div>;
-  if (!user)   return <Navigate to="/login" replace />;
+  if (!user)   return <Navigate to="/signup" replace />;
   return children;
 }
 
 function AdminRoute({ children }) {
   const { user, profile, loading } = useAuth();
   if (loading) return <div style={{ padding: "4rem", textAlign: "center", color: "#888" }}>Loading...</div>;
-  if (!user)   return <Navigate to="/login" replace />;
+  if (!user)   return <Navigate to="/signup" replace />;
   if (profile?.role !== "admin") return <Navigate to="/" replace />;
   return children;
 }
@@ -134,32 +140,50 @@ function AppInner() {
   useBlinkingTitle();
   const location = useLocation();
   const isAdmin  = location.pathname.startsWith("/admin");
+  useEffect(() => {
+  CapApp.addListener("appUrlOpen", async ({ url }) => {
+    if (url.includes("login-callback")) {
+      // Extract tokens from URL and set session
+      const { data, error } = await supabase.auth.getSessionFromUrl({ url });
+      if (data?.session) {
+        // Session set — navigate to home
+        navigate("/");
+      }
+    }
+  });
+
+  return () => { CapApp.removeAllListeners(); };
+}, []);
 
   return (
     <>
       {!isAdmin && <Navbar />}
-      {!isAdmin && <div className="navbar__spacer" />}
+
       <main className="min-h-screen bg-white text-gray-800">
-        <Routes>
-          <Route path="/"                   element={<Home />} />
-          <Route path="/products"           element={<Products />} />
-          <Route path="/product/:slug"      element={<ProductDetails />} />
-          <Route path="/about"              element={<About />} />
-          <Route path="/contact"            element={<Contact />} />
-          <Route path="/faq"                element={<FAQ />} />
-          <Route path="/shipping"           element={<Shipping />} />
-          <Route path="/returns"            element={<Returns />} />
-          <Route path="/privacy"            element={<Privacy />} />
-          <Route path="/terms"              element={<Terms />} />
-          <Route path="/login"              element={<Auth />} />
-          <Route path="/signup"             element={<Auth />} />
-          <Route path="/cart"               element={<ProtectedRoute><Cart /></ProtectedRoute>} />
-          <Route path="/checkout"           element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
-          <Route path="/order-confirmation" element={<ProtectedRoute><OrderConfirmation /></ProtectedRoute>} />
-          <Route path="/profile"            element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-          <Route path="/admin"              element={<AdminRoute><AdminDashboard /></AdminRoute>} />
-          <Route path="*"                   element={<NotFound />} />
-        </Routes>
+        <Suspense fallback={<div style={{ padding: "4rem", textAlign: "center", color: "#888" }}>Loading...</div>}>
+          <Routes>
+            <Route path="/"                   element={<Home />} />
+            <Route path="/products"           element={<Products />} />
+            <Route path="/product/:slug"      element={<ProductDetails />} />
+            <Route path="/about"              element={<About />} />
+            <Route path="/contact"            element={<Contact />} />
+            <Route path="/faq"                element={<FAQ />} />
+            <Route path="/shipping"           element={<Shipping />} />
+            <Route path="/returns"            element={<Returns />} />
+            <Route path="/privacy"            element={<Privacy />} />
+            <Route path="/terms"              element={<Terms />} />
+            <Route path="/login"              element={<Auth />} />
+            <Route path="/signup"             element={<Auth />} />
+            <Route path="/cart"               element={<ProtectedRoute><Cart /></ProtectedRoute>} />
+            <Route path="/checkout"           element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+            <Route path="/order-confirmation" element={<ProtectedRoute><OrderConfirmation /></ProtectedRoute>} />
+            <Route path="/profile"            element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+            <Route path="/admin"              element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+            <Route path="/delete-account"     element={<DeleteAccount />} />
+
+            <Route path="*"                   element={<NotFound />} />
+          </Routes>
+        </Suspense>
       </main>
       {!isAdmin && <Footer />}
        <CookieBanner />
