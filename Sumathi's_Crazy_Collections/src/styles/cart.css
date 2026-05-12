@@ -21,6 +21,24 @@
   align-items: start;
 }
 
+.buy-now-btn {
+  display: block;
+  width: calc(100% - 2rem);
+  margin: 0.5rem 1rem 0.35rem;
+  padding: 0.65rem;
+  background: #ec72da;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.buy-now-btn:hover { background: #a2a2a2; }
+
 /* ── Cart Items ── */
 .cart-items { display: flex; flex-direction: column; gap: 1rem; }
 

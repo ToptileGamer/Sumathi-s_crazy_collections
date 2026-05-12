@@ -139,11 +139,25 @@ useEffect(() => {
                 </div>
                 <p className="product-rating">⭐ {product.rating_avg ?? "—"} ({product.rating_count ?? 0})</p>
               </Link>
-              <button className="add-to-cart-btn"
-                onClick={(e) => handleAddToCart(e, product.id)}
-                disabled={addingId === product.id || product.stock === 0}>
-                {product.stock === 0 ? "Out of Stock" : addingId === product.id ? "Adding..." : "Add to Cart"}
-              </button>
+              {/* Buy Now button */}
+{product.stock > 0 && (
+  <Link
+    to="/checkout"
+    onClick={async (e) => {
+      if (!user) { e.preventDefault(); alert("Please log in first."); return; }
+      await add(product.id, 1);
+    }}
+    className="buy-now-btn">
+    Buy Now
+  </Link>
+)}
+
+{/* Add to Cart button */}
+<button className="add-to-cart-btn"
+  onClick={(e) => handleAddToCart(e, product.id)}
+  disabled={addingId === product.id || product.stock === 0}>
+  {product.stock === 0 ? "Out of Stock" : addingId === product.id ? "Adding..." : "Add to Cart"}
+</button>
             </div>
           ))}
         </div>
