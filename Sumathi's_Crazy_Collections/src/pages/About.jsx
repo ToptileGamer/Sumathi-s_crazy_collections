@@ -1,5 +1,6 @@
 import React from "react";
 import "../styles/about.css";
+import aboutimg from "../assets/aboutimg.jpg";
 
 const About = () => (
   <div className="about-page-container">
@@ -23,7 +24,7 @@ const About = () => (
         </p>
       </div>
       <div className="mission-image-wrapper">
-        <img src="/about-artisan.png" alt="Artisan crafting jewelry" className="mission-image" />
+        <img src={aboutimg} alt="Artisan crafting jewelry" className="mission-image" />  
       </div>
     </section>
 
