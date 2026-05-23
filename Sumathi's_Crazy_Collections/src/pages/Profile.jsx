@@ -145,7 +145,7 @@ const Profile = () => {
     if (!cancelReason.trim()) return;
     setCancelling(true);
     try {
-      await cancelOrder(cancelModal.id);
+      await cancelOrder(cancelModal.id, cancelReason);
       setCancelMsg("✅ Order cancelled successfully.");
       
       // Update local orders list

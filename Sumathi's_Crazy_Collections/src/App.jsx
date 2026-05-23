@@ -5,8 +5,6 @@ import { WishlistProvider } from "./hooks/useWishlist";
 import { useAuth }          from "./hooks/useAuth";
 import { Analytics }        from "@vercel/analytics/react";
 import { useState } from "react";
-import { App as CapApp } from "@capacitor/app";
-import { useEffect } from "react";
 
 import Navbar           from "./components/Navbar";
 import Footer           from "./components/Footer";
@@ -140,20 +138,6 @@ function AppInner() {
   useBlinkingTitle();
   const location = useLocation();
   const isAdmin  = location.pathname.startsWith("/admin");
-  useEffect(() => {
-  CapApp.addListener("appUrlOpen", async ({ url }) => {
-    if (url.includes("login-callback")) {
-      // Extract tokens from URL and set session
-      const { data, error } = await supabase.auth.getSessionFromUrl({ url });
-      if (data?.session) {
-        // Session set — navigate to home
-        navigate("/");
-      }
-    }
-  });
-
-  return () => { CapApp.removeAllListeners(); };
-}, []);
 
   return (
     <>

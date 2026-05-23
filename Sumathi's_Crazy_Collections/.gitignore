@@ -10,6 +10,8 @@ lerna-debug.log*
 node_modules
 dist
 android
+keystore
+android/app/release
 dist-ssr
 *.local
 .env

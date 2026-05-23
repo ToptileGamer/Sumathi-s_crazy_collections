@@ -1,12 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { signIn, signUp, signInWithGoogle, resetPassword } from "../services/authService";
+import { useAuth } from "../hooks/useAuth";
 
 import "../styles/profile.css";
 
 const Auth = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
+
   const [mode, setMode] = useState(location.pathname === "/login" ? "login" : "signup"); // default to signup
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
