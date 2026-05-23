@@ -1,3 +1,4 @@
+/*
 // src/hooks/useRazorpay.js
 import { useCallback } from 'react';
 import { initiateCheckout, verifyPayment } from '../services/orderService';
@@ -80,3 +81,4 @@ export function useRazorpay() {
 
   return { checkout };
 }
+*/

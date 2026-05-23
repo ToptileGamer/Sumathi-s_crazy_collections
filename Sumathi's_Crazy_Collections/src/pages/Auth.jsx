@@ -26,7 +26,6 @@ const Auth = () => {
       } else {
         await signUp({ email: form.email, password: form.password, fullName: form.fullName });
       }
-      <button onClick={() => resetPassword(form.email)}>Forgot password?</button>
       navigate("/");
     } catch (err) {
       setError(err.message);

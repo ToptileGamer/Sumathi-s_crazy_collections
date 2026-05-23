@@ -29,10 +29,12 @@ const Contact = () => {
 
     emailjs
       .sendForm(
-        "service_40e1bnr",
-        "template_5qo613f",
+        "service_hkmu9hw",
+        "template_eoj7d9v",
         e.target,
-        "cZQOjQodmOO8ZoAo9"
+        {
+          publicKey: "dTrFGG1s35hxdYEBP",
+        }
       )
       .then(
         () => {
@@ -55,10 +57,12 @@ const Contact = () => {
 
     emailjs
       .sendForm(
-        "service_40e1bnr",
-        "template_5qo613f",
+        "service_hkmu9hw",
+        "template_eoj7d9v",
         e.target,
-        "cZQOjQodmOO8ZoAo9"
+        {
+          publicKey: "dTrFGG1s35hxdYEBP",
+        }
       )
       .then(
         () => {

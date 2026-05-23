@@ -173,47 +173,48 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* ── Mobile Menu (slide-in overlay) ── */}
-        <div className={`mobile-overlay ${menuOpen ? "mobile-overlay--open" : ""}`} onClick={() => setMenuOpen(false)} />
-        <div className={`mobile-drawer ${menuOpen ? "mobile-drawer--open" : ""}`}>
-          <div className="mobile-drawer__header">
-            <span className="logo__icon">✦</span>
-            <span className="logo__text" style={{color:'#1a1a2e'}}>Sumathi's<span>Crazy Collections</span></span>
-            <button className="mobile-close" onClick={() => setMenuOpen(false)} aria-label="Close">✕</button>
-          </div>
-
-          {/* Mobile search */}
-          <form className="mobile-search" onSubmit={(e) => { e.preventDefault(); if(searchQuery.trim()) { navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`); setSearchQuery(""); setMenuOpen(false); } }}>
-            <input type="search" placeholder="Search products..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
-          </form>
-
-          <div className="mobile-drawer__links">
-            {[
-              { to: "/",         label: "Home",    icon: "🏠" },
-              { to: "/products", label: "Shop",    icon: "🛍" },
-              { to: "/about",    label: "About",   icon: "ℹ️" },
-              { to: "/contact",  label: "Contact", icon: "✉️" },
-            ].map(({ to, label, icon }) => (
-              <Link key={to} to={to} className={`mobile-link ${isActive(to) ? "mobile-link--active" : ""}`}>
-                <span className="mobile-link__icon">{icon}</span> {label}
-              </Link>
-            ))}
-            <div className="mobile-divider" />
-            {user ? (
-              <>
-                <Link to="/profile" className="mobile-link"><span className="mobile-link__icon">👤</span> My Profile</Link>
-                <Link to="/profile" className="mobile-link"><span className="mobile-link__icon">📦</span> My Orders</Link>
-                <Link to="/profile" className="mobile-link"><span className="mobile-link__icon">♡</span> Wishlist</Link>
-                {profile?.role === "admin" && <Link to="/admin" className="mobile-link"><span className="mobile-link__icon">🛠</span> Admin</Link>}
-                <div className="mobile-divider" />
-                <button className="mobile-logout" onClick={handleLogout}>Log Out</button>
-              </>
-            ) : (
-              <Link to="/signup" className="mobile-cta">Sign Up / Log In</Link>
-            )}
-          </div>
-        </div>
       </nav>
+
+      {/* ── Mobile Menu (slide-in overlay) ── */}
+      <div className={`mobile-overlay ${menuOpen ? "mobile-overlay--open" : ""}`} onClick={() => setMenuOpen(false)} />
+      <div className={`mobile-drawer ${menuOpen ? "mobile-drawer--open" : ""}`}>
+        <div className="mobile-drawer__header">
+          <span className="logo__icon">✦</span>
+          <span className="logo__text" style={{color:'#1a1a2e'}}>Sumathi's<span>Crazy Collections</span></span>
+          <button className="mobile-close" onClick={() => setMenuOpen(false)} aria-label="Close">✕</button>
+        </div>
+
+        {/* Mobile search */}
+        <form className="mobile-search" onSubmit={(e) => { e.preventDefault(); if(searchQuery.trim()) { navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`); setSearchQuery(""); setMenuOpen(false); } }}>
+          <input type="search" placeholder="Search products..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
+        </form>
+
+        <div className="mobile-drawer__links">
+          {[
+            { to: "/",         label: "Home",    icon: "🏠" },
+            { to: "/products", label: "Shop",    icon: "🛍" },
+            { to: "/about",    label: "About",   icon: "ℹ️" },
+            { to: "/contact",  label: "Contact", icon: "✉️" },
+          ].map(({ to, label, icon }) => (
+            <Link key={to} to={to} className={`mobile-link ${isActive(to) ? "mobile-link--active" : ""}`}>
+              <span className="mobile-link__icon">{icon}</span> {label}
+            </Link>
+          ))}
+          <div className="mobile-divider" />
+          {user ? (
+            <>
+              <Link to="/profile" className="mobile-link"><span className="mobile-link__icon">👤</span> My Profile</Link>
+              <Link to="/profile" className="mobile-link"><span className="mobile-link__icon">📦</span> My Orders</Link>
+              <Link to="/profile" className="mobile-link"><span className="mobile-link__icon">♡</span> Wishlist</Link>
+              {profile?.role === "admin" && <Link to="/admin" className="mobile-link"><span className="mobile-link__icon">🛠</span> Admin</Link>}
+              <div className="mobile-divider" />
+              <button className="mobile-logout" onClick={handleLogout}>Log Out</button>
+            </>
+          ) : (
+            <Link to="/signup" className="mobile-cta">Sign Up / Log In</Link>
+          )}
+        </div>
+      </div>
 
       {/* ── Mobile Bottom Navigation (Sticky) ── */}
       <div className="mobile-bottom-nav">

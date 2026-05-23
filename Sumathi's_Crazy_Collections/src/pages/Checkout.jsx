@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useCart } from "../hooks/useCart";
 import { useAuth } from "../hooks/useAuth";
-import { useRazorpay } from "../hooks/useRazorpay";
+// import { useRazorpay } from "../hooks/useRazorpay";
 import { getAddresses, addAddress } from "../services/orderService";
 import { createCODOrder } from "../services/orderService";
 
@@ -30,7 +30,7 @@ const Checkout = () => {
   const navigate = useNavigate();
   const { items, subtotal, clear } = useCart();
   const { user, profile } = useAuth();
-  const { checkout } = useRazorpay();
+  // const { checkout } = useRazorpay();
 
   const [addresses, setAddresses] = useState([]);
   const [selectedAddr, setSelectedAddr] = useState(null);
@@ -39,7 +39,7 @@ const Checkout = () => {
   const [savingAddr, setSavingAddr] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState("");
-  const [payMethod, setPayMethod] = useState("razorpay");
+  const [payMethod, setPayMethod] = useState("cod"); // Default changed from "razorpay" to "cod"
 
   const shipping = subtotal >= 999 ? 0 : 99;
   const tax = Math.round(subtotal * 0.03);
@@ -106,6 +106,7 @@ const Checkout = () => {
     }
 
     // ── Razorpay flow ─────────────────────────────────────────
+    /*
     await checkout({
       cartItems: items.map((i) => ({
         product_id: i.product?.id,
@@ -126,6 +127,7 @@ const Checkout = () => {
         setProcessing(false);
       },
     });
+    */
   };
 
   // ── Guards ────────────────────────────────────────────────
@@ -337,11 +339,13 @@ const Checkout = () => {
               }}
             >
               {[
+                /*
                 {
                   id: "razorpay",
                   label: "💳 Pay Online",
                   sub: "UPI, Cards, Wallets via Razorpay",
                 },
+                */
                 {
                   id: "cod",
                   label: "💵 Cash on Delivery",
@@ -399,13 +403,17 @@ const Checkout = () => {
           >
             {processing
               ? "Processing..."
+              : `Place Order (COD) ${formatPrice(total)}`
+              /*
               : payMethod === "cod"
                 ? `Place Order (COD) ${formatPrice(total)}`
-                : `Pay ${formatPrice(total)} via Razorpay`}
+                : `Pay ${formatPrice(total)} via Razorpay`
+              */
+            }
           </button>
-          <p className="summary-note">
+          {/* <p className="summary-note">
             🔒 Secured by Razorpay. UPI, Cards, Wallets & more accepted.
-          </p>
+          </p> */}
         </ScrollReveal>
       </div>
     </section>

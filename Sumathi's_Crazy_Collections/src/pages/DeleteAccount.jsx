@@ -77,7 +77,7 @@ const DeleteAccount = () => {
             <p style={{ fontWeight:600, color:"#1a1a2e", marginBottom:"0.5rem" }}>⚠️ Data that will be kept:</p>
             <ul style={{ paddingLeft:"1.25rem", color:"#555", lineHeight:2, margin:0 }}>
               <li>Order history (kept for 3 years for legal/tax reasons)</li>
-              <li>Payment records (kept by Razorpay per RBI guidelines)</li>
+              {/* <li>Payment records (kept by Razorpay per RBI guidelines)</li> */}
             </ul>
           </div>
 
