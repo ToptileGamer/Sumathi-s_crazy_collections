@@ -152,17 +152,15 @@ export async function createCODOrder({ cartItems, addressId, userId }) {
 }
 
 // ── Cancel order ──────────────────────────────────────────
-export async function cancelOrder(orderId, reason) {
-  // We update the status to cancelled.
-  // We use .select() without .single() and check data.length to avoid PGRST116 when 0 rows are updated.
+export async function cancelOrder(orderId, userId) {
+  // Update the order status to cancelled. Ensure the user owns the order.
   const { data, error } = await supabase
     .from("orders")
     .update({ status: "cancelled" })
     .eq("id", orderId)
+    .eq("user_id", userId)
     .select();
-
   if (error) throw error;
-  
   if (!data || data.length === 0) {
     throw new Error("Could not cancel order. You might not have permission, or the order doesn't exist.");
   }
