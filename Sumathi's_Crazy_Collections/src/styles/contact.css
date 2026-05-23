@@ -155,28 +155,6 @@
   padding-right: 2rem;
 }
 
-/* Dynamic Color Preview */
-.color-preview {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-  flex-wrap: wrap;
-}
-
-.color-box {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  border: 1px solid var(--border);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.04);
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
-}
-
-.color-box:hover {
-  transform: scale(1.15);
-  box-shadow: 0 6px 15px rgba(0,0,0,0.08);
-}
-
 /* Submit Button Overrides */
 .contact-form .add-to-cart-btn {
   margin: 1rem 0 0 0;
@@ -216,6 +194,423 @@
 .contact-form .add-to-cart-btn:hover {
   box-shadow: 0 8px 20px rgba(0,0,0,0.1);
   transform: translateY(-2px);
+}
+/* ════════════════════════════════
+   Bracelet Preview & Customizer - Interactive Arc Layout
+════════════════════════════════ */
+
+.custom-order-section h3 {
+  justify-content: center;
+  gap: 1rem;
+}
+
+.custom-order-icon {
+  font-size: 0.7rem;
+  opacity: 0.4;
+}
+
+/* ── Bracelet Preview Area ── */
+
+.bracelet-preview-area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem 0 0.5rem;
+  position: relative;
+}
+
+.bracelet-preview-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.bracelets-preview-svg--arc {
+  max-width: 100%;
+  height: auto;
+  filter: drop-shadow(0 6px 20px rgba(0,0,0,0.05));
+  transition: filter 0.4s ease;
+}
+
+.bracelets-preview-svg--arc:hover {
+  filter: drop-shadow(0 10px 28px rgba(0,0,0,0.08));
+}
+
+/* ── Interactive Beads ── */
+
+.preview-bead-arc {
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.preview-bead-arc:hover {
+  filter: brightness(1.08);
+}
+
+.preview-bead-arc:hover .empty-bead-plus {
+  opacity: 0.6;
+}
+
+.bead-empty {
+  cursor: pointer;
+}
+
+.bead-empty:hover circle:first-of-type {
+  stroke: var(--brand);
+  stroke-width: 2;
+}
+
+.bead-active circle:first-of-type {
+  stroke: var(--brand);
+  stroke-width: 2.5;
+}
+
+/* Hidden color input trigger */
+.bead-hidden-color-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: 0;
+  border: none;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Pendant swing animation */
+.pendant-arc {
+  animation: pendant-swing 3s ease-in-out infinite;
+  transform-origin: 530px 110px;
+}
+
+@keyframes pendant-swing {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(3deg); }
+  75% { transform: rotate(-3deg); }
+}
+
+/* ── Color Presets Panel ── */
+
+.preset-panel {
+  width: 100%;
+  max-width: 480px;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  animation: preset-slide-in 0.25s ease-out;
+}
+
+@keyframes preset-slide-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.preset-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.preset-close-btn {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0,0,0,0.05);
+  color: var(--text-muted);
+  font-size: 0.6rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.preset-close-btn:hover {
+  background: rgba(0,0,0,0.1);
+  color: var(--dark);
+}
+
+.preset-colors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.preset-swatch {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  outline: none;
+}
+
+.preset-swatch:hover {
+  transform: scale(1.15);
+  border-color: var(--dark);
+}
+
+.preset-swatch--active {
+  border-color: var(--dark) !important;
+  transform: scale(1.15);
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--dark);
+}
+
+.preset-custom-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.preset-custom-picker {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 36px !important;
+  height: 36px !important;
+  min-height: 36px !important;
+  padding: 2px !important;
+  border: 1.5px solid var(--border) !important;
+  border-radius: 8px !important;
+  cursor: pointer;
+  background: none;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.preset-custom-picker::-webkit-color-swatch-wrapper { padding: 2px; }
+.preset-custom-picker::-webkit-color-swatch { border: none; border-radius: 5px; }
+.preset-custom-picker::-moz-color-swatch { border: none; border-radius: 5px; }
+.preset-custom-picker:hover {
+  transform: scale(1.1);
+  border-color: var(--brand) !important;
+}
+
+/* ── Bead Overview Strip ── */
+
+.bead-overview {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 0.5rem 0 0.25rem;
+}
+
+.bead-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+  outline: none;
+}
+
+.bead-dot:hover {
+  transform: scale(1.2);
+  border-color: var(--brand);
+}
+
+.bead-dot--active {
+  border-color: var(--brand) !important;
+  transform: scale(1.25);
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 3px var(--brand);
+}
+
+.bead-dot--empty {
+  border-color: rgba(0,0,0,0.08);
+}
+
+.bead-dot-pendant {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffe066, #ffd700);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: bold;
+  color: #8b6914;
+  margin-left: 0.15rem;
+  box-shadow: 0 1px 4px rgba(255,215,0,0.3);
+  transition: transform 0.2s ease;
+  cursor: default;
+}
+
+.bead-dot-pendant:hover {
+  transform: scale(1.15);
+}
+
+/* ── Custom Order Fields ── */
+
+.custom-order-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+/* ── Pendant Selector ── */
+
+.pendant-selector-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  cursor: default;
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--border);
+  margin-top: 0.25rem;
+}
+
+.pendant-selector-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--dark);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.pendant-icon {
+  font-size: 0.75rem;
+  opacity: 0.5;
+}
+
+.pendant-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.pendant-option {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.85rem;
+  border: 1.5px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  font-size: 0.8rem;
+  color: var(--text-light);
+}
+
+.pendant-option:hover {
+  border-color: var(--dark);
+  color: var(--dark);
+  background: rgba(0,0,0,0.02);
+}
+
+.pendant-option--active {
+  border-color: var(--dark);
+  background: var(--dark);
+  color: #fff;
+}
+
+.pendant-option--active .pendant-option-icon {
+  color: #ffd700;
+}
+
+.pendant-option-icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.pendant-option-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.optional-badge {
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.15rem 0.5rem;
+  border-radius: 10px;
+  background: rgba(0,0,0,0.05);
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-left: auto;
+}
+
+/* ── Submit Button Enhancement ── */
+
+.submit-order-btn {
+  margin-top: 0 !important;
+}
+
+.btn-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+.btn-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Responsive Tweaks ── */
+
+@media (max-width: 600px) {
+  .bracelets-preview-svg--arc {
+    max-width: 100%;
+  }
+
+  .preset-panel {
+    padding: 0.75rem 1rem;
+  }
+
+  .preset-swatch {
+    width: 26px;
+    height: 26px;
+  }
+
+  .bead-dot {
+    width: 20px;
+    height: 20px;
+  }
+
+  .pendant-options {
+    gap: 0.35rem;
+  }
+
+  .pendant-option {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.7rem;
+  }
 }
 
 .contact-info {

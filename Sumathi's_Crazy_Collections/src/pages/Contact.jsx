@@ -1,29 +1,25 @@
 import React, { useState } from "react";
 import emailjs from "@emailjs/browser";
 import ScrollReveal from "../components/ScrollReveal";
+import BraceletPreview, { TOTAL_BEADS, PENDANT_OPTIONS } from "../components/BraceletPreview";
 import "../styles/contact.css";
+
+const STYLE_OPTIONS = ["Classic", "Elegant", "Cute", "Trendy", "Festive"];
 
 const Contact = () => {
   const [sendingMessage, setSendingMessage] = useState(false);
   const [sendingOrder, setSendingOrder] = useState(false);
 
-  // Custom Order States
-  const [numColors, setNumColors] = useState(1);
-  const [colorValues, setColorValues] = useState([""]);
+  // Custom Order States — per-bead colors
+  const EMPTY_BEAD = "#e0e0e0";
+  const [beadColors, setBeadColors] = useState(Array(TOTAL_BEADS).fill(EMPTY_BEAD));
   const [style, setStyle] = useState("");
+  const [pendantType, setPendantType] = useState("heart");
 
-  const styleOptions = [
-    "Classic",
-    "Elegant",
-    "Cute",
-    "Trendy",
-    "Festive",
-  ];
-
-  const handleColorChange = (index, value) => {
-    const newColors = [...colorValues];
-    newColors[index] = value;
-    setColorValues(newColors);
+  const handleBeadColorChange = (index, color) => {
+    const newColors = [...beadColors];
+    newColors[index] = color;
+    setBeadColors(newColors);
   };
 
   // ========== Message Form ==========
@@ -68,9 +64,9 @@ const Contact = () => {
         () => {
           alert("Thank you! Your custom order has been sent successfully.");
           e.target.reset();
-          setNumColors(1);
-          setColorValues([""]);
+          setBeadColors(Array(TOTAL_BEADS).fill(EMPTY_BEAD));
           setStyle("");
+          setPendantType("heart");
           setSendingOrder(false);
         },
         (err) => {
@@ -113,92 +109,101 @@ const Contact = () => {
 
         {/* ================= Custom Order Section ================= */}
         <ScrollReveal as="div" className="custom-order-section">
-          <h3>Place a Custom Order</h3>
+          <h3>
+            <span className="custom-order-icon">✦</span>
+            Design Your Bracelet
+            <span className="custom-order-icon">✦</span>
+          </h3>
+
           <form onSubmit={handleOrderSubmit} className="contact-form">
-            <input type="text" name="name" placeholder="Your Name" required />
-            <input
-              type="email"
-              name="email"
-              placeholder="Your Email"
-              required
-            />
-
-            {/* Preferred Style Dropdown */}
-            <label>
-              Preferred Style:
-              <select
-                name="style"
-                value={style}
-                onChange={(e) => setStyle(e.target.value)}
-                required
-              >
-                <option value="">Select a style</option>
-                {styleOptions.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            {/* Number of Colors */}
-            <label>
-              {/* Number of Colors (1-5): */}
-              <input
-                type="number"
-                name="numColors"
-                min="1"
-                max="5"
-                value={numColors}
-                onChange={(e) => {
-                  const val = Number(e.target.value);
-                  setNumColors(val);
-                  setColorValues(Array(val).fill(""));
-                }}
-                required
+            {/* Live Bracelet Preview */}
+            <div className="bracelet-preview-area">
+              <BraceletPreview
+                beadColors={beadColors}
+                onBeadColorChange={handleBeadColorChange}
+                pendantType={pendantType}
               />
-            </label>
-
-            {/* Dynamic Color Inputs */}
-            {colorValues.map((color, index) => (
-              <input
-                key={index}
-                type="text"
-                name={`color${index + 1}`}
-                placeholder={`Color ${index + 1}`}
-                value={color}
-                onChange={(e) => handleColorChange(index, e.target.value)}
-                required
-              />
-            ))}
-
-            {/* Hidden input for all colors */}
-            <input
-              type="hidden"
-              name="colors"
-              value={colorValues.join(", ")}
-            />
-
-            {/* Live color preview */}
-            <div className="color-preview">
-              {colorValues.map((color, index) => (
-                <div
-                  key={index}
-                  className="color-box"
-                  style={{ backgroundColor: color || "#fff" }}
-                  title={color || "empty"}
-                ></div>
-              ))}
             </div>
 
-            <textarea
-              name="description"
-              placeholder="Extra Notes / Description"
-              rows="3"
-            ></textarea>
+            <div className="custom-order-fields">
+              <input type="text" name="name" placeholder="Your Name" required />
+              <input
+                type="email"
+                name="email"
+                placeholder="Your Email"
+                required
+              />
 
-            <button type="submit" className="add-to-cart-btn">
-              {sendingOrder ? "Sending..." : "Send Custom Order"}
+              {/* Preferred Style */}
+              <label>
+                Preferred Style
+                <select
+                  name="style"
+                  value={style}
+                  onChange={(e) => setStyle(e.target.value)}
+                  required
+                >
+                  <option value="">Select a style</option>
+                  {STYLE_OPTIONS.map((opt) => (
+                    <option key={opt} value={opt}>
+                      {opt}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              {/* Hidden inputs for bead colors */}
+              {beadColors.map((color, i) => (
+                <input key={i} type="hidden" name={`bead${i + 1}`} value={color} />
+              ))}
+              <input type="hidden" name="beadColors" value={beadColors.join(", ")} />
+              <input type="hidden" name="numBeads" value={TOTAL_BEADS} />
+
+              {/* Pendant Selector */}
+              <label className="pendant-selector-label">
+                <span className="pendant-selector-heading">
+                  <span className="pendant-icon">✦</span>
+                  Pendant at the End
+                  <span className="optional-badge">Optional</span>
+                </span>
+                <div className="pendant-options">
+                  <button
+                    type="button"
+                    className={`pendant-option ${!pendantType ? "pendant-option--active" : ""}`}
+                    onClick={() => setPendantType(null)}
+                  >
+                    None
+                  </button>
+                  {PENDANT_OPTIONS.map((p) => (
+                    <button
+                      key={p.id}
+                      type="button"
+                      className={`pendant-option ${pendantType === p.id ? "pendant-option--active" : ""}`}
+                      onClick={() => setPendantType(p.id)}
+                    >
+                      <span className="pendant-option-icon">{p.icon}</span>
+                      <span className="pendant-option-label">{p.label}</span>
+                    </button>
+                  ))}
+                </div>
+                <input type="hidden" name="pendantType" value={pendantType || "none"} />
+              </label>
+
+              <textarea
+                name="description"
+                placeholder="Extra Notes / Description (optional)"
+                rows="3"
+              ></textarea>
+            </div>
+
+            <button type="submit" className="add-to-cart-btn submit-order-btn">
+              {sendingOrder ? (
+                <span className="btn-loading">
+                  <span className="btn-spinner" /> Sending...
+                </span>
+              ) : (
+                "Send Custom Order"
+              )}
             </button>
           </form>
         </ScrollReveal>
