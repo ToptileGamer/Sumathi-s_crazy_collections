@@ -250,3 +250,321 @@
   .wishlist-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
   .wishlist-actions button { min-height: 44px; padding: 0.5rem; }
 }
+
+/* ── Settings Form ── */
+.settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.settings-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #555;
+}
+
+.settings-form input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 1.5px solid var(--border, #e2e8f0);
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: var(--dark, #1a1a2e);
+  background: #fff;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+
+.settings-form input:focus {
+  border-color: var(--brand, #ec4899);
+}
+
+.settings-form input:disabled {
+  background: #f8fafc;
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+.settings-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.settings-actions button {
+  padding: 0.7rem 1.5rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.settings-actions button:not(.hero-btn) {
+  background: none;
+  border: 1.5px solid var(--border, #e2e8f0);
+  color: #555;
+}
+
+.settings-actions button:not(.hero-btn):hover {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+/* ── Order Cards ── */
+.order-card {
+  border: 1.5px solid var(--border, #e2e8f0);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+  transition: box-shadow 0.2s ease;
+}
+
+.order-card:hover {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+}
+
+.order-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.order-number {
+  font-weight: 700;
+  color: var(--dark, #1a1a2e);
+  font-size: 1rem;
+}
+
+.order-status {
+  padding: 0.25rem 0.85rem;
+  border-radius: 80px;
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.order-date {
+  margin-left: auto;
+  font-size: 0.84rem;
+  color: #94a3b8;
+}
+
+.order-items-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.order-items-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f5f5f5;
+  font-size: 0.9rem;
+  color: #444;
+}
+
+.order-items-list li:last-child {
+  border-bottom: none;
+}
+
+.order-total {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1.5px solid #f1f5f9;
+  text-align: right;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+/* ── Address Cards ── */
+.addr-label {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--dark, #1a1a2e);
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.addr-label span {
+  font-size: 0.78rem;
+  color: var(--brand, #ec4899);
+  font-weight: 600;
+}
+
+.addr-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.addr-actions button {
+  padding: 0.4rem 1rem;
+  border-radius: 8px;
+  border: 1.5px solid var(--border, #e2e8f0);
+  background: none;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: #555;
+  transition: all 0.2s ease;
+}
+
+.addr-actions button:hover {
+  border-color: var(--brand, #ec4899);
+  color: var(--brand, #ec4899);
+}
+
+.addr-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+  border: 1.5px dashed var(--border, #e2e8f0);
+  border-radius: 16px;
+  background: #fafbfc;
+}
+
+.addr-form input,
+.addr-form select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1.5px solid var(--border, #e2e8f0);
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+
+.addr-form input:focus,
+.addr-form select:focus {
+  border-color: var(--brand, #ec4899);
+}
+
+/* ── Tab Toolbar ── */
+.tab-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.tab-toolbar h3 {
+  margin: 0;
+}
+
+/* ── Wishlist Cards ── */
+.wishlist-card {
+  border: 1.5px solid var(--border, #e2e8f0);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.wishlist-card:hover {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  transform: translateY(-2px);
+}
+
+.wishlist-card img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+}
+
+.wishlist-card > div {
+  padding: 0.75rem 1rem;
+}
+
+.wishlist-card h4 {
+  margin: 0 0 0.25rem;
+  font-size: 0.9rem;
+  color: var(--dark, #1a1a2e);
+}
+
+.wishlist-card p {
+  margin: 0;
+  font-weight: 700;
+  color: var(--brand, #ec4899);
+  font-size: 0.95rem;
+}
+
+.wishlist-actions {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem 1rem;
+}
+
+.wishlist-actions a,
+.wishlist-actions button {
+  flex: 1;
+  padding: 0.5rem;
+  text-align: center;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.wishlist-actions button {
+  border: 1.5px solid var(--border, #e2e8f0);
+  background: none;
+  color: #555;
+}
+
+.wishlist-actions button:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+/* ── Empty State ── */
+.empty-note {
+  color: #94a3b8;
+  font-size: 0.95rem;
+}
+
+.empty-note a {
+  color: var(--brand, #ec4899);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.empty-note a:hover {
+  text-decoration: underline;
+}
+
+/* ── Admin Badge ── */
+.admin-badge {
+  margin-top: 0.5rem;
+  padding: 0.4rem 1rem;
+  border-radius: 80px;
+  border: 1.5px solid var(--brand, #ec4899);
+  background: none;
+  color: var(--brand, #ec4899);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.admin-badge:hover {
+  background: var(--brand, #ec4899);
+  color: #fff;
+}
