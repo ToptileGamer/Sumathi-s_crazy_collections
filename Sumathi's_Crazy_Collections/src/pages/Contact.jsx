@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import emailjs from "@emailjs/browser";
+import ScrollReveal from "../components/ScrollReveal";
 import "../styles/contact.css";
 
 const Contact = () => {
@@ -39,7 +40,7 @@ const Contact = () => {
       )
       .then(
         () => {
-          alert("Thank you! Your message has been sent 💖");
+          alert("Thank you! Your message has been sent successfully.");
           e.target.reset();
           setSendingMessage(false);
         },
@@ -65,7 +66,7 @@ const Contact = () => {
       )
       .then(
         () => {
-          alert("Thank you! Your custom order has been sent 💖");
+          alert("Thank you! Your custom order has been sent successfully.");
           e.target.reset();
           setNumColors(1);
           setColorValues([""]);
@@ -84,14 +85,13 @@ const Contact = () => {
     <section className="contact-section">
       <h2>Contact & Custom Orders</h2>
       <p className="subtext">
-        Send us a message or place your custom order. We’ll bring your ideas to
-        life! 🌸
+        Share your vision or place a bespoke custom order. We are dedicated to bringing your unique ideas to life.
       </p>
 
       <div className="contact-wrapper">
         {/* ================= Message Section ================= */}
-        <div className="message-section">
-          <h3>💌 Send Us a Message</h3>
+        <ScrollReveal as="div" className="message-section">
+          <h3>Send an Inquiry</h3>
           <form onSubmit={handleMessageSubmit} className="contact-form">
             <input type="text" name="name" placeholder="Your Name" required />
             <input
@@ -106,14 +106,14 @@ const Contact = () => {
               rows="4"
             ></textarea>
             <button type="submit" className="add-to-cart-btn">
-              {sendingMessage ? "Sending..." : "Send Message 💖"}
+              {sendingMessage ? "Sending..." : "Send Message"}
             </button>
           </form>
-        </div>
+        </ScrollReveal>
 
         {/* ================= Custom Order Section ================= */}
-        <div className="custom-order-section">
-          <h3>🎀 Place a Custom Order</h3>
+        <ScrollReveal as="div" className="custom-order-section">
+          <h3>Place a Custom Order</h3>
           <form onSubmit={handleOrderSubmit} className="contact-form">
             <input type="text" name="name" placeholder="Your Name" required />
             <input
@@ -198,10 +198,10 @@ const Contact = () => {
             ></textarea>
 
             <button type="submit" className="add-to-cart-btn">
-              {sendingOrder ? "Sending..." : "Send Custom Order 💖"}
+              {sendingOrder ? "Sending..." : "Send Custom Order"}
             </button>
           </form>
-        </div>
+        </ScrollReveal>
       </div>
 
       <p className="contact-info">

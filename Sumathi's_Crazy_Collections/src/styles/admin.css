@@ -193,6 +193,17 @@
 .hero-btn.small { padding: 0.5rem 1.1rem; font-size: 0.85rem; }
 
 /* ── Responsive ── */
+@media (max-width: 1024px) {
+  .stats-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1rem;
+  }
+
+  .admin-main {
+    padding: 1.5rem;
+  }
+}
+
 @media (max-width: 768px) {
   .admin-layout {
     flex-direction: column;
@@ -214,5 +225,39 @@
   .admin-main {
     margin-left: 0;
     padding: 1.25rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-main {
+    padding: 1rem 0.75rem;
+  }
+
+  .admin-page-title {
+    font-size: 1.2rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-table th,
+  .admin-table td {
+    padding: 0.5rem 0.6rem;
+    font-size: 0.75rem;
+  }
+
+  .admin-modal {
+    padding: 1.5rem 1rem;
+    border-radius: 12px;
+  }
+
+  .admin-sidebar {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .admin-nav-btn {
+    font-size: 0.8rem;
+    padding: 0.5rem 0.65rem;
   }
 }

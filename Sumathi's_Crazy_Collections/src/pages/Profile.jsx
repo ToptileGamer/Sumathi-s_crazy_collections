@@ -13,6 +13,7 @@ import {
 } from "../services/orderService";
 import { requestReturn, getUserReturns } from "../services/returnService";
 import { addReview, getReviews } from "../services/reviewService";
+import ScrollReveal from "../components/ScrollReveal";
 import "../styles/profile.css";
 
 const formatPrice = (n) =>
@@ -216,7 +217,7 @@ const Profile = () => {
 
   return (
     <section className="profile-section">
-      <div className="profile-header">
+      <ScrollReveal as="div" className="profile-header">
         <div className="profile-avatar">
           {profile?.avatar_url ? (
             <img src={profile.avatar_url} alt="avatar" />
@@ -242,7 +243,7 @@ const Profile = () => {
         <button className="logout-btn" onClick={handleLogout}>
           Log Out
         </button>
-      </div>
+      </ScrollReveal>
 
       <div className="profile-tabs">
         {["orders", "addresses", "wishlist", "settings"].map((t) => (
@@ -257,7 +258,7 @@ const Profile = () => {
       </div>
 
       {tab === "orders" && (
-        <div className="tab-content">
+        <ScrollReveal as="div" className="tab-content">
           <h3>My Orders</h3>
           {orders.length === 0 ? (
             <p className="empty-note">
@@ -406,11 +407,11 @@ const Profile = () => {
               </div>
             ))
           )}
-        </div>
+        </ScrollReveal>
       )}
 
       {tab === "addresses" && (
-        <div className="tab-content">
+        <ScrollReveal as="div" className="tab-content">
           <div className="tab-toolbar">
             <h3>Saved Addresses</h3>
             <button
@@ -497,11 +498,11 @@ const Profile = () => {
               </div>
             ))
           )}
-        </div>
+        </ScrollReveal>
       )}
 
       {tab === "wishlist" && (
-        <div className="tab-content">
+        <ScrollReveal as="div" className="tab-content">
           <h3>My Wishlist</h3>
           {wishlist.length === 0 ? (
             <p className="empty-note">
@@ -535,11 +536,11 @@ const Profile = () => {
               })}
             </div>
           )}
-        </div>
+        </ScrollReveal>
       )}
 
       {tab === "settings" && (
-        <div className="tab-content">
+        <ScrollReveal as="div" className="tab-content">
           <h3>Account Settings</h3>
           <div className="settings-form">
             <label>
@@ -596,7 +597,7 @@ const Profile = () => {
     🗑️ Delete my account
   </Link>
 </div>
-        </div>
+        </ScrollReveal>
       )}
       {returnModal && (
         <div

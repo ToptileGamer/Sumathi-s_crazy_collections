@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, Link }   from "react-router-dom";
 import { getOrder }            from "../services/orderService";
+import "../styles/checkout.css";
 
 const formatPrice = (n) =>
   new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);

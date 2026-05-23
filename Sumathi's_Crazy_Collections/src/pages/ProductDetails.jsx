@@ -5,6 +5,7 @@ import { useAuth }     from "../hooks/useAuth";
 import { useWishlist } from "../hooks/useWishlist";
 import { getProductBySlug, getProducts } from "../services/productService";
 import { getReviews, addReview, hasUserPurchased } from "../services/reviewService";
+import ScrollReveal from "../components/ScrollReveal";
 import "../styles/productDetails.css";
 import "../styles/cart.css";
 import defaultImg from "../assets/bracelets/bluewhite_panda.png";
@@ -108,7 +109,7 @@ const ProductDetails = () => {
 
   return (
     <div className="product-details-container">
-      <div className="product-details-wrapper">
+      <ScrollReveal as="div" className="product-details-wrapper">
 
         {/* ── Images ── */}
         <div className="product-details-image">
@@ -185,10 +186,10 @@ const ProductDetails = () => {
             ⬅️ Go Back
           </button>
         </div>
-      </div>
+      </ScrollReveal>
 
       {/* ── Reviews ── */}
-      <section className="reviews-section">
+      <ScrollReveal as="section" className="reviews-section">
         <h2>Customer Reviews</h2>
 
         {/* Write review */}
@@ -236,11 +237,11 @@ const ProductDetails = () => {
             </div>
           ))
         }
-      </section>
+      </ScrollReveal>
 
       {/* ── Related Products ── */}
       {related.length > 0 && (
-        <section className="recommendations">
+        <ScrollReveal as="section" className="recommendations">
           <h2>You may also like...</h2>
           <div className="recommendation-grid">
             {related.map((item) => {
@@ -259,7 +260,7 @@ const ProductDetails = () => {
               );
             })}
           </div>
-        </section>
+        </ScrollReveal>
       )}
     </div>
   );

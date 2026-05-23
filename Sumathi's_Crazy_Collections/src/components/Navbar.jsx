@@ -502,18 +502,19 @@ const Navbar = () => {
         }
 
         /* Responsive */
-        @media (max-width: 860px) {
+        @media (max-width: 1024px) {
           .navbar__links { display: none; }
           .mobile-toggle { display: flex; }
           .navbar__cta   { display: none; }
+          .navbar__inner { gap: 1rem; }
         }
         @media (max-width: 600px) {
           .navbar__inner { padding: 0 1rem; height: 56px; }
-          .nav-announce { padding: 0.4rem 1rem; }
-          .nav-announce p { font-size: 0.65rem; }
+          .nav-announce { padding: 0.4rem 0.75rem; }
+          .nav-announce p { font-size: 0.65rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
           
           /* Hide desktop cart/user buttons since we have bottom nav */
-          #nav-cart-btn, #nav-user-btn, #nav-wishlist-btn { display: none; }
+          #nav-cart-btn, #nav-user-btn, #nav-wishlist-btn, #nav-search-btn { display: none; }
 
           /* Bottom Nav styling */
           .mobile-bottom-nav {
@@ -534,12 +535,12 @@ const Navbar = () => {
           .bottom-nav-item {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             color: #888; text-decoration: none; font-size: 0.65rem; font-weight: 500;
-            width: 100%; height: 64px; gap: 0.2rem;
+            width: 100%; height: 60px; gap: 0.15rem;
             transition: color 0.2s;
             -webkit-tap-highlight-color: transparent;
           }
           .bottom-nav-item.active { color: #e91e8c; }
-          .bottom-nav-icon { font-size: 1.3rem; }
+          .bottom-nav-icon { font-size: 1.25rem; }
           .bottom-nav-badge {
             position: absolute; top: -4px; right: -8px;
             background: #e91e8c; color: #fff; font-size: 9px; font-weight: 700;

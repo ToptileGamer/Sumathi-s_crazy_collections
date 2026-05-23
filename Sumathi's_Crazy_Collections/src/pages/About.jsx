@@ -1,4 +1,5 @@
 import React from "react";
+import ScrollReveal from "../components/ScrollReveal";
 import "../styles/about.css";
 import aboutimg from "../assets/aboutimg.jpg";
 
@@ -13,7 +14,7 @@ const About = () => (
       </div>
     </section>
 
-    <section className="about-mission-section">
+    <ScrollReveal as="section" className="about-mission-section">
       <div className="mission-content">
         <h2>Handmade with Love</h2>
         <p>
@@ -26,9 +27,9 @@ const About = () => (
       <div className="mission-image-wrapper">
         <img src={aboutimg} alt="Artisan crafting jewelry" className="mission-image" />  
       </div>
-    </section>
+    </ScrollReveal>
 
-    <section className="about-team-section">
+    <ScrollReveal as="section" className="about-team-section">
       <h2>The Hands Behind the Craft</h2>
       <div className="about-team-grid">
         {[
@@ -43,9 +44,9 @@ const About = () => (
           </div>
         ))}
       </div>
-    </section>
+    </ScrollReveal>
     
-    <section className="about-stats-section">
+    <ScrollReveal as="section" className="about-stats-section">
        <div className="stat-card">
           <h4>100+</h4>
           <p>Happy Customers</p>
@@ -58,7 +59,7 @@ const About = () => (
           <h4>200+</h4>
           <p>Unique Designs</p>
        </div>
-    </section>
+    </ScrollReveal>
   </div>
 );
 

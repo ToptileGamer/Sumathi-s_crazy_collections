@@ -1,6 +1,5 @@
 /* ════════════════════════════════
-   Product Details — extra styles
-   (main styles are in cart.css)
+   Product Details — Premium Responsive
 ════════════════════════════════ */
 
 /* Secondary button */
@@ -77,4 +76,143 @@
   color: #1a1a2e;
   border-left: 1px solid #e2e8f0;
   border-right: 1px solid #e2e8f0;
+}
+
+/* ── Review Form ── */
+.review-form {
+  background: var(--bg-alt);
+  padding: 1.5rem;
+  border-radius: var(--radius-lg);
+  border: 1.5px solid var(--border);
+  margin-bottom: 2rem;
+}
+.review-form h4 { margin-bottom: 0.75rem; color: var(--dark); }
+.review-form input, .review-form textarea {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-family: var(--font);
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+  transition: border-color var(--transition);
+  box-sizing: border-box;
+}
+.review-form input:focus, .review-form textarea:focus {
+  border-color: var(--brand);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(233,30,140,0.08);
+}
+
+/* Reviewer avatar */
+.reviewer-avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 700; font-size: 0.85rem; overflow: hidden; flex-shrink: 0;
+}
+.reviewer-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.verified-badge { font-size: 0.72rem; color: #10b981; font-weight: 600; margin-left: 0.5rem; }
+
+/* Review title & body */
+.review-title { font-size: 0.95rem; margin: 0.3rem 0; color: var(--dark); }
+.review-body { font-size: 0.875rem; color: var(--text-light); line-height: 1.6; }
+
+/* Recommendations */
+.recommendations { max-width: 1100px; margin: 0 auto; padding: 2rem var(--container-px) 4rem; }
+.recommendations h2 {
+  font-size: clamp(1.3rem, 3vw, 1.5rem);
+  margin-bottom: 1.5rem;
+  color: var(--dark);
+  font-family: var(--font-display);
+}
+.recommendation-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.25rem;
+}
+
+@media (max-width: 768px) {
+  .recommendation-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+}
+
+@media (max-width: 480px) {
+  .recommendation-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+}
+
+/* Wishlist button (detail page) */
+.wishlist-btn {
+  padding: 0.75rem 1.25rem;
+  border: 1.5px solid var(--border);
+  background: none;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  color: var(--text-light);
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.wishlist-btn:hover, .wishlist-btn.wishlisted {
+  border-color: var(--brand);
+  color: var(--brand);
+  background: var(--brand-light);
+}
+
+/* ── Responsive overrides ── */
+@media (max-width: 600px) {
+  .reviews-section {
+    padding: 2rem var(--container-px) 3rem;
+  }
+
+  .review-card {
+    padding: 1rem;
+  }
+
+  .review-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+  }
+
+  .review-date {
+    margin-left: 0;
+  }
+
+  .review-form {
+    padding: 1.25rem;
+  }
+
+  .product-actions {
+    flex-direction: column;
+  }
+
+  .product-actions .add-to-cart-btn,
+  .product-actions .wishlist-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Responsive quantity picker */
+  .qty-picker {
+    width: 100%;
+  }
+  .qty-picker button {
+    flex: 1;
+    min-height: 48px;
+  }
+  .qty-picker span {
+    flex: 1;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .recommendations {
+    padding: 2rem var(--container-px) 3rem;
+  }
 }

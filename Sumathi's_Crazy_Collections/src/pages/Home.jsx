@@ -4,6 +4,7 @@ import { getProducts, getCategories } from "../services/productService";
 import { useCart }     from "../hooks/useCart";
 import { useAuth }     from "../hooks/useAuth";
 import { useWishlist } from "../hooks/useWishlist";
+import ScrollReveal    from "../components/ScrollReveal";
 import "../styles/home.css";
 import images from "../assets/bracelets/bluewhite_panda.png"; 
 import imgBracelet from "../assets/bracelets/mc4.png";
@@ -143,16 +144,16 @@ const Home = () => {
       </section>
 
       {/* ════ MARQUEE ════ */}
-      <div className="marquee-container">
+      <ScrollReveal as="div" className="marquee-container">
         <div className="marquee-track">
           {Array(8).fill("FREE SHIPPING OVER ₹999 • HANDCRAFTED • 100% SECURE").map((text, i) => (
             <span key={i} className="marquee-item">{text}</span>
           ))}
         </div>
-      </div>
+      </ScrollReveal>
 
         {/* ════ LOOKBOOK (CATEGORIES) ════ */}
-        <section className="home-section">
+        <ScrollReveal as="section" className="home-section">
           <div className="section-header center">
             <span className="section-subtitle">The Collections</span>
             <h2>Shop by Category</h2>
@@ -169,10 +170,10 @@ const Home = () => {
               </Link>
             ))}
           </div>
-        </section>
+        </ScrollReveal>
 
       {/* ════ TRENDING PRODUCTS ════ */}
-      <section className="home-section alt">
+      <ScrollReveal as="section" className="home-section alt">
         <div className="section-inner">
           <div className="section-header">
             <div>
@@ -187,10 +188,10 @@ const Home = () => {
               : featured.map(p => <ProductCard key={p.id} product={p} />)}
           </div>
         </div>
-      </section>
+      </ScrollReveal>
 
       {/* ════ PREMIUM TESTIMONIALS ════ */}
-      <section className="home-section">
+      <ScrollReveal as="section" className="home-section">
         <div className="section-header center">
           <span className="section-subtitle">Testimonials</span>
           <h2>Loved by Our Customers</h2>
@@ -214,10 +215,10 @@ const Home = () => {
             </div>
           ))}
         </div>
-      </section>
+      </ScrollReveal>
 
       {/* ════ WHY CHOOSE US ════ */}
-      <section className="home-section alt">
+      <ScrollReveal as="section" className="home-section alt">
         <div className="section-inner">
           <div className="section-header center">
             <span className="section-subtitle">Our Promise</span>
@@ -241,16 +242,16 @@ const Home = () => {
             </div>
           </div>
         </div>
-      </section>
+      </ScrollReveal>
 
       {/* ════ PARALLAX CTA ════ */}
-      <section className="cta-banner">
+      <ScrollReveal as="section" className="cta-banner">
         <h2>Find Your Perfect Piece</h2>
         <p>Whether you're looking for an everyday staple or a statement piece for a special occasion, we have something beautiful waiting for you.</p>
         <Link to="/products" className="hero-btn-primary" style={{background:'#fff', color:'#1a1a2e'}}>
           Shop the Collection
         </Link>
-      </section>
+      </ScrollReveal>
     </div>
   );
 };

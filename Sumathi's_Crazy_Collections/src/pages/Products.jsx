@@ -5,6 +5,7 @@ import { useAuth } from "../hooks/useAuth";
 import { useWishlist } from "../hooks/useWishlist";
 import { getProducts, getCategories } from "../services/productService";
 import { useSearchParams } from "react-router-dom";
+import ScrollReveal from "../components/ScrollReveal";
 import "../styles/productDetails.css";
 import "../styles/cart.css";
 
@@ -86,10 +87,10 @@ useEffect(() => {
 
   return (
     <section className="products-section px-6 py-12">
-      <div className="products-hero">
+      <ScrollReveal className="products-hero">
         <h2>Shop All Products</h2>
         <p>Browse our handcrafted bracelets & earrings curated with love.</p>
-      </div>
+      </ScrollReveal>
 
       <div className="products-toolbar">
         <input type="search" placeholder="Search by name or tag..."
@@ -111,7 +112,7 @@ useEffect(() => {
           {Array.from({ length: 8 }).map((_, i) => <div key={i} className="product-skeleton" />)}
         </div>
       ) : (
-        <div className="products-grid">
+        <ScrollReveal as="div" className="products-grid" stagger>
           {products.map((product) => (
             <div key={product.id} className="product-card">
               <Link to={`/product/${product.slug}`} state={{ product }}>
@@ -160,7 +161,7 @@ useEffect(() => {
 </button>
             </div>
           ))}
-        </div>
+        </ScrollReveal>
       )}
 
       {!loading && products.length === 0 && (

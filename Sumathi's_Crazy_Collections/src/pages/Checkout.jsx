@@ -6,6 +6,7 @@ import { useRazorpay } from "../hooks/useRazorpay";
 import { getAddresses, addAddress } from "../services/orderService";
 import { createCODOrder } from "../services/orderService";
 
+import ScrollReveal from "../components/ScrollReveal";
 import "../styles/checkout.css";
 
 const formatPrice = (n) =>
@@ -154,14 +155,14 @@ const Checkout = () => {
 
   return (
     <section className="checkout-page">
-      <div className="checkout-header">
+      <ScrollReveal className="checkout-header">
         <h2>Checkout</h2>
         <p>Almost there! Confirm your delivery and pay securely.</p>
-      </div>
+      </ScrollReveal>
 
       <div className="checkout-layout">
         {/* ── LEFT: Address ── */}
-        <div className="checkout-form">
+        <ScrollReveal as="div" className="checkout-form">
           <h3>Delivery Address</h3>
 
           {/* Saved addresses */}
@@ -272,10 +273,10 @@ const Checkout = () => {
           )}
 
           {error && <p className="checkout-error">{error}</p>}
-        </div>
+        </ScrollReveal>
 
         {/* ── RIGHT: Summary ── */}
-        <aside className="checkout-summary">
+        <ScrollReveal as="aside" className="checkout-summary">
           <h3>Order Summary</h3>
           <ul className="checkout-items-list">
             {items.map((item) => {
@@ -405,7 +406,7 @@ const Checkout = () => {
           <p className="summary-note">
             🔒 Secured by Razorpay. UPI, Cards, Wallets & more accepted.
           </p>
-        </aside>
+        </ScrollReveal>
       </div>
     </section>
   );

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useCart } from "../hooks/useCart";
 import { useAuth } from "../hooks/useAuth";
+import ScrollReveal from "../components/ScrollReveal";
 import "../styles/cart.css";
 
 import defaultImg from "../assets/bracelets/bluewhite_panda.png";
@@ -65,14 +66,14 @@ const Cart = () => {
 
   return (
     <section className="cart-page">
-      <div className="cart-header">
+      <ScrollReveal className="cart-header">
         <h2>Your Shopping Bag</h2>
         <p>{items.length} item{items.length > 1 ? "s" : ""} in your cart</p>
-      </div>
+      </ScrollReveal>
 
       <div className="cart-layout">
         {/* ── Items ── */}
-        <div className="cart-items">
+        <ScrollReveal as="div" className="cart-items">
           {items.map((item) => {
             const name    = item.product?.name  ?? "Product";
             const price   = item.product?.price ?? 0;
@@ -108,11 +109,10 @@ const Cart = () => {
                 </div>
               </div>
             );
-          })}
-        </div>
+          })}         </ScrollReveal>
 
         {/* ── Summary ── */}
-        <aside className="cart-summary">
+        <ScrollReveal as="aside" className="cart-summary">
           <h3>Order Summary</h3>
 
           <div className="summary-row">
@@ -145,7 +145,7 @@ const Cart = () => {
             Proceed to Checkout →
           </Link>
           <Link to="/products" className="continue-shopping">← Continue Shopping</Link>
-        </aside>
+        </ScrollReveal>
       </div>
     </section>
   );
