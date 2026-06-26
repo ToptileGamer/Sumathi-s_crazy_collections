@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useCart } from "../hooks/useCart";
 import { useAuth } from "../hooks/useAuth";
-// import { useRazorpay } from "../hooks/useRazorpay";
+import { useRazorpay } from "../hooks/useRazorpay";
 import { getAddresses, addAddress } from "../services/orderService";
 import { createCODOrder } from "../services/orderService";
 
@@ -30,7 +30,7 @@ const Checkout = () => {
   const navigate = useNavigate();
   const { items, subtotal, clear } = useCart();
   const { user, profile } = useAuth();
-  // const { checkout } = useRazorpay();
+  const { checkout } = useRazorpay();
 
   const [addresses, setAddresses] = useState([]);
   const [selectedAddr, setSelectedAddr] = useState(null);
@@ -106,7 +106,6 @@ const Checkout = () => {
     }
 
     // ── Razorpay flow ─────────────────────────────────────────
-    /*
     await checkout({
       cartItems: items.map((i) => ({
         product_id: i.product?.id,
@@ -127,7 +126,6 @@ const Checkout = () => {
         setProcessing(false);
       },
     });
-    */
   };
 
   // ── Guards ────────────────────────────────────────────────
@@ -339,13 +337,11 @@ const Checkout = () => {
               }}
             >
               {[
-                /*
                 {
                   id: "razorpay",
                   label: "💳 Pay Online",
                   sub: "UPI, Cards, Wallets via Razorpay",
                 },
-                */
                 {
                   id: "cod",
                   label: "💵 Cash on Delivery",
@@ -403,17 +399,16 @@ const Checkout = () => {
           >
             {processing
               ? "Processing..."
-              : `Place Order (COD) ${formatPrice(total)}`
-              /*
               : payMethod === "cod"
                 ? `Place Order (COD) ${formatPrice(total)}`
                 : `Pay ${formatPrice(total)} via Razorpay`
-              */
             }
           </button>
-          {/* <p className="summary-note">
-            🔒 Secured by Razorpay. UPI, Cards, Wallets & more accepted.
-          </p> */}
+          {payMethod === "razorpay" && (
+            <p className="summary-note">
+              🔒 Secured by Razorpay. UPI, Cards, Wallets & more accepted.
+            </p>
+          )}
         </ScrollReveal>
       </div>
     </section>
