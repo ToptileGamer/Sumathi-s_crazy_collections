@@ -7,6 +7,31 @@
   ],
   "headers": [
     {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' https://checkout.razorpay.com https://va.vercel-scripts.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.supabase.co https://avatar.iran.liara.run https://www.gstatic.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.genderize.io https://api.emailjs.com https://va.vercel-scripts.com; font-src 'self' data:; frame-src https://checkout.razorpay.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+        }
+      ]
+    },
+    {
       "source": "/sitemap.xml",
       "headers": [{ "key": "Content-Type", "value": "application/xml" }]
     },
