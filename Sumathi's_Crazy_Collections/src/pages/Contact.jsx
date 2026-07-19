@@ -29,11 +29,11 @@ const Contact = () => {
 
     emailjs
       .sendForm(
-        "service_hkmu9hw",
-        "template_eoj7d9v",
+        import.meta.env.VITE_EMAILJS_SERVICE_ID ?? "service_hkmu9hw",
+        import.meta.env.VITE_EMAILJS_TEMPLATE_ID ?? "template_eoj7d9v",
         e.target,
         {
-          publicKey: "dTrFGG1s35hxdYEBP",
+          publicKey: import.meta.env.VITE_EMAILJS_PUBLIC_KEY ?? "dTrFGG1s35hxdYEBP",
         }
       )
       .then(
@@ -57,11 +57,11 @@ const Contact = () => {
 
     emailjs
       .sendForm(
-        "service_hkmu9hw",
-        "template_eoj7d9v",
+        import.meta.env.VITE_EMAILJS_SERVICE_ID ?? "service_hkmu9hw",
+        import.meta.env.VITE_EMAILJS_TEMPLATE_ID ?? "template_eoj7d9v",
         e.target,
         {
-          publicKey: "dTrFGG1s35hxdYEBP",
+          publicKey: import.meta.env.VITE_EMAILJS_PUBLIC_KEY ?? "dTrFGG1s35hxdYEBP",
         }
       )
       .then(

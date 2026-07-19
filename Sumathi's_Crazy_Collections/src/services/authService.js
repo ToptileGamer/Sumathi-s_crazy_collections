@@ -5,20 +5,15 @@ import { Browser } from "@capacitor/browser";
 import { App } from "@capacitor/app";
 
 
+// ── Deterministic gender from name (no external API call) ─
+function getDeterministicGender(name) {
+  const hash = name.split('').reduce((sum, c) => sum + c.charCodeAt(0), 0);
+  return hash % 2 === 0 ? 'girl' : 'boy';
+}
+
 // ── Sign Up ───────────────────────────────────────────────
 export async function signUp({ email, password, fullName }) {
-  const firstName = fullName.split(' ')[0];
-  let gender = 'boy';
-  try {
-    const res = await fetch(`https://api.genderize.io?name=${firstName}`);
-    const gData = await res.json();
-    if (gData.gender === 'female') {
-      gender = 'girl';
-    }
-  } catch (err) {
-    // fallback
-  }
-
+  const gender = getDeterministicGender(fullName);
   const avatar_url = `https://avatar.iran.liara.run/public/${gender}?username=${encodeURIComponent(fullName)}`;
 
   const { data, error } = await supabase.auth.signUp({
@@ -87,6 +82,22 @@ export async function uploadAvatar(userId, file) {
   const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
   await updateProfile(userId, { avatar_url: data.publicUrl });
   return data.publicUrl;
+}
+
+// ── Delete account via Edge Function ─────────────────────
+export async function deleteAccount() {
+  const { data: sessionData } = await supabase.auth.getSession();
+  const token = sessionData?.session?.access_token;
+  if (!token) throw new Error('Not authenticated');
+
+  const { data, error } = await supabase.functions.invoke('delete-account', {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (error) throw new Error(error.message || 'Failed to delete account');
+
+  // Sign out locally after successful deletion
+  await supabase.auth.signOut();
+  return data;
 }
 
 // ── Forgot password ───────────────────────────────────────

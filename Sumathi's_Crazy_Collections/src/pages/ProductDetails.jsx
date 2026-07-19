@@ -175,12 +175,22 @@ const ProductDetails = () => {
               disabled={adding || product.stock === 0}>
               {adding ? "Adding..." : product.stock === 0 ? "Out of Stock" : "Add to Cart"}
             </button>
+            <Link
+    to="/checkout"
+    onClick={async (e) => {
+      if (!user) { e.preventDefault(); alert("Please log in first."); return; }
+      await add(product.id, 1);
+    }}
+    className="buy-now-btn">
+    Buy Now
+  </Link>
             <button
               className={`wishlist-btn ${isWishlisted(product.id) ? "wishlisted" : ""}`}
               onClick={() => user ? toggle(product.id) : alert("Please log in to save items.")}>
               {isWishlisted(product.id) ? "♥ Saved" : "♡ Wishlist"}
             </button>
           </div>
+          
 
           <button className="back-btn" onClick={() => navigate(-1)} style={{ marginTop: "1rem" }}>
             ⬅️ Go Back
