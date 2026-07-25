@@ -1,25 +1,26 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { useCart }     from "../hooks/useCart";
 import { useAuth }     from "../hooks/useAuth";
 import { useWishlist } from "../hooks/useWishlist";
 import { getProductBySlug, getProducts } from "../services/productService";
 import { getReviews, addReview, hasUserPurchased } from "../services/reviewService";
-import ScrollReveal from "../components/ScrollReveal";
 import "../styles/productDetails.css";
-import "../styles/cart.css";
 import defaultImg from "../assets/bracelets/bluewhite_panda.png";
 
 const formatPrice = (n) =>
   new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
 
-const Stars = ({ rating, onChange }) =>
+const Stars = ({ rating, onChange, size = "1.4rem" }) =>
   [1,2,3,4,5].map((s) => (
     <span key={s}
       onClick={() => onChange?.(s)}
-      style={{ cursor: onChange ? "pointer" : "default", fontSize: "1.4rem",
-               color: s <= rating ? "#f59e0b" : "#ddd" }}>★</span>
+      className={s <= rating ? "" : "empty"}
+      style={{ cursor: onChange ? "pointer" : "default", fontSize: size }}>★</span>
   ));
+
+const fadeUp = { hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } } };
 
 const ProductDetails = () => {
   const { slug }               = useParams();
@@ -57,13 +58,13 @@ const ProductDetails = () => {
   // ── Related products ──────────────────────────────────────
   useEffect(() => {
     if (!product) return;
-    getProducts({ categorySlug: product.category?.slug, limit: 4 })
+    getProducts({ categorySlug: product.category?.slug, limit: 5 })
       .then(({ products }) =>
         setRelated((products ?? []).filter((p) => p.id !== product.id).slice(0, 4))
       ).catch(console.error);
   }, [product]);
 
-  // ── Check if user can review (must have purchased) ────────
+  // ── Check if user can review ──────────────────────────────
   useEffect(() => {
     if (!user || !product) return;
     hasUserPurchased(user.id, product.id)
@@ -96,11 +97,17 @@ const ProductDetails = () => {
     finally { setSubmitting(false); }
   };
 
-  if (loading) return <div className="product-details-container"><p>Loading...</p></div>;
+  if (loading) return (
+    <div className="product-details-container" style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "60vh" }}>
+      <div className="spinner" />
+      <p style={{ color: "#888", fontFamily: "DM Sans" }}>Loading...</p>
+    </div>
+  );
+  
   if (!product) return (
-    <div className="product-details-container" style={{ textAlign: "center" }}>
-      <h2>Product Not Found</h2>
-      <button onClick={() => navigate(-1)} className="back-btn">Go Back</button>
+    <div className="product-details-container" style={{ textAlign: "center", padding: "6rem 2rem" }}>
+      <h2 style={{ fontFamily: "Playfair Display", color: "#1a1a1a", marginBottom: "1rem" }}>Product Not Found</h2>
+      <button onClick={() => navigate(-1)} className="secondary-btn">Go Back</button>
     </div>
   );
 
@@ -109,13 +116,19 @@ const ProductDetails = () => {
 
   return (
     <div className="product-details-container">
-      <ScrollReveal as="div" className="product-details-wrapper">
-
+      <motion.div className="product-details-wrapper" variants={fadeUp} initial="hidden" animate="visible">
         {/* ── Images ── */}
         <div className="product-details-image">
-          <img src={images[activeImg]?.url ?? primaryImg} alt={product.name} />
+          <motion.img
+            key={activeImg}
+            src={images[activeImg]?.url ?? primaryImg}
+            alt={product.name}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4 }}
+          />
           {images.length > 1 && (
-            <div className="img-thumbnails">
+            <div className="product-details-thumbs">
               {images.map((img, i) => (
                 <img key={i} src={img.url} alt={i}
                   className={activeImg === i ? "active" : ""}
@@ -127,87 +140,98 @@ const ProductDetails = () => {
 
         {/* ── Info ── */}
         <div className="product-details-info">
-          <p className="product-category-label">{product.category?.name}</p>
+          <p className="product-category-label">{product.category?.name || "Collection"}</p>
           <h1>{product.name}</h1>
 
-          <div style={{ display: "flex", gap: "0.75rem", alignItems: "center", margin: "0.5rem 0" }}>
-            <span className="price">{formatPrice(product.price)}</span>
+          <div className="product-details-price">
+            <span className="current">{formatPrice(product.price)}</span>
             {product.original_price && (
-              <span style={{ textDecoration: "line-through", color: "#aaa" }}>
-                {formatPrice(product.original_price)}
-              </span>
-            )}
-            {product.original_price && (
-              <span style={{ background: "#fef2f2", color: "#ef4444", padding: "0.2rem 0.5rem", borderRadius: "6px", fontSize: "0.8rem" }}>
-                {Math.round((1 - product.price / product.original_price) * 100)}% OFF
-              </span>
+              <>
+                <span className="original">{formatPrice(product.original_price)}</span>
+                <span className="discount-badge">
+                  {Math.round((1 - product.price / product.original_price) * 100)}% OFF
+                </span>
+              </>
             )}
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.75rem" }}>
-            <Stars rating={Math.round(product.rating_avg ?? 0)} />
-            <span style={{ color: "#888", fontSize: "0.9rem" }}>
+          <div className="product-details-rating">
+            <div className="stars">
+              {[1,2,3,4,5].map((s) => (
+                <span key={s} className={s <= Math.round(product.rating_avg ?? 0) ? "" : "empty"}>
+                  ★
+                </span>
+              ))}
+            </div>
+            <span className="rating-text">
               {product.rating_avg ?? "—"} ({product.rating_count ?? 0} reviews)
             </span>
           </div>
 
-          <p className="description">{product.description}</p>
+          <p className="product-details-desc">{product.description}</p>
 
           {product.tags?.length > 0 && (
-            <div className="product-tags">
-              {product.tags.map((t) => <span key={t} className="tag">#{t}</span>)}
+            <div className="product-details-tags">
+              {product.tags.map((t) => <span key={t}>#{t}</span>)}
             </div>
           )}
 
-          <p style={{ fontSize: "0.85rem", color: product.stock > 0 ? "#10b981" : "#ef4444", margin: "0.75rem 0" }}>
-            {product.stock > 0 ? `✓ In Stock (${product.stock} left)` : "✗ Out of Stock"}
+          <p className={`product-details-stock ${product.stock > 0 ? "in-stock" : "out-stock"}`}>
+            {product.stock > 0 ? `✓ In Stock (${product.stock} available)` : "✗ Out of Stock"}
           </p>
 
           {/* Quantity */}
-          <div className="cart-quantity" style={{ marginBottom: "1rem" }}>
-            <button onClick={() => setQuantity((q) => Math.max(1, q - 1))}>−</button>
+          <div className="product-details-qty">
+            <button onClick={() => setQuantity((q) => Math.max(1, q - 1))} disabled={quantity <= 1}>−</button>
             <span>{quantity}</span>
-            <button onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))}>+</button>
+            <button onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))} disabled={quantity >= product.stock}>+</button>
           </div>
 
-          <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
+          <div className="product-details-actions">
             <button className="add-to-cart-btn" onClick={handleAddToCart}
               disabled={adding || product.stock === 0}>
               {adding ? "Adding..." : product.stock === 0 ? "Out of Stock" : "Add to Cart"}
             </button>
             <Link
-    to="/checkout"
-    onClick={async (e) => {
-      if (!user) { e.preventDefault(); alert("Please log in first."); return; }
-      await add(product.id, 1);
-    }}
-    className="buy-now-btn">
-    Buy Now
-  </Link>
+              to="/checkout"
+              onClick={async (e) => {
+                if (!user) { e.preventDefault(); alert("Please log in first."); return; }
+                await add(product.id, quantity);
+              }}
+              className="buy-now-btn">
+              Buy Now
+            </Link>
             <button
-              className={`wishlist-btn ${isWishlisted(product.id) ? "wishlisted" : ""}`}
+              className={`wishlist-btn ${isWishlisted(product.id) ? "active" : ""}`}
               onClick={() => user ? toggle(product.id) : alert("Please log in to save items.")}>
               {isWishlisted(product.id) ? "♥ Saved" : "♡ Wishlist"}
             </button>
           </div>
-          
 
-          <button className="back-btn" onClick={() => navigate(-1)} style={{ marginTop: "1rem" }}>
-            ⬅️ Go Back
+          <button className="product-details-back" onClick={() => navigate(-1)}>
+            ← Back
           </button>
         </div>
-      </ScrollReveal>
+      </motion.div>
 
-      {/* ── Reviews ── */}
-      <ScrollReveal as="section" className="reviews-section">
-        <h2>Customer Reviews</h2>
+      {/* ═══════════════════════════════════════
+           REVIEWS
+      ═══════════════════════════════════════ */}
+      <section className="reviews-section">
+        <motion.span className="sh__sub" variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+          <span className="sh__accent-line" />Feedback
+        </motion.span>
+        <motion.h2 variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+          Customer Reviews
+        </motion.h2>
 
         {/* Write review */}
         {user && canReview && !reviewDone && (
-          <form className="review-form" onSubmit={handleSubmitReview}>
+          <motion.form className="review-form" onSubmit={handleSubmitReview}
+            variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}>
             <h4>Write a Review</h4>
-            <div style={{ marginBottom: "0.5rem" }}>
-              <Stars rating={reviewForm.rating} onChange={(r) => setReviewForm((f) => ({ ...f, rating: r }))} />
+            <div className="stars">
+              <Stars rating={reviewForm.rating} onChange={(r) => setReviewForm((f) => ({ ...f, rating: r }))} size="1.5rem" />
             </div>
             <input placeholder="Review title" value={reviewForm.title}
               onChange={(e) => setReviewForm((f) => ({ ...f, title: e.target.value }))} />
@@ -217,18 +241,19 @@ const ProductDetails = () => {
             <button type="submit" className="hero-btn" disabled={submitting}>
               {submitting ? "Submitting..." : "Submit Review"}
             </button>
-          </form>
+          </motion.form>
         )}
-        {reviewDone && <p style={{ color: "#10b981" }}>✓ Thanks for your review!</p>}
-        {!user && <p style={{ color: "#888" }}>
-          <Link to="/signup" style={{ color: "#e91e8c" }}>Sign up / Log in</Link> to write a review.
+        {reviewDone && <p style={{ color: "#10b981", fontFamily: "DM Sans" }}>✓ Thanks for your review!</p>}
+        {!user && <p style={{ color: "#888", fontFamily: "DM Sans" }}>
+          <Link to="/signup" style={{ color: "#B8953A", fontWeight: 600 }}>Sign up / Log in</Link> to write a review.
         </p>}
 
         {/* Review list */}
         {reviews.length === 0
-          ? <p style={{ color: "#888" }}>No reviews yet. Be the first!</p>
+          ? <p style={{ color: "#888", fontFamily: "DM Sans" }}>No reviews yet. Be the first!</p>
           : reviews.map((r) => (
-            <div key={r.id} className="review-card">
+            <motion.div key={r.id} className="review-card"
+              variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}>
               <div className="review-header">
                 <div className="reviewer-avatar">
                   {r.user?.avatar_url
@@ -236,41 +261,54 @@ const ProductDetails = () => {
                     : <span>{(r.user?.full_name?.[0] ?? "?").toUpperCase()}</span>}
                 </div>
                 <div>
-                  <strong>{r.user?.full_name ?? "Customer"}</strong>
+                  <span className="reviewer-name">{r.user?.full_name ?? "Customer"}</span>
                   {r.is_verified && <span className="verified-badge">✓ Verified Purchase</span>}
-                  <div><Stars rating={r.rating} /></div>
+                  <div className="reviewer-stars">
+                    <Stars rating={r.rating} size="0.85rem" />
+                  </div>
                 </div>
                 <span className="review-date">{new Date(r.created_at).toLocaleDateString("en-IN")}</span>
               </div>
               {r.title && <h4 className="review-title">{r.title}</h4>}
               {r.body  && <p className="review-body">{r.body}</p>}
-            </div>
+            </motion.div>
           ))
         }
-      </ScrollReveal>
+      </section>
 
-      {/* ── Related Products ── */}
+      {/* ═══════════════════════════════════════
+           RELATED PRODUCTS
+      ═══════════════════════════════════════ */}
       {related.length > 0 && (
-        <ScrollReveal as="section" className="recommendations">
-          <h2>You may also like...</h2>
+        <section className="recommendations">
+          <motion.span className="sh__sub" variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+            <span className="sh__accent-line" />You May Also Like
+          </motion.span>
+          <motion.h2 variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+            Complete the Look
+          </motion.h2>
           <div className="recommendation-grid">
             {related.map((item) => {
               const img = item.images?.find((i) => i.is_primary)?.url ?? item.images?.[0]?.url ?? defaultImg;
               return (
-                <div key={item.id} className="product-card"
-                  onClick={() => navigate(`/product/${item.slug}`, { state: { product: item } })}>
-                  <img src={img} alt={item.name} />
+                <motion.div key={item.id} className="product-card"
+                  onClick={() => navigate(`/product/${item.slug}`, { state: { product: item } })}
+                  variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+                  <div className="product-img-wrap">
+                    <img src={img} alt={item.name} />
+                  </div>
+                  <p className="product-category-label">{item.category?.name || "Collection"}</p>
                   <h3>{item.name}</h3>
-                  <p>{formatPrice(item.price)}</p>
+                  <p className="price">{formatPrice(item.price)}</p>
                   <button className="add-to-cart-btn"
                     onClick={(e) => { e.stopPropagation(); if (!user) { alert("Please log in."); return; } add(item.id, 1); }}>
                     Add to Cart
                   </button>
-                </div>
+                </motion.div>
               );
             })}
           </div>
-        </ScrollReveal>
+        </section>
       )}
     </div>
   );

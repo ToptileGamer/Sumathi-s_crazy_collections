@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { useCart } from "../hooks/useCart";
 import { useAuth } from "../hooks/useAuth";
-// import { useRazorpay } from "../hooks/useRazorpay";
 import { getAddresses, addAddress } from "../services/orderService";
 import { createCODOrder } from "../services/orderService";
-
-import ScrollReveal from "../components/ScrollReveal";
 import "../styles/checkout.css";
 
 const formatPrice = (n) =>
@@ -26,11 +24,26 @@ const EMPTY_ADDR = {
   pincode: "",
 };
 
+/* ── Section Header ── */
+function SectionHeader({ subtitle, title }) {
+  return (
+    <motion.div className="checkout-header"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}>
+      <span className="sh__sub">
+        <span className="sh__accent-line" />{subtitle}
+      </span>
+      <h2>{title}</h2>
+      <p>Almost there! Confirm your delivery and place your order.</p>
+    </motion.div>
+  );
+}
+
 const Checkout = () => {
   const navigate = useNavigate();
   const { items, subtotal, clear } = useCart();
   const { user, profile } = useAuth();
-  // const { checkout } = useRazorpay();
 
   const [addresses, setAddresses] = useState([]);
   const [selectedAddr, setSelectedAddr] = useState(null);
@@ -39,7 +52,7 @@ const Checkout = () => {
   const [savingAddr, setSavingAddr] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState("");
-  const [payMethod, setPayMethod] = useState("cod"); // Default changed from "razorpay" to "cod"
+  const [payMethod, setPayMethod] = useState("cod");
 
   const shipping = subtotal >= 999 ? 0 : 99;
   const tax = Math.round(subtotal * 0.03);
@@ -54,7 +67,7 @@ const Checkout = () => {
         const def = data?.find((a) => a.is_default);
         if (def) setSelectedAddr(def.id);
         else if (data?.length > 0) setSelectedAddr(data[0].id);
-        else setShowAddrForm(true); // no addresses → show form immediately
+        else setShowAddrForm(true);
       })
       .catch(console.error);
   }, [user]);
@@ -85,7 +98,6 @@ const Checkout = () => {
     setProcessing(true);
     setError("");
 
-    // ── COD flow ──────────────────────────────────────────────
     if (payMethod === "cod") {
       try {
         const order = await createCODOrder({
@@ -104,28 +116,6 @@ const Checkout = () => {
       }
       return;
     }
-
-    // // ── Razorpay flow ─────────────────────────────────────────
-    // await checkout({
-    //   cartItems: items.map((i) => ({
-    //     product_id: i.product?.id,
-    //     quantity: i.quantity,
-    //   })),
-    //   addressId: selectedAddr,
-    //   userProfile: {
-    //     full_name: profile?.full_name ?? "",
-    //     email: user?.email ?? "",
-    //     phone: profile?.phone ?? "",
-    //   },
-    //   onSuccess: (orderId) => {
-    //     clear();
-    //     navigate("/order-confirmation", { state: { orderId } });
-    //   },
-    //   onFailure: (msg) => {
-    //     setError(msg);
-    //     setProcessing(false);
-    //   },
-    // });
   };
 
   // ── Guards ────────────────────────────────────────────────
@@ -133,8 +123,10 @@ const Checkout = () => {
     return (
       <section className="checkout-page">
         <div className="empty-state">
+          <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>🔒</div>
           <h3>Please log in first</h3>
-          <Link to="/signup" className="hero-btn">
+          <p style={{ color: "#888", fontFamily: "DM Sans" }}>Log in to complete your purchase.</p>
+          <Link to="/signup" className="hero-btn" style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", padding: "0.85rem 2rem", background: "#1a1a1a", color: "#fff", borderRadius: "50px", fontWeight: 600, textDecoration: "none", marginTop: "1rem" }}>
             Log In
           </Link>
         </div>
@@ -145,8 +137,10 @@ const Checkout = () => {
     return (
       <section className="checkout-page">
         <div className="empty-state">
+          <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>🛍️</div>
           <h3>Your cart is empty</h3>
-          <Link to="/products" className="hero-btn">
+          <p style={{ color: "#888", fontFamily: "DM Sans" }}>Add some items to your cart first.</p>
+          <Link to="/products" className="hero-btn" style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", padding: "0.85rem 2rem", background: "#1a1a1a", color: "#fff", borderRadius: "50px", fontWeight: 600, textDecoration: "none", marginTop: "1rem" }}>
             Shop Now
           </Link>
         </div>
@@ -155,14 +149,14 @@ const Checkout = () => {
 
   return (
     <section className="checkout-page">
-      <ScrollReveal className="checkout-header">
-        <h2>Checkout</h2>
-        <p>Almost there! Confirm your delivery and pay securely.</p>
-      </ScrollReveal>
+      <SectionHeader subtitle="Checkout" title="Complete Your Order" />
 
       <div className="checkout-layout">
         {/* ── LEFT: Address ── */}
-        <ScrollReveal as="div" className="checkout-form">
+        <motion.div className="checkout-form"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.15, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}>
           <h3>Delivery Address</h3>
 
           {/* Saved addresses */}
@@ -234,13 +228,7 @@ const Checkout = () => {
                   setAddrForm((f) => ({ ...f, line1: e.target.value }))
                 }
               />
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: "0.75rem",
-                }}
-              >
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
                 <input
                   placeholder="City"
                   required
@@ -273,10 +261,13 @@ const Checkout = () => {
           )}
 
           {error && <p className="checkout-error">{error}</p>}
-        </ScrollReveal>
+        </motion.div>
 
         {/* ── RIGHT: Summary ── */}
-        <ScrollReveal as="aside" className="checkout-summary">
+        <motion.aside className="checkout-summary"
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.3, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}>
           <h3>Order Summary</h3>
           <ul className="checkout-items-list">
             {items.map((item) => {
@@ -317,31 +308,12 @@ const Checkout = () => {
             <span>Total</span>
             <span>{formatPrice(total)}</span>
           </div>
-          {/* Payment method picker — add above the pay button */}
+
+          {/* Payment Method */}
           <div style={{ margin: "1rem 0" }}>
-            <p
-              style={{
-                fontSize: "0.85rem",
-                fontWeight: 600,
-                color: "#555",
-                marginBottom: "0.6rem",
-              }}
-            >
-              Payment Method
-            </p>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "0.5rem",
-              }}
-            >
+            <p className="pay-method-label">Payment Method</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
               {[
-                // {
-                //   id: "razorpay",
-                //   label: "💳 Pay Online",
-                //   sub: "UPI, Cards, Wallets via Razorpay",
-                // },
                 {
                   id: "cod",
                   label: "💵 Cash on Delivery",
@@ -350,16 +322,10 @@ const Checkout = () => {
               ].map((opt) => (
                 <label
                   key={opt.id}
+                  className={`pay-method-option ${payMethod === opt.id ? "selected" : ""}`}
                   style={{
-                    display: "flex",
-                    alignItems: "flex-start",
-                    gap: "0.75rem",
-                    padding: "0.85rem 1rem",
-                    border: `2px solid ${payMethod === opt.id ? "#e91e8c" : "#e2e8f0"}`,
-                    borderRadius: 12,
-                    cursor: "pointer",
-                    background: payMethod === opt.id ? "#fff8fb" : "#fff",
-                    transition: "all 0.18s",
+                    border: `1.5px solid ${payMethod === opt.id ? "#B8953A" : "rgba(0,0,0,0.06)"}`,
+                    background: payMethod === opt.id ? "rgba(184,149,58,0.04)" : "#fff",
                   }}
                 >
                   <input
@@ -368,24 +334,11 @@ const Checkout = () => {
                     value={opt.id}
                     checked={payMethod === opt.id}
                     onChange={() => setPayMethod(opt.id)}
-                    style={{ marginTop: 3, accentColor: "#e91e8c" }}
+                    style={{ marginTop: 3 }}
                   />
                   <div>
-                    <p
-                      style={{
-                        margin: 0,
-                        fontWeight: 600,
-                        fontSize: "0.9rem",
-                        color: "#1a1a2e",
-                      }}
-                    >
-                      {opt.label}
-                    </p>
-                    <p
-                      style={{ margin: 0, fontSize: "0.78rem", color: "#888" }}
-                    >
-                      {opt.sub}
-                    </p>
+                    <p className="pay-label">{opt.label}</p>
+                    <p className="pay-sub">{opt.sub}</p>
                   </div>
                 </label>
               ))}
@@ -399,17 +352,10 @@ const Checkout = () => {
           >
             {processing
               ? "Processing..."
-              : payMethod === "cod"
-                ? `Place Order (COD) ${formatPrice(total)}`
-                : `Place Order (COD) ${formatPrice(total)}`
+              : `Place Order ${formatPrice(total)}`
             }
           </button>
-          {/* {payMethod === "razorpay" && (
-            <p className="summary-note">
-              🔒 Secured by Razorpay. UPI, Cards, Wallets & more accepted.
-            </p>
-          )} */}
-        </ScrollReveal>
+        </motion.aside>
       </div>
     </section>
   );

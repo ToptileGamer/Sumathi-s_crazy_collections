@@ -55,8 +55,6 @@ const Navbar = () => {
 
   const isActive = (path) => location.pathname === path;
 
-  const initials = (profile?.full_name?.split(" ").map(w => w[0]).join("").slice(0,2).toUpperCase())
-    ?? user?.email?.[0]?.toUpperCase() ?? "?";
 
   const navItems = [
     { to: "/",         label: "Home"     },
@@ -161,9 +159,17 @@ const Navbar = () => {
             {user ? (
               <div className="user-menu" ref={dropRef}>
                 <motion.button className="user-avatar" onClick={() => setDropOpen(v => !v)} id="nav-user-btn"
-                  whileHover={{ scale: 1.06, borderColor: "#e91e8c" }}
+                  whileHover={{ scale: 1.06, borderColor: "#e91e8c", boxShadow: "0 0 20px rgba(233,30,140,0.25)" }}
                   whileTap={{ scale: 0.95 }}>
-                  {profile?.avatar_url ? <img src={profile.avatar_url} alt="avatar" /> : initials}
+                  <span className="avatar-ring" />
+                  {profile?.avatar_url ? (
+                    <img src={profile.avatar_url} alt={profile?.full_name ?? "User"} />
+                  ) : (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                      <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                  )}
                 </motion.button>
                 <AnimatePresence>
                   {dropOpen && (
@@ -253,7 +259,12 @@ const Navbar = () => {
               {user ? (
                 <>
                   <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
-                    <Link to="/profile" className="mobile-link"><span className="mobile-link__icon">👤</span> My Profile</Link>
+                    <Link to="/profile" className="mobile-link"><span className="mobile-link__icon mobile-link__icon--profile">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                      </svg>
+                    </span> My Profile</Link>
                   </motion.div>
                   <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.25 }}>
                     <Link to="/profile" className="mobile-link"><span className="mobile-link__icon">📦</span> My Orders</Link>
@@ -289,11 +300,16 @@ const Navbar = () => {
           { to: "/", label: "Home", icon: "🏠" },
           { to: "/products", label: "Shop", icon: "🛍" },
           { to: "/cart", label: "Cart", icon: "🛒", badge: count },
-          { to: user ? "/profile" : "/signup", label: "Profile", icon: "👤" },
+          { to: user ? "/profile" : "/signup", label: "Profile", icon: (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+          ) },
         ].map(({ to, label, icon, badge }) => (
           <Link key={to} to={to} className={`bottom-nav-item ${isActive(to) ? "active" : ""}`}>
             <span className="bottom-nav-icon" style={{ position: "relative" }}>
-              {icon}
+              <span className="bottom-nav-svg">{icon}</span>
               {badge > 0 && (
                 <motion.span className="bottom-nav-badge"
                   initial={{ scale: 0 }}
@@ -332,8 +348,11 @@ const Navbar = () => {
         .nav-search-submit { background: #e91e8c; color: #fff; border: none; padding: 0 1rem; font-size: 1.1rem; cursor: pointer; transition: background 0.2s; }
         .nav-search-submit:hover { background: #c2185b; }
         .user-menu { position: relative; }
-        .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #e91e8c, #c2185b); border: 2px solid transparent; color: #fff; font-size: 0.75rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; overflow: hidden; transition: border-color 0.2s; }
+        .user-avatar { position: relative; width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #e91e8c, #c2185b); border: 2px solid transparent; color: #fff; font-size: 0.75rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; overflow: hidden; transition: border-color 0.2s, box-shadow 0.3s; }
+        .avatar-ring { position: absolute; inset: -3px; border-radius: 50%; border: 1.5px solid rgba(233,30,140,0.25); border-top-color: rgba(255,255,255,0.5); pointer-events: none; animation: avatarSpin 6s linear infinite; }
+        @keyframes avatarSpin { to { transform: rotate(360deg); } }
         .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .user-avatar svg { width: 18px; height: 18px; }
         .user-dropdown { position: absolute; top: calc(100% + 10px); right: 0; width: 220px; background: #fff; border-radius: 14px; border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 16px 48px rgba(0,0,0,0.12); overflow: hidden; z-index: 100; }
         .dropdown-header { padding: 0.85rem 1rem 0.7rem; }
         .dropdown-name { margin: 0; font-size: 0.85rem; font-weight: 600; color: #1a1a2e; }
@@ -385,7 +404,10 @@ const Navbar = () => {
           .mobile-bottom-nav { display: flex; position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.98); backdrop-filter: blur(20px); border-top: 1px solid rgba(0,0,0,0.08); z-index: 999; padding-bottom: env(safe-area-inset-bottom); box-shadow: 0 -4px 20px rgba(0,0,0,0.05); justify-content: space-around; align-items: center; }
           .bottom-nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #888; text-decoration: none; font-size: 0.65rem; font-weight: 500; width: 100%; height: 60px; gap: 0.15rem; transition: color 0.2s; }
           .bottom-nav-item.active { color: #e91e8c; }
-          .bottom-nav-icon { font-size: 1.25rem; position: relative; }
+          .bottom-nav-icon { font-size: 1.25rem; position: relative; display: flex; align-items: center; justify-content: center; }
+          .bottom-nav-svg { display: flex; align-items: center; justify-content: center; }
+          .mobile-link__icon--profile { display: inline-flex; align-items: center; justify-content: center; vertical-align: middle; }
+          .bottom-nav-item.active .bottom-nav-svg svg { color: #e91e8c; }
           .bottom-nav-badge { position: absolute; top: -4px; right: -10px; background: #e91e8c; color: #fff; font-size: 9px; font-weight: 700; min-width: 16px; height: 16px; border-radius: 10px; display: flex; align-items: center; justify-content: center; padding: 0 3px; }
         }
       `}</style>
