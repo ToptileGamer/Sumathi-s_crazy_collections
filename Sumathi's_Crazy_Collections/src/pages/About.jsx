@@ -5,9 +5,8 @@ import "../styles/about.css";
 import aboutimg from "../assets/aboutimg.jpg";
 
 const fadeUp = { hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } } };
-const fadeIn = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { duration: 0.6 } } };
 const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.15, delayChildren: 0.2 } } };
-const scaleIn = { hidden: { opacity: 0, scale: 0.8 }, visible: { opacity: 1, scale: 1, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } } };
+const scaleIn = { hidden: { opacity: 0, scale: 0.9 }, visible: { opacity: 1, scale: 1, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } } };
 
 function AnimatedSection({ children, className, variants = fadeUp }) {
   const ref = useRef(null);
@@ -20,63 +19,89 @@ function AnimatedSection({ children, className, variants = fadeUp }) {
   );
 }
 
+/* ── Section Header ── */
+function SectionHeader({ subtitle, title }) {
+  return (
+    <div className="sh sh--center">
+      <motion.span className="sh__sub"
+        initial={{ opacity: 0, y: 12 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}>
+        <span className="sh__accent-line" />{subtitle}
+      </motion.span>
+      <motion.h2
+        initial={{ opacity: 0, y: 18 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}>
+        {title}
+      </motion.h2>
+    </div>
+  );
+}
+
 const About = () => (
-  <div className="about-page-container">
-    <motion.section className="about-hero-section"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.8 }}>
+  <div className="about-page">
+    {/* ── Hero ── */}
+    <section className="about-hero">
       <motion.div className="about-hero-content"
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}>
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}>
+        <motion.div className="about-eyebrow"
+          initial={{ opacity: 0, x: -15 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.15, duration: 0.5 }}>
+          <span /> Our Story
+        </motion.div>
         <motion.h1 className="about-title"
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.6 }}>
-          Our Story
+          transition={{ delay: 0.25, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}>
+          Crafting Joy,<br />
+          <span style={{ fontStyle: "italic", background: "linear-gradient(135deg, #B8953A, #D4AF37, #B8953A)", backgroundSize: "200% 200%", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>One Piece at a Time</span>
         </motion.h1>
         <motion.p className="about-subtitle"
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6, duration: 0.6 }}>
-          Crafting joy, one piece at a time. Discover the passion behind Sumathi's Crazy Collections.
+          transition={{ delay: 0.4, duration: 0.6 }}>
+          Discover the passion and artistry behind Sumathi's Crazy Collections.
         </motion.p>
       </motion.div>
-    </motion.section>
+    </section>
 
-    <AnimatedSection className="about-mission-section">
-      <motion.div className="mission-content" variants={fadeUp}>
-        <motion.h2 variants={fadeUp}>Handmade with Love</motion.h2>
-        <motion.p variants={fadeUp}>
+    {/* ── Mission ── */}
+    <AnimatedSection className="about-mission">
+      <motion.div className="about-mission-content" variants={fadeUp}>
+        <SectionHeader subtitle="Our Mission" title="Handmade with Love" />
+        <p>
           We started our journey with a love for handmade accessories and a dream to
           bring affordable, joyful pieces to every wardrobe. Each bracelet and earring
           is crafted with care, combining playful colors and thoughtful charms to make
           your everyday style feel extra special.
-        </motion.p>
+        </p>
       </motion.div>
-      <motion.div className="mission-image-wrapper" variants={scaleIn}>
-        <motion.img src={aboutimg} alt="Artisan crafting jewelry" className="mission-image"
-          whileHover={{ scale: 1.03 }}
-          transition={{ duration: 0.4 }} />
+      <motion.div className="about-mission-img" variants={scaleIn}>
+        <img src={aboutimg} alt="Artisan crafting jewelry" />
       </motion.div>
     </AnimatedSection>
 
-    <AnimatedSection className="about-team-section">
-      <motion.h2 variants={fadeUp}>The Hands Behind the Craft</motion.h2>
+    {/* ── Team ── */}
+    <AnimatedSection className="about-team">
+      <span className="sh__sub" style={{ justifyContent: "center" }}>
+        <span className="sh__accent-line" />The Hands Behind the Craft
+      </span>
+      <motion.h2 variants={fadeUp}>Meet Our Team</motion.h2>
       <motion.div className="about-team-grid" variants={stagger}>
         {[
-          { name: "Design Studio", icon: "\u2728", desc: "Where colors meet creativity and new ideas are born." },
+          { name: "Design Studio", icon: "✨", desc: "Where colors meet creativity and new ideas are born." },
           { name: "Quality & Packaging", icon: "🎀", desc: "Ensuring every order is beautiful, secure, and ready to gift." },
           { name: "Customer Happiness", icon: "💖", desc: "Dedicated to bringing a smile to your face with every purchase." }
         ].map((team, i) => (
           <TiltCard key={team.name} tiltDegree={4} glare={true} scale={1.01}>
             <motion.div className="about-team-card" variants={fadeUp}>
-              <motion.div className="team-icon"
-                whileHover={{ rotate: 360, scale: 1.2 }}
-                transition={{ duration: 0.6 }}>
-                {team.icon}
-              </motion.div>
+              <span className="team-icon">{team.icon}</span>
               <h3>{team.name}</h3>
               <p>{team.desc}</p>
             </motion.div>
@@ -85,21 +110,22 @@ const About = () => (
       </motion.div>
     </AnimatedSection>
 
-    <AnimatedSection className="about-stats-section">
+    {/* ── Stats ── */}
+    <AnimatedSection className="about-stats">
       {[
         { number: "100+", label: "Happy Customers" },
         { number: "100%", label: "Handmade" },
         { number: "200+", label: "Unique Designs" },
       ].map((stat, i) => (
         <TiltCard key={i} tiltDegree={3} glare={false} scale={1.01}>
-          <motion.div className="stat-card" variants={scaleIn}>
-            <motion.h4
+          <motion.div className="about-stat" variants={scaleIn}>
+            <motion.strong
               initial={{ opacity: 0, scale: 0.5 }}
               whileInView={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2, type: "spring", stiffness: 200 }}>
               {stat.number}
-            </motion.h4>
-            <p>{stat.label}</p>
+            </motion.strong>
+            <span>{stat.label}</span>
           </motion.div>
         </TiltCard>
       ))}

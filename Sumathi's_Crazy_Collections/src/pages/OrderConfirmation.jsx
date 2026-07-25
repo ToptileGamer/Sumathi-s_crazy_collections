@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation, Link }   from "react-router-dom";
+import { motion } from "framer-motion";
 import { getOrder }            from "../services/orderService";
 import "../styles/checkout.css";
 
@@ -7,6 +8,8 @@ const formatPrice = (n) =>
   new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
 
 const STATUS_STEPS = ["paid", "processing", "shipped", "delivered"];
+
+const fadeUp = { hidden: { opacity: 0, y: 25 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } } };
 
 const OrderConfirmation = () => {
   const { state }       = useLocation();
@@ -26,7 +29,7 @@ const OrderConfirmation = () => {
       <section className="confirmation-page">
         <div className="confirmation-card">
           <div className="spinner" />
-          <p>Loading your order...</p>
+          <p style={{ color: "#888", fontFamily: "DM Sans" }}>Loading your order...</p>
         </div>
       </section>
     );
@@ -35,12 +38,14 @@ const OrderConfirmation = () => {
   if (!order) {
     return (
       <section className="confirmation-page">
-        <div className="confirmation-card">
-          <div style={{ fontSize: "3rem" }}>🎉</div>
+        <motion.div className="confirmation-card" variants={fadeUp} initial="hidden" animate="visible">
+          <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>🎉</div>
           <h2>Order Placed!</h2>
           <p>Thank you for shopping with us. Check your email for updates.</p>
-          <Link to="/products" className="hero-btn">Continue Shopping</Link>
-        </div>
+          <Link to="/products" className="hero-btn" style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", padding: "0.85rem 2rem", background: "#1a1a1a", color: "#fff", borderRadius: "50px", fontWeight: 600, textDecoration: "none", marginTop: "1.5rem" }}>
+            Continue Shopping
+          </Link>
+        </motion.div>
       </section>
     );
   }
@@ -50,9 +55,9 @@ const OrderConfirmation = () => {
   return (
     <section className="confirmation-page">
       {/* ── Success Banner ── */}
-      <div className="confirmation-card">
+      <motion.div className="confirmation-card" variants={fadeUp} initial="hidden" animate="visible">
         <div className="success-icon">✓</div>
-        <h2>Order Confirmed! 🎉</h2>
+        <h2>Order Confirmed!</h2>
         <p>
           Thank you <strong>{order.address?.full_name ?? "there"}</strong>! Your order has been placed successfully.
         </p>
@@ -64,17 +69,17 @@ const OrderConfirmation = () => {
         {/* ── Progress Tracker ── */}
         <div className="order-tracker">
           {STATUS_STEPS.map((step, i) => (
-            <div key={step} className={`tracker-step ${i <= currentStep ? "done" : ""} ${i === currentStep ? "active" : ""}`}>
+            <div key={step} className={`tracker-step ${i <= currentStep ? "done" : ""}`}>
               <div className="tracker-dot" />
               <span>{step.charAt(0).toUpperCase() + step.slice(1)}</span>
               {i < STATUS_STEPS.length - 1 && <div className="tracker-line" />}
             </div>
           ))}
         </div>
-      </div>
+      </motion.div>
 
       {/* ── Order Details ── */}
-      <div className="confirmation-details">
+      <motion.div className="confirmation-details" variants={fadeUp} initial="hidden" animate="visible">
         <div className="conf-section">
           <h3>Items Ordered</h3>
           <ul className="conf-items">
@@ -83,7 +88,7 @@ const OrderConfirmation = () => {
                 {item.product_image && <img src={item.product_image} alt={item.product_name} />}
                 <div>
                   <strong>{item.product_name}</strong>
-                  <span>Qty: {item.quantity}</span>
+                  <span style={{ display: "block", fontSize: "0.78rem", color: "#999" }}>Qty: {item.quantity}</span>
                 </div>
                 <span className="conf-price">{formatPrice(item.line_total)}</span>
               </li>
@@ -99,7 +104,7 @@ const OrderConfirmation = () => {
               <p>{order.address.line1}</p>
               <p>{order.address.city}, {order.address.state} – {order.address.pincode}</p>
             </div>
-          ) : <p style={{ color: "#888" }}>Address not available</p>}
+          ) : <p style={{ color: "#888", fontFamily: "DM Sans" }}>Address not available</p>}
         </div>
 
         <div className="conf-section">
@@ -114,18 +119,16 @@ const OrderConfirmation = () => {
             <span>{formatPrice(order.total_amount)}</span>
           </div>
           {order.razorpay_payment_id && (
-            <p style={{ fontSize: "0.8rem", color: "#888", marginTop: "0.5rem" }}>
+            <p style={{ fontSize: "0.8rem", color: "#999", marginTop: "0.5rem", fontFamily: "DM Sans" }}>
               Payment ID: {order.razorpay_payment_id}
             </p>
           )}
         </div>
-      </div>
+      </motion.div>
 
-      <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap", marginTop: "2rem" }}>
+      <div className="confirmation-actions">
         <Link to="/profile" className="hero-btn">View All Orders</Link>
-        <Link to="/products" className="hero-btn" style={{ background: "#fff", color: "#e91e8c", border: "1.5px solid #e91e8c" }}>
-          Continue Shopping
-        </Link>
+        <Link to="/products" className="hero-btn secondary">Continue Shopping</Link>
       </div>
     </section>
   );

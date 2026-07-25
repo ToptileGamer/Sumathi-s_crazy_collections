@@ -1,16 +1,36 @@
 import React, { useState } from "react";
+import { motion } from "framer-motion";
 import emailjs from "@emailjs/browser";
-import ScrollReveal from "../components/ScrollReveal";
 import BraceletPreview, { TOTAL_BEADS, PENDANT_OPTIONS } from "../components/BraceletPreview";
 import "../styles/contact.css";
 
 const STYLE_OPTIONS = ["Classic", "Elegant", "Cute", "Trendy", "Festive"];
 
+const fadeUp = { hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } } };
+
+function SectionHeader({ subtitle, title }) {
+  return (
+    <div className="sh sh--center" style={{ marginBottom: "2rem" }}>
+      <motion.span className="sh__sub"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}>
+        <span className="sh__accent-line" />{subtitle}
+      </motion.span>
+      <motion.h2
+        initial={{ opacity: 0, y: 18 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}>
+        {title}
+      </motion.h2>
+    </div>
+  );
+}
+
 const Contact = () => {
   const [sendingMessage, setSendingMessage] = useState(false);
   const [sendingOrder, setSendingOrder] = useState(false);
 
-  // Custom Order States — per-bead colors
   const EMPTY_BEAD = "#e0e0e0";
   const [beadColors, setBeadColors] = useState(Array(TOTAL_BEADS).fill(EMPTY_BEAD));
   const [style, setStyle] = useState("");
@@ -22,7 +42,6 @@ const Contact = () => {
     setBeadColors(newColors);
   };
 
-  // ========== Message Form ==========
   const handleMessageSubmit = (e) => {
     e.preventDefault();
     setSendingMessage(true);
@@ -40,9 +59,7 @@ const Contact = () => {
         import.meta.env.VITE_EMAILJS_SERVICE_ID ?? "service_hkmu9hw",
         import.meta.env.VITE_EMAILJS_TEMPLATE_ID ?? "template_eoj7d9v",
         e.target,
-        {
-          publicKey: import.meta.env.VITE_EMAILJS_PUBLIC_KEY ?? "dTrFGG1s35hxdYEBP",
-        }
+        { publicKey: import.meta.env.VITE_EMAILJS_PUBLIC_KEY ?? "dTrFGG1s35hxdYEBP" }
       )
       .then(
         () => {
@@ -58,7 +75,6 @@ const Contact = () => {
       );
   };
 
-  // ========== Custom Order Form ==========
   const handleOrderSubmit = (e) => {
     e.preventDefault();
     setSendingOrder(true);
@@ -76,9 +92,7 @@ const Contact = () => {
         import.meta.env.VITE_EMAILJS_SERVICE_ID ?? "service_hkmu9hw",
         import.meta.env.VITE_EMAILJS_TEMPLATE_ID ?? "template_eoj7d9v",
         e.target,
-        {
-          publicKey: import.meta.env.VITE_EMAILJS_PUBLIC_KEY ?? "dTrFGG1s35hxdYEBP",
-        }
+        { publicKey: import.meta.env.VITE_EMAILJS_PUBLIC_KEY ?? "dTrFGG1s35hxdYEBP" }
       )
       .then(
         () => {
@@ -99,36 +113,27 @@ const Contact = () => {
 
   return (
     <section className="contact-section">
-      <h2>Contact & Custom Orders</h2>
-      <p className="subtext">
+      <SectionHeader subtitle="Get in Touch" title="Contact & Custom Orders" />
+      <p className="contact-subtext">
         Share your vision or place a bespoke custom order. We are dedicated to bringing your unique ideas to life.
       </p>
 
       <div className="contact-wrapper">
         {/* ================= Message Section ================= */}
-        <ScrollReveal as="div" className="message-section">
+        <motion.div className="message-section" variants={fadeUp} initial="hidden" animate="visible">
           <h3>Send an Inquiry</h3>
           <form onSubmit={handleMessageSubmit} className="contact-form">
             <input type="text" name="name" placeholder="Your Name" required />
-            <input
-              type="email"
-              name="email"
-              placeholder="Your Email"
-              required
-            />
-            <textarea
-              name="message"
-              placeholder="Your Message"
-              rows="4"
-            ></textarea>
-            <button type="submit" className="add-to-cart-btn">
+            <input type="email" name="email" placeholder="Your Email" required />
+            <textarea name="message" placeholder="Your Message" rows="4"></textarea>
+            <button type="submit" className="contact-submit-btn">
               {sendingMessage ? "Sending..." : "Send Message"}
             </button>
           </form>
-        </ScrollReveal>
+        </motion.div>
 
         {/* ================= Custom Order Section ================= */}
-        <ScrollReveal as="div" className="custom-order-section">
+        <motion.div className="custom-order-section" variants={fadeUp} initial="hidden" animate="visible" transition={{ delay: 0.1 }}>
           <h3>
             <span className="custom-order-icon">✦</span>
             Design Your Bracelet
@@ -136,7 +141,6 @@ const Contact = () => {
           </h3>
 
           <form onSubmit={handleOrderSubmit} className="contact-form">
-            {/* Live Bracelet Preview */}
             <div className="bracelet-preview-area">
               <BraceletPreview
                 beadColors={beadColors}
@@ -147,39 +151,24 @@ const Contact = () => {
 
             <div className="custom-order-fields">
               <input type="text" name="name" placeholder="Your Name" required />
-              <input
-                type="email"
-                name="email"
-                placeholder="Your Email"
-                required
-              />
+              <input type="email" name="email" placeholder="Your Email" required />
 
-              {/* Preferred Style */}
               <label>
                 Preferred Style
-                <select
-                  name="style"
-                  value={style}
-                  onChange={(e) => setStyle(e.target.value)}
-                  required
-                >
+                <select name="style" value={style} onChange={(e) => setStyle(e.target.value)} required>
                   <option value="">Select a style</option>
                   {STYLE_OPTIONS.map((opt) => (
-                    <option key={opt} value={opt}>
-                      {opt}
-                    </option>
+                    <option key={opt} value={opt}>{opt}</option>
                   ))}
                 </select>
               </label>
 
-              {/* Hidden inputs for bead colors */}
               {beadColors.map((color, i) => (
                 <input key={i} type="hidden" name={`bead${i + 1}`} value={color} />
               ))}
               <input type="hidden" name="beadColors" value={beadColors.join(", ")} />
               <input type="hidden" name="numBeads" value={TOTAL_BEADS} />
 
-              {/* Pendant Selector */}
               <label className="pendant-selector-label">
                 <span className="pendant-selector-heading">
                   <span className="pendant-icon">✦</span>
@@ -187,20 +176,13 @@ const Contact = () => {
                   <span className="optional-badge">Optional</span>
                 </span>
                 <div className="pendant-options">
-                  <button
-                    type="button"
+                  <button type="button"
                     className={`pendant-option ${!pendantType ? "pendant-option--active" : ""}`}
-                    onClick={() => setPendantType(null)}
-                  >
-                    None
-                  </button>
+                    onClick={() => setPendantType(null)}>None</button>
                   {PENDANT_OPTIONS.map((p) => (
-                    <button
-                      key={p.id}
-                      type="button"
+                    <button key={p.id} type="button"
                       className={`pendant-option ${pendantType === p.id ? "pendant-option--active" : ""}`}
-                      onClick={() => setPendantType(p.id)}
-                    >
+                      onClick={() => setPendantType(p.id)}>
                       <span className="pendant-option-icon">{p.icon}</span>
                       <span className="pendant-option-label">{p.label}</span>
                     </button>
@@ -209,14 +191,10 @@ const Contact = () => {
                 <input type="hidden" name="pendantType" value={pendantType || "none"} />
               </label>
 
-              <textarea
-                name="description"
-                placeholder="Extra Notes / Description (optional)"
-                rows="3"
-              ></textarea>
+              <textarea name="description" placeholder="Extra Notes / Description (optional)" rows="3"></textarea>
             </div>
 
-            <button type="submit" className="add-to-cart-btn submit-order-btn">
+            <button type="submit" className="contact-submit-btn">
               {sendingOrder ? (
                 <span className="btn-loading">
                   <span className="btn-spinner" /> Sending...
@@ -226,16 +204,12 @@ const Contact = () => {
               )}
             </button>
           </form>
-        </ScrollReveal>
+        </motion.div>
       </div>
 
       <p className="contact-info">
         You can also DM us on Instagram:{" "}
-        <a
-          href="https://instagram.com/sumathiscrazycollection"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <a href="https://instagram.com/sumathiscrazycollection" target="_blank" rel="noopener noreferrer">
           @sumathiscrazycollection
         </a>
       </p>

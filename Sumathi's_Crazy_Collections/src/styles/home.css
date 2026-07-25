@@ -975,6 +975,7 @@
 @media (max-width: 600px) {
   .hero { padding: 3rem 1.25rem 2.5rem; }
   .hero__title { font-size: 2rem; }
+  .hero__desc { font-size: 0.88rem; }
   .hero__stats { gap: 1.5rem; }
   .hero__stat-divider { display: none; }
   .hero__visual { height: 280px; }
@@ -985,4 +986,45 @@
   .testi__card { min-width: 80vw; }
   .cta { padding: 3.5rem 1.25rem; }
   .cta__btn { width: 100%; }
+  .marquee__item { font-size: 0.65rem; }
+  .sh { margin-bottom: 2.5rem; }
+  .sh__title { font-size: clamp(1.4rem, 6vw, 1.8rem); }
+  .section__header-row { flex-direction: column; align-items: center; text-align: center; gap: 0.5rem; }
+}
+
+@media (max-width: 480px) {
+  .hero { padding: 2.5rem 1rem 2rem; }
+  .hero__title { font-size: 1.7rem; }
+  .hero__stats { gap: 1rem; flex-wrap: wrap; }
+  .hero__stat { min-width: 80px; }
+  .hero__stat strong { font-size: 1.2rem; }
+  .hero__stat span { font-size: 0.6rem; }
+  .hero__btns { flex-direction: column; }
+  .hero__btns .btn { width: 100%; justify-content: center; }
+  .hero__visual { height: 240px; }
+  .section { padding: 2rem 1rem; }
+  .section--alt { padding: 2rem 1rem; }
+  .cats { gap: 0.75rem; }
+  .cat__card { min-width: 85vw; min-height: 200px; padding: 1.5rem; }
+  .cat__content h3 { font-size: 1.3rem; }
+  .pcard { min-width: 78vw; }
+  .pcard__img { height: 180px; }
+  .pcard__info { padding: 1rem; }
+  .pcard__info h4 { font-size: 0.85rem; }
+  .why { grid-template-columns: 1fr; }
+  .why__card { padding: 1.5rem; }
+  .why__icon { width: 60px; height: 60px; font-size: 1.5rem; }
+  .testi { padding: 3rem 1rem; }
+  .testi__card { min-width: 85vw; padding: 1.5rem; }
+  .testi__text { font-size: 0.82rem; }
+  .story__grid { gap: 1.5rem; }
+  .story__img img { aspect-ratio: 3/4; }
+  .story__quote { position: static; margin-top: 0.75rem; max-width: 100%; }
+  .cta { padding: 3rem 1rem; }
+  .cta__content h2 { font-size: 1.5rem; }
+  .cta__content p { font-size: 0.85rem; }
+  .cta__btn { width: 100%; padding: 1rem 2rem; font-size: 0.8rem; }
+  .marquee { padding: 0.7rem 0; }
+  .marquee__item { font-size: 0.6rem; gap: 1rem; }
+  .marquee__track { gap: 2rem; }
 }

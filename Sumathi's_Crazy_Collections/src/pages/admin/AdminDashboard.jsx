@@ -45,9 +45,10 @@ const AdminDashboard = () => {
   return (
     <>
       <style>{`
+        /* ═══ Base Layout ═══ */
         .adm-layout { display:flex; min-height:100vh; background:#f4f6fb; padding-top:68px; }
 
-        /* Sidebar */
+        /* ── Sidebar ── */
         .adm-sidebar {
           width:240px; background:#0f172a; color:#fff;
           display:flex; flex-direction:column;
@@ -56,16 +57,14 @@ const AdminDashboard = () => {
           transition:transform 0.28s ease;
         }
 
-        /* Main */
+        /* ── Main ── */
         .adm-main { flex:1; margin-left:240px; padding:2rem 2.5rem; min-height:calc(100vh - 68px); }
 
-        /* Mobile topbar */
+        /* ── Mobile topbar ── */
         .adm-topbar { display:none; }
-
-        /* Overlay */
         .adm-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:199; }
 
-        /* Scrollable table wrapper */
+        /* ── Table Wrapper ── */
         .tbl-wrap { background:#fff; border-radius:16px; overflow-x:auto; box-shadow:0 1px 4px rgba(0,0,0,0.06); -webkit-overflow-scrolling:touch; }
         .tbl-wrap table { width:100%; border-collapse:collapse; font-size:0.85rem; min-width:700px; }
         .tbl-wrap th { padding:0.9rem 1rem; text-align:left; font-weight:600; color:#64748b; border-bottom:1px solid #f1f5f9; white-space:nowrap; background:#f8fafc; }
@@ -73,22 +72,44 @@ const AdminDashboard = () => {
         .tbl-wrap tr:last-child td { border-bottom:none; }
         .tbl-wrap tr:hover td { background:#fafbff; }
 
-        /* Stats grid */
+        /* ── Stats Grid ── */
         .stats-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(180px,1fr)); gap:1.25rem; margin-top:1.5rem; }
 
-        /* Form grid */
+        /* ── Form Grids ── */
         .form-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
         .form-grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.75rem; }
 
+        /* ════════════════════════════════
+           RESPONSIVE - Tablet (≤768px)
+        ════════════════════════════════ */
         @media (max-width: 768px) {
-          .adm-sidebar { transform:translateX(-100%); top:0; padding-top:4rem; }
+          .adm-layout { padding-top: 0; }
+          
+          .adm-sidebar {
+            transform:translateX(-100%);
+            top:0;
+            padding-top:5rem;
+            width: 280px;
+          }
           .adm-sidebar.open { transform:translateX(0); }
           .adm-overlay.open { display:block; }
-          .adm-main { margin-left:0; padding:1rem; }
+          
+          .adm-main {
+            margin-left:0;
+            padding:1.25rem;
+            min-height: 100vh;
+          }
+          
           .adm-topbar {
-            display:flex; align-items:center; justify-content:space-between;
-            background:#0f172a; color:#fff;
-            padding:0.75rem 1rem; position:sticky; top:68px; z-index:100;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            background:#0f172a;
+            color:#fff;
+            padding:0.75rem 1rem;
+            position:sticky;
+            top:0;
+            z-index:100;
           }
           .adm-topbar-title { font-weight:700; font-size:0.95rem; }
           .adm-hamburger {
@@ -96,15 +117,75 @@ const AdminDashboard = () => {
             display:flex; flex-direction:column; gap:5px; padding:4px;
           }
           .adm-hamburger span { display:block; width:22px; height:2px; background:#fff; border-radius:2px; }
+          
           .stats-grid { grid-template-columns:1fr 1fr; gap:0.75rem; }
           .form-grid-2 { grid-template-columns:1fr; }
           .form-grid-3 { grid-template-columns:1fr 1fr; }
           .tbl-wrap table { min-width:600px; }
         }
 
-        @media (max-width: 400px) {
-          .stats-grid { grid-template-columns:1fr; }
-          .form-grid-3 { grid-template-columns:1fr; }
+        /* ════════════════════════════════
+           RESPONSIVE - Large Phone (≤600px)
+        ════════════════════════════════ */
+        @media (max-width: 600px) {
+          .adm-main { padding: 1rem; }
+          
+          .stats-grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 0.65rem;
+            margin-top: 1rem;
+          }
+          
+          .form-grid-3 { grid-template-columns: 1fr; }
+          
+          .tbl-wrap table { min-width: 500px; font-size: 0.78rem; }
+          .tbl-wrap th { padding: 0.65rem 0.75rem; font-size: 0.75rem; }
+          .tbl-wrap td { padding: 0.65rem 0.75rem; font-size: 0.78rem; }
+          
+          .adm-topbar { padding: 0.6rem 0.85rem; }
+          .adm-topbar-title { font-size: 0.85rem; }
+          .adm-hamburger span { width: 20px; height: 1.8px; }
+          
+          .adm-sidebar { width: 260px; padding-top: 4.5rem; }
+        }
+
+        /* ════════════════════════════════
+           RESPONSIVE - Phone (≤480px)
+        ════════════════════════════════ */
+        @media (max-width: 480px) {
+          .adm-main { padding: 0.75rem; }
+          
+          .stats-grid {
+            grid-template-columns: 1fr;
+            gap: 0.6rem;
+          }
+          
+          .tbl-wrap { border-radius: 12px; }
+          .tbl-wrap table { min-width: 420px; font-size: 0.72rem; }
+          .tbl-wrap th { padding: 0.5rem 0.6rem; font-size: 0.7rem; }
+          .tbl-wrap td { padding: 0.5rem 0.6rem; font-size: 0.72rem; }
+          
+          .adm-topbar { padding: 0.5rem 0.75rem; }
+          .adm-topbar-title { font-size: 0.8rem; }
+          .adm-hamburger span { width: 18px; height: 1.6px; gap: 4px; }
+          
+          .adm-sidebar { width: 240px; padding: 1rem 0.75rem; padding-top: 4rem; }
+        }
+
+        /* ════════════════════════════════
+           RESPONSIVE - Small Phone (≤360px)
+        ════════════════════════════════ */
+        @media (max-width: 360px) {
+          .adm-main { padding: 0.5rem; }
+          
+          .tbl-wrap table { min-width: 320px; font-size: 0.68rem; }
+          .tbl-wrap th { padding: 0.4rem 0.45rem; font-size: 0.65rem; }
+          .tbl-wrap td { padding: 0.4rem 0.45rem; font-size: 0.68rem; }
+          
+          .adm-topbar { padding: 0.4rem 0.6rem; }
+          .adm-topbar-title { font-size: 0.75rem; }
+          
+          .stats-grid { gap: 0.5rem; }
         }
       `}</style>
 
