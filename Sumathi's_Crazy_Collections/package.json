@@ -17,14 +17,21 @@
     "@capacitor/core": "^8.3.0",
     "@capacitor/splash-screen": "^8.0.1",
     "@emailjs/browser": "^4.4.1",
+
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
     "@supabase/supabase-js": "^2.105.1",
     "@vercel/analytics": "^2.0.1",
-    "firebase": "^12.11.0",
+
+    "framer-motion": "^12.42.2",
+
     "react": "^19.1.1",
-    "react-cookie-consent": "^10.0.1",
+
     "react-dom": "^19.1.1",
-    "react-hot-toast": "^2.6.0",
-    "react-router-dom": "^7.9.4"
+
+    "react-parallax-tilt": "^1.7.333",
+    "react-router-dom": "^7.9.4",
+    "three": "^0.185.1"
   },
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",

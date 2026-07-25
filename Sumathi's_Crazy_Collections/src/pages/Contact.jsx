@@ -27,6 +27,14 @@ const Contact = () => {
     e.preventDefault();
     setSendingMessage(true);
 
+    const emailjsServiceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+    const emailjsTemplateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+    const emailjsPublicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+    if (!emailjsServiceId || !emailjsTemplateId || !emailjsPublicKey) {
+      alert("Email service is not configured. Please set up environment variables.");
+      setSendingMessage(false);
+      return;
+    }
     emailjs
       .sendForm(
         import.meta.env.VITE_EMAILJS_SERVICE_ID ?? "service_hkmu9hw",
@@ -55,6 +63,14 @@ const Contact = () => {
     e.preventDefault();
     setSendingOrder(true);
 
+    const emailjsServiceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+    const emailjsTemplateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+    const emailjsPublicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+    if (!emailjsServiceId || !emailjsTemplateId || !emailjsPublicKey) {
+      alert("Email service is not configured. Please set up environment variables.");
+      setSendingOrder(false);
+      return;
+    }
     emailjs
       .sendForm(
         import.meta.env.VITE_EMAILJS_SERVICE_ID ?? "service_hkmu9hw",
