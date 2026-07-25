@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useCart } from "../hooks/useCart";
 import { useAuth } from "../hooks/useAuth";
-import { useRazorpay } from "../hooks/useRazorpay";
+// import { useRazorpay } from "../hooks/useRazorpay";
 import { getAddresses, addAddress } from "../services/orderService";
 import { createCODOrder } from "../services/orderService";
 
@@ -30,7 +30,7 @@ const Checkout = () => {
   const navigate = useNavigate();
   const { items, subtotal, clear } = useCart();
   const { user, profile } = useAuth();
-  const { checkout } = useRazorpay();
+  // const { checkout } = useRazorpay();
 
   const [addresses, setAddresses] = useState([]);
   const [selectedAddr, setSelectedAddr] = useState(null);
@@ -105,27 +105,27 @@ const Checkout = () => {
       return;
     }
 
-    // ── Razorpay flow ─────────────────────────────────────────
-    await checkout({
-      cartItems: items.map((i) => ({
-        product_id: i.product?.id,
-        quantity: i.quantity,
-      })),
-      addressId: selectedAddr,
-      userProfile: {
-        full_name: profile?.full_name ?? "",
-        email: user?.email ?? "",
-        phone: profile?.phone ?? "",
-      },
-      onSuccess: (orderId) => {
-        clear();
-        navigate("/order-confirmation", { state: { orderId } });
-      },
-      onFailure: (msg) => {
-        setError(msg);
-        setProcessing(false);
-      },
-    });
+    // // ── Razorpay flow ─────────────────────────────────────────
+    // await checkout({
+    //   cartItems: items.map((i) => ({
+    //     product_id: i.product?.id,
+    //     quantity: i.quantity,
+    //   })),
+    //   addressId: selectedAddr,
+    //   userProfile: {
+    //     full_name: profile?.full_name ?? "",
+    //     email: user?.email ?? "",
+    //     phone: profile?.phone ?? "",
+    //   },
+    //   onSuccess: (orderId) => {
+    //     clear();
+    //     navigate("/order-confirmation", { state: { orderId } });
+    //   },
+    //   onFailure: (msg) => {
+    //     setError(msg);
+    //     setProcessing(false);
+    //   },
+    // });
   };
 
   // ── Guards ────────────────────────────────────────────────
@@ -337,11 +337,11 @@ const Checkout = () => {
               }}
             >
               {[
-                {
-                  id: "razorpay",
-                  label: "💳 Pay Online",
-                  sub: "UPI, Cards, Wallets via Razorpay",
-                },
+                // {
+                //   id: "razorpay",
+                //   label: "💳 Pay Online",
+                //   sub: "UPI, Cards, Wallets via Razorpay",
+                // },
                 {
                   id: "cod",
                   label: "💵 Cash on Delivery",
@@ -401,14 +401,14 @@ const Checkout = () => {
               ? "Processing..."
               : payMethod === "cod"
                 ? `Place Order (COD) ${formatPrice(total)}`
-                : `Pay ${formatPrice(total)} via Razorpay`
+                : `Place Order (COD) ${formatPrice(total)}`
             }
           </button>
-          {payMethod === "razorpay" && (
+          {/* {payMethod === "razorpay" && (
             <p className="summary-note">
               🔒 Secured by Razorpay. UPI, Cards, Wallets & more accepted.
             </p>
-          )}
+          )} */}
         </ScrollReveal>
       </div>
     </section>

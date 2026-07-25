@@ -28,22 +28,18 @@ export function AuthProvider({ children }) {
     return () => subscription.unsubscribe();
   }, []);
 
+  // ── Deterministic gender from name (no external API call) ─
+  function getDeterministicGender(name) {
+    const hash = name.split('').reduce((sum, c) => sum + c.charCodeAt(0), 0);
+    return hash % 2 === 0 ? 'girl' : 'boy';
+  }
+
   async function fetchProfile(userId) {
     try {
       let p = await getProfile(userId);
 
       if (p && !p.avatar_url && p.full_name) {
-        const firstName = p.full_name.split(' ')[0];
-        let gender = 'boy';
-        try {
-          const res = await fetch(`https://api.genderize.io?name=${firstName}`);
-          const gData = await res.json();
-          if (gData.gender === 'female') {
-            gender = 'girl';
-          }
-        } catch (err) {
-          // fallback
-        }
+        const gender = getDeterministicGender(p.full_name);
         const avatar_url = `https://avatar.iran.liara.run/public/${gender}?username=${encodeURIComponent(p.full_name)}`;
         
         const { updateProfile } = await import('../services/authService');

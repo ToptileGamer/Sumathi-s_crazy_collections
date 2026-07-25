@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { supabase } from "../lib/supabaseClient";
-import { signOut } from "../services/authService";
+import { deleteAccount } from "../services/authService";
 
 const DeleteAccount = () => {
   const { user }          = useAuth();
@@ -20,19 +19,9 @@ const DeleteAccount = () => {
     setLoading(true);
     setError("");
     try {
-      // Delete user data from all tables
-      // Supabase cascades handle most via ON DELETE CASCADE
-      // but we manually clear what we can
+      // Call Edge Function that uses service role to properly delete auth user
       if (user) {
-        await supabase.from("cart_items").delete().eq("user_id", user.id);
-        await supabase.from("wishlists").delete().eq("user_id", user.id);
-        await supabase.from("return_requests").delete().eq("user_id", user.id);
-        await supabase.from("reviews").delete().eq("user_id", user.id);
-        await supabase.from("addresses").delete().eq("user_id", user.id);
-        await supabase.from("profiles").delete().eq("id", user.id);
-        // Sign out — actual auth user deletion needs service role (admin)
-        // so we sign out and the profile is gone
-        await signOut();
+        await deleteAccount();
       }
       setStep(3);
     } catch (err) {

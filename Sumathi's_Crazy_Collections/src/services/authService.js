@@ -5,16 +5,16 @@ import { Browser } from "@capacitor/browser";
 import { App } from "@capacitor/app";
 
 
+// ── Deterministic gender from name (no external API call) ─
+function getDeterministicGender(name) {
+  const hash = name.split('').reduce((sum, c) => sum + c.charCodeAt(0), 0);
+  return hash % 2 === 0 ? 'girl' : 'boy';
+}
+
 // ── Sign Up ───────────────────────────────────────────────
 export async function signUp({ email, password, fullName }) {
-  // Generate a local SVG data-URI avatar — no external API calls
-  const initials = (fullName.split(' ').map(n => n[0]).join('') || 'U').toUpperCase();
-  const avatarColors = ['e91e8c','a855f7','6366f1','0ea5e9','10b981','f59e0b','ef4444'];
-  const bgColor = avatarColors[fullName.length % avatarColors.length];
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">` +
-    `<rect width="128" height="128" rx="64" fill="#${bgColor}"/>` +
-    `<text x="64" y="82" text-anchor="middle" font-family="system-ui,sans-serif" font-size="48" font-weight="bold" fill="white">${initials}</text></svg>`;
-  const avatar_url = `data:image/svg+xml,${encodeURIComponent(svg)}`;
+  const gender = getDeterministicGender(fullName);
+  const avatar_url = `https://avatar.iran.liara.run/public/${gender}?username=${encodeURIComponent(fullName)}`;
 
   const { data, error } = await supabase.auth.signUp({
     email,
@@ -82,6 +82,22 @@ export async function uploadAvatar(userId, file) {
   const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
   await updateProfile(userId, { avatar_url: data.publicUrl });
   return data.publicUrl;
+}
+
+// ── Delete account via Edge Function ─────────────────────
+export async function deleteAccount() {
+  const { data: sessionData } = await supabase.auth.getSession();
+  const token = sessionData?.session?.access_token;
+  if (!token) throw new Error('Not authenticated');
+
+  const { data, error } = await supabase.functions.invoke('delete-account', {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (error) throw new Error(error.message || 'Failed to delete account');
+
+  // Sign out locally after successful deletion
+  await supabase.auth.signOut();
+  return data;
 }
 
 // ── Forgot password ───────────────────────────────────────
