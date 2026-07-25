@@ -7,19 +7,14 @@ import { App } from "@capacitor/app";
 
 // ── Sign Up ───────────────────────────────────────────────
 export async function signUp({ email, password, fullName }) {
-  const firstName = fullName.split(' ')[0];
-  let gender = 'boy';
-  try {
-    const res = await fetch(`https://api.genderize.io?name=${firstName}`);
-    const gData = await res.json();
-    if (gData.gender === 'female') {
-      gender = 'girl';
-    }
-  } catch (err) {
-    // fallback
-  }
-
-  const avatar_url = `https://avatar.iran.liara.run/public/${gender}?username=${encodeURIComponent(fullName)}`;
+  // Generate a local SVG data-URI avatar — no external API calls
+  const initials = (fullName.split(' ').map(n => n[0]).join('') || 'U').toUpperCase();
+  const avatarColors = ['e91e8c','a855f7','6366f1','0ea5e9','10b981','f59e0b','ef4444'];
+  const bgColor = avatarColors[fullName.length % avatarColors.length];
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">` +
+    `<rect width="128" height="128" rx="64" fill="#${bgColor}"/>` +
+    `<text x="64" y="82" text-anchor="middle" font-family="system-ui,sans-serif" font-size="48" font-weight="bold" fill="white">${initials}</text></svg>`;
+  const avatar_url = `data:image/svg+xml,${encodeURIComponent(svg)}`;
 
   const { data, error } = await supabase.auth.signUp({
     email,

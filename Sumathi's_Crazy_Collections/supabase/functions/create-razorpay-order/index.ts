@@ -34,9 +34,6 @@ serve(async (req) => {
   }
 
   try {
-    // ── DEBUG: step 1 ──
-    console.log('STEP1: Starting function');
-    
     // ── Authenticate via JWT ──────────────────────────────
     const authHeader = req.headers.get('Authorization');
     if (!authHeader?.startsWith('Bearer ')) {
@@ -46,14 +43,12 @@ serve(async (req) => {
       });
     }
 
-    console.log('STEP2: Creating Supabase client');
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
     );
 
     const token = authHeader.split('Bearer ')[1];
-    console.log('STEP3: Verifying user token');
     const { data: { user }, error: userErr } = await supabase.auth.getUser(token);
     if (userErr || !user) {
       return new Response(JSON.stringify({ error: 'Invalid token' }), {
@@ -62,8 +57,6 @@ serve(async (req) => {
       });
     }
 
-    console.log('STEP4: User authenticated: ' + user.id);
-    
     // ── Validate payload ──────────────────────────────────
     const { cartItems, addressId, notes }: ReqBody = await req.json();
     if (!cartItems?.length || !addressId) {
@@ -73,8 +66,6 @@ serve(async (req) => {
       });
     }
 
-    console.log('STEP5: Fetching products, count=' + cartItems.length);
-    
     // ── Fetch real product data from DB ──────────────────
     const productIds = cartItems.map((i) => i.product_id);
     const { data: products, error: prodErr } = await supabase
@@ -84,22 +75,19 @@ serve(async (req) => {
       .eq('is_active', true);
 
     if (prodErr) {
-      console.log('PROD_ERR: ' + JSON.stringify(prodErr));
+      console.error('PROD_ERR: ' + JSON.stringify(prodErr));
       return new Response(JSON.stringify({ error: 'Failed to fetch products: ' + prodErr.message }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
     if (products.length !== new Set(productIds).size) {
-      console.log('PROD_MISMATCH: found=' + products.length + ' expected=' + new Set(productIds).size);
       return new Response(JSON.stringify({ error: 'One or more products not found or inactive' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    console.log('STEP6: Calculating totals');
-    
     // ── Validate stock & calculate totals ────────────────
     const productMap = Object.fromEntries(products.map((p) => [p.id, p]));
     let subtotal = 0;
@@ -133,8 +121,6 @@ serve(async (req) => {
     const shippingAmount = subtotal >= 999 ? 0 : 99;
     const totalAmount    = subtotal + shippingAmount;
 
-    console.log('STEP7: Creating order, total=' + totalAmount);
-    
     // ── Create order in Supabase ─────────────────────────
     const { data: order, error: orderErr } = await supabase
       .from('orders')
@@ -152,22 +138,20 @@ serve(async (req) => {
       .single();
 
     if (orderErr) {
-      console.log('ORDER_ERR: ' + JSON.stringify(orderErr));
+      console.error('ORDER_ERR: ' + JSON.stringify(orderErr));
       return new Response(JSON.stringify({ error: 'Failed to create order: ' + orderErr.message }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    console.log('STEP8: Order created, id=' + order.id);
-    
     // ── Insert order items ──────────────────────────────
     const { error: itemsErr } = await supabase
       .from('order_items')
       .insert(orderItems.map((i) => ({ ...i, order_id: order.id })));
 
     if (itemsErr) {
-      console.log('ITEMS_ERR: ' + JSON.stringify(itemsErr));
+      console.error('ITEMS_ERR: ' + JSON.stringify(itemsErr));
       await supabase.from('orders').delete().eq('id', order.id);
       return new Response(JSON.stringify({ error: 'Failed to create order items: ' + itemsErr.message }), {
         status: 500,
@@ -175,8 +159,6 @@ serve(async (req) => {
       });
     }
 
-    console.log('STEP9: Creating Razorpay order');
-    
     // ── Create Razorpay order ───────────────────────────
     const razorpay = new Razorpay({
       key_id:     Deno.env.get('RAZORPAY_KEY_ID') ?? '',
@@ -194,17 +176,15 @@ serve(async (req) => {
           user_id:  user.id,
         },
       });
-    } catch (_rpErr) {
-      console.log('RAZORPAY_ERR: ' + JSON.stringify(_rpErr));
+    } catch (rpErr) {
+      console.error('RAZORPAY_ERR: ' + JSON.stringify(rpErr));
       await supabase.from('orders').delete().eq('id', order.id);
-      return new Response(JSON.stringify({ error: 'Failed to create Razorpay order: ' + (_rpErr.message ?? _rpErr) }), {
+      return new Response(JSON.stringify({ error: 'Failed to create Razorpay order: ' + (rpErr.message ?? rpErr) }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    console.log('STEP10: Razorpay order created, id=' + razorpayOrder.id);
-    
     // ── Save Razorpay reference on the order ────────────
     await supabase.from('orders').update({ razorpay_order_id: razorpayOrder.id }).eq('id', order.id);
 
@@ -218,15 +198,13 @@ serve(async (req) => {
       orderNumber:     order.order_number,
     };
 
-    console.log('STEP11: Success, returning response');
-    
     return new Response(JSON.stringify(body), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (err) {
-    console.log('FATAL_ERR: ' + (err.message ?? JSON.stringify(err)));
-    console.log('FATAL_STACK: ' + (err.stack ?? 'no stack'));
+    console.error('FATAL_ERR: ' + (err.message ?? JSON.stringify(err)));
+    console.error('FATAL_STACK: ' + (err.stack ?? 'no stack'));
     return new Response(JSON.stringify({ error: err.message ?? 'Internal error' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
