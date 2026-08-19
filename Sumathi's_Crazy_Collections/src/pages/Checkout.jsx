@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router";
 import { motion } from "framer-motion";
 import { useCart } from "../hooks/useCart";
 import { useAuth } from "../hooks/useAuth";
@@ -45,7 +45,6 @@ const Checkout = () => {
   const navigate = useNavigate();
   const { items, subtotal, clear } = useCart();
   const { user, profile } = useAuth();
-
   const [addresses, setAddresses] = useState([]);
   const [selectedAddr, setSelectedAddr] = useState(null);
   const [showAddrForm, setShowAddrForm] = useState(false);
@@ -108,7 +107,6 @@ const Checkout = () => {
             quantity: i.quantity,
           })),
           addressId: selectedAddr,
-          userId: user.id,
         });
         clear();
         navigate("/order-confirmation", { state: { orderId: order.id } });

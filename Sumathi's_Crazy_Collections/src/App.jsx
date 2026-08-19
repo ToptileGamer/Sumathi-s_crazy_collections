@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router";
 import { AuthProvider } from "./hooks/useAuth";
 import { CartProvider } from "./hooks/useCart";
 import { WishlistProvider } from "./hooks/useWishlist";

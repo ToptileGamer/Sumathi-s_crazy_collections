@@ -1,7 +1,8 @@
-// supabase/functions/create-razorpay-order/main.ts
+// supabase/functions/create-cod-order/index.ts
+// Server-side COD order creation — prices and stock are always read from the DB,
+// never trusted from the client. Mirrors the Razorpay order flow.
 import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.105.0';
-import Razorpay from 'npm:razorpay@^2.9.6';
 import { corsResponse } from '../_shared/cors.ts';
 import { rateLimit, getRateLimitKey } from '../_shared/rateLimit.ts';
 
@@ -16,7 +17,7 @@ interface ReqBody {
   notes?: string;
 }
 
-const rl = rateLimit('create-razorpay-order', { maxRequests: 5, windowMs: 300_000 }); // 5 per 5 min
+const rl = rateLimit('create-cod-order', { maxRequests: 5, windowMs: 300_000 }); // 5 per 5 min
 
 serve(async (req) => {
   const cors = corsResponse(req);
@@ -141,6 +142,7 @@ serve(async (req) => {
         product_name: product.name,
         price:        product.price,
         quantity:     item.quantity,
+        line_total:   lineTotal,
       });
     }
 
@@ -148,18 +150,18 @@ serve(async (req) => {
     const gstAmount      = Math.round(subtotal * 0.03);
     const totalAmount    = subtotal + shippingAmount + gstAmount;
 
-    // ── Create order in Supabase ─────────────────────────
+    // ── Create order ─────────────────────────────────────
     const { data: order, error: orderErr } = await supabase
       .from('orders')
       .insert({
         user_id:         user.id,
         address_id:      addressId,
-        status:          'payment_initiated',
+        status:          'pending',
         subtotal,
         shipping_amount: shippingAmount,
         gst_amount:      gstAmount,
         total_amount:    totalAmount,
-        payment_method:  'razorpay',
+        payment_method:  'cod',
         notes:           notes ?? null,
       })
       .select()
@@ -167,7 +169,7 @@ serve(async (req) => {
 
     if (orderErr) {
       console.error('ORDER_ERR: ' + JSON.stringify(orderErr));
-      return new Response(JSON.stringify({ error: 'Failed to create order', details: orderErr.message ?? orderErr }), {
+      return new Response(JSON.stringify({ error: 'Failed to create order' }), {
         status: 500,
         headers: { ...cors.headers, 'Content-Type': 'application/json' },
       });
@@ -187,58 +189,14 @@ serve(async (req) => {
       });
     }
 
-    // ── Create Razorpay order ───────────────────────────
-    const razorpay = new Razorpay({
-      key_id:     Deno.env.get('RAZORPAY_KEY_ID') ?? '',
-      key_secret: Deno.env.get('RAZORPAY_KEY_SECRET') ?? '',
-    });
+    // ── Clear the user's cart ───────────────────────────
+    await supabase.from('cart_items').delete().eq('user_id', user.id);
 
-    let razorpayOrder;
-    try {
-      // Receipt must be ≤ 40 chars per Razorpay API
-      const shortId = String(order.id).slice(-10);
-      razorpayOrder = await razorpay.orders.create({
-        amount:   Math.round(totalAmount * 100), // paise
-        currency: 'INR',
-        receipt:  `rcpt_${shortId}`,
-        notes: {
-          order_id: String(order.id),
-          user_id:  user.id,
-        },
-      });
-    } catch (rpErr) {
-      // Properly serialize the Razorpay error
-      const rpErrMsg = typeof rpErr === 'object' && rpErr !== null
-        ? (rpErr.message || rpErr.error?.description || JSON.stringify(rpErr))
-        : String(rpErr);
-      console.error('RAZORPAY_ERR: ' + JSON.stringify(rpErr));
-      await supabase.from('orders').delete().eq('id', order.id);
-      return new Response(JSON.stringify({ error: 'Failed to create payment order' }), {
-        status: 500,
-        headers: { ...cors.headers, 'Content-Type': 'application/json' },
-      });
-    }
-
-    // ── Save Razorpay reference on the order ────────────
-    await supabase.from('orders').update({ razorpay_order_id: razorpayOrder.id }).eq('id', order.id);
-
-    // ── Respond ─────────────────────────────────────────
-    const body = {
-      keyId:           Deno.env.get('RAZORPAY_KEY_ID'),
-      razorpayOrderId: razorpayOrder.id,
-      amount:          razorpayOrder.amount,
-      currency:        razorpayOrder.currency,
-      orderId:         order.id,
-      orderNumber:     order.order_number,
-    };
-
-    return new Response(JSON.stringify(body), {
+    return new Response(JSON.stringify({ success: true, order }), {
       status: 200,
       headers: { ...cors.headers, 'Content-Type': 'application/json' },
     });
   } catch (err) {
-    console.error('FATAL_ERR: ' + (err.message ?? JSON.stringify(err)));
-    console.error('FATAL_STACK: ' + (err.stack ?? 'no stack'));
     return new Response(JSON.stringify({ error: err.message ?? 'Internal error' }), {
       status: 500,
       headers: { ...cors.headers, 'Content-Type': 'application/json' },

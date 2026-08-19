@@ -1,6 +1,8 @@
 // supabase/functions/verify-razorpay-payment/main.ts
 import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.105.0';
+import { corsResponse } from '../_shared/cors.ts';
+import { rateLimit, getRateLimitKey } from '../_shared/rateLimit.ts';
 
 interface ReqBody {
   razorpay_order_id: string;
@@ -9,25 +11,24 @@ interface ReqBody {
   order_id: number;
 }
 
-serve(async (req) => {
-  // ── CORS headers ─────────────────────────────────────────
-  const ALLOWED_ORIGINS = (Deno.env.get('ALLOWED_ORIGINS') ?? 'http://localhost:3000,http://127.0.0.1:3000').split(',');
-  const origin = req.headers.get('Origin') ?? '';
-  const corsOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
-  const corsHeaders = {
-    'Access-Control-Allow-Origin': corsOrigin,
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-client-info, apikey',
-  };
+const rl = rateLimit('verify-razorpay-payment', { maxRequests: 10, windowMs: 300_000 }); // 10 per 5 min
 
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders });
+serve(async (req) => {
+  const cors = corsResponse(req);
+
+  if (req.method === 'OPTIONS') return new Response('ok', { headers: cors.headers });
+
+  if (!cors.allowed) {
+    return new Response(JSON.stringify({ error: 'Origin not allowed' }), {
+      status: 403,
+      headers: { ...cors.headers, 'Content-Type': 'application/json' },
+    });
   }
 
   if (req.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'Method not allowed' }), {
       status: 405,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: { ...cors.headers, 'Content-Type': 'application/json' },
     });
   }
 
@@ -37,7 +38,7 @@ serve(async (req) => {
     if (!authHeader?.startsWith('Bearer ')) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { ...cors.headers, 'Content-Type': 'application/json' },
       });
     }
 
@@ -51,7 +52,16 @@ serve(async (req) => {
     if (userErr || !user) {
       return new Response(JSON.stringify({ error: 'Invalid token' }), {
         status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { ...cors.headers, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // ── Rate limit ──────────────────────────────────────
+    const rlResult = rl.check(getRateLimitKey(req, user.id));
+    if (!rlResult.allowed) {
+      return new Response(JSON.stringify({ error: 'Too many requests. Please try again later.' }), {
+        status: 429,
+        headers: { ...cors.headers, 'Content-Type': 'application/json', 'Retry-After': String(rlResult.retryAfterSec) },
       });
     }
 
@@ -60,7 +70,7 @@ serve(async (req) => {
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !order_id) {
       return new Response(JSON.stringify({ error: 'Missing required payment fields' }), {
         status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { ...cors.headers, 'Content-Type': 'application/json' },
       });
     }
 
@@ -83,7 +93,7 @@ serve(async (req) => {
     if (expectedSignature !== razorpay_signature) {
       return new Response(JSON.stringify({ error: 'Payment signature verification failed' }), {
         status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { ...cors.headers, 'Content-Type': 'application/json' },
       });
     }
 
@@ -101,9 +111,10 @@ serve(async (req) => {
       .single();
 
     if (updateErr) {
+      console.error('UPDATE_ERR: ' + JSON.stringify(updateErr));
       return new Response(JSON.stringify({ error: 'Failed to update order status' }), {
         status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { ...cors.headers, 'Content-Type': 'application/json' },
       });
     }
 
@@ -112,12 +123,12 @@ serve(async (req) => {
 
     return new Response(JSON.stringify({ success: true, order }), {
       status: 200,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: { ...cors.headers, 'Content-Type': 'application/json' },
     });
   } catch (err) {
     return new Response(JSON.stringify({ error: err.message ?? 'Internal error' }), {
       status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: { ...cors.headers, 'Content-Type': 'application/json' },
     });
   }
 });

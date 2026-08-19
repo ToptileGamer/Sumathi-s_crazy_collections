@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router";
 import { getProducts, getCategories } from "../services/productService";
 import { useCart } from "../hooks/useCart";
 import { useAuth } from "../hooks/useAuth";

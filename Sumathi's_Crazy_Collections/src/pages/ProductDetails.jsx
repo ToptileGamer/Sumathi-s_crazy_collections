@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router";
 import { motion } from "framer-motion";
 import { useCart }     from "../hooks/useCart";
 import { useAuth }     from "../hooks/useAuth";
