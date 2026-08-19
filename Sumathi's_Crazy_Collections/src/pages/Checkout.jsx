@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router";
 import { motion } from "framer-motion";
 import { useCart } from "../hooks/useCart";
 import { useAuth } from "../hooks/useAuth";
+import { useRazorpay } from "../hooks/useRazorpay";
 import { getAddresses, addAddress } from "../services/orderService";
 import { createCODOrder } from "../services/orderService";
 import "../styles/checkout.css";
@@ -44,6 +45,7 @@ const Checkout = () => {
   const navigate = useNavigate();
   const { items, subtotal, clear } = useCart();
   const { user, profile } = useAuth();
+  const { checkout: razorpayCheckout } = useRazorpay();
 
   const [addresses, setAddresses] = useState([]);
   const [selectedAddr, setSelectedAddr] = useState(null);
@@ -52,7 +54,7 @@ const Checkout = () => {
   const [savingAddr, setSavingAddr] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState("");
-  const [payMethod, setPayMethod] = useState("cod");
+  const [payMethod, setPayMethod] = useState("razorpay");
 
   const shipping = subtotal >= 999 ? 0 : 99;
   const tax = Math.round(subtotal * 0.03);
@@ -106,7 +108,6 @@ const Checkout = () => {
             quantity: i.quantity,
           })),
           addressId: selectedAddr,
-          userId: user.id,
         });
         clear();
         navigate("/order-confirmation", { state: { orderId: order.id } });
@@ -115,6 +116,30 @@ const Checkout = () => {
         setProcessing(false);
       }
       return;
+    }
+
+    if (payMethod === "razorpay") {
+      razorpayCheckout({
+        cartItems: items.map((i) => ({
+          product_id: i.product?.id,
+          quantity: i.quantity,
+        })),
+        addressId: selectedAddr,
+        userProfile: {
+          full_name: profile?.full_name ?? "",
+          email:     user?.email        ?? "",
+          phone:     profile?.phone     ?? "",
+        },
+        onSuccess: (orderId) => {
+          setProcessing(false);
+          clear();
+          navigate("/order-confirmation", { state: { orderId } });
+        },
+        onFailure: (errMsg) => {
+          setError(errMsg ?? "Payment failed. Please try again.");
+          setProcessing(false);
+        },
+      });
     }
   };
 
@@ -314,6 +339,11 @@ const Checkout = () => {
             <p className="pay-method-label">Payment Method</p>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
               {[
+                {
+                  id: "razorpay",
+                  label: "💳 Pay Online (Razorpay)",
+                  sub: "Credit/Debit Card, UPI, Net Banking, Wallet",
+                },
                 {
                   id: "cod",
                   label: "💵 Cash on Delivery",

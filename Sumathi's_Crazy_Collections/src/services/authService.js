@@ -58,10 +58,24 @@ export async function getProfile(userId) {
 }
 
 // ── Update profile ────────────────────────────────────────
+// Only allow a fixed whitelist of editable fields. `role`, `id`, `created_at`
+// etc. can never be written from the client — even if an attacker calls
+// updateProfile with { role: 'admin' }, it is silently dropped here,
+// and RLS on the DB enforces the same restriction.
+const EDITABLE_PROFILE_FIELDS = ['full_name', 'phone', 'avatar_url'];
+
 export async function updateProfile(userId, updates) {
+  const safeUpdates = {};
+  for (const key of EDITABLE_PROFILE_FIELDS) {
+    if (updates[key] !== undefined) safeUpdates[key] = updates[key];
+  }
+  if (Object.keys(safeUpdates).length === 0) {
+    throw new Error('No editable fields provided');
+  }
+
   const { data, error } = await supabase
     .from('profiles')
-    .update(updates)
+    .update(safeUpdates)
     .eq('id', userId)
     .select()
     .single();

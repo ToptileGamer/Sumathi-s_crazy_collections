@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router";
 import { motion, useInView, useScroll, useTransform } from "framer-motion";
 import { getProducts, getCategories } from "../services/productService";
 import { useCart } from "../hooks/useCart";

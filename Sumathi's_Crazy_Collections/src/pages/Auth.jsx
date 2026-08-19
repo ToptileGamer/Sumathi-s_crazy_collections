@@ -1,11 +1,25 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useLocation, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router";
 import { motion } from "framer-motion";
 import { signIn, signUp, signInWithGoogle, resetPassword } from "../services/authService";
 import { useAuth } from "../hooks/useAuth";
 import "../styles/profile.css";
 
 const fadeUp = { hidden: { opacity: 0, y: 25 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } } };
+
+// ── Password strength validation ───────────────────────────
+function validatePassword(pw) {
+  const checks = [
+    { test: pw.length >= 8,                          msg: 'at least 8 characters' },
+    { test: /[A-Z]/.test(pw),                       msg: 'one uppercase letter' },
+    { test: /[a-z]/.test(pw),                       msg: 'one lowercase letter' },
+    { test: /[0-9]/.test(pw),                       msg: 'one number' },
+    { test: /[^A-Za-z0-9]/.test(pw),                msg: 'one special character' },
+  ];
+  const failed = checks.filter(c => !c.test);
+  if (failed.length === 0) return null;
+  return `Password must contain ${failed.map(c => c.msg).join(', ')}`;
+}
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -30,10 +44,16 @@ const Auth = () => {
     setLoading(true);
     setError("");
     try {
-      if (mode === "login") {
-        await signIn({ email: form.email, password: form.password });
-      } else {
+      if (mode === "signup") {
+        const pwError = validatePassword(form.password);
+        if (pwError) {
+          setError(pwError);
+          setLoading(false);
+          return;
+        }
         await signUp({ email: form.email, password: form.password, fullName: form.fullName });
+      } else {
+        await signIn({ email: form.email, password: form.password });
       }
       navigate("/");
     } catch (err) {
@@ -118,8 +138,8 @@ const Auth = () => {
               )}
               <input name="email" type="email" placeholder="Email Address" required
                 value={form.email} onChange={handle} />
-              <input name="password" type="password" placeholder="Password" required
-                minLength={6} value={form.password} onChange={handle} />
+              <input name="password" type="password" placeholder="Password (min 8 chars, mixed case, number, special)" required
+                minLength={8} value={form.password} onChange={handle} />
 
               {mode === "login" && (
                 <div style={{ textAlign: "right", marginTop: "-0.25rem" }}>

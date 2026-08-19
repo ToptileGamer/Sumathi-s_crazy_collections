@@ -63,11 +63,25 @@ export async function getAllProducts({ page = 1, limit = 20 } = {}) {
   return { products: data, total: count };
 }
 
-// ── Set admin role ────────────────────────────────────────
-export async function setAdminRole(userId) {
-  const { error } = await supabase
-    .from('profiles')
-    .update({ role: 'admin' })
-    .eq('id', userId);
-  if (error) throw error;
+// ── Set admin role (server-side only) ─────────────────────
+// Role changes MUST go through the edge function — the client is never
+// granted UPDATE on the `role` column (see RLS migration), so a direct
+// client write would fail anyway.
+export async function setAdminRole(userId, role = 'admin') {
+  const { data, error } = await supabase.functions.invoke('set-admin-role', {
+    body: { userId, role },
+  });
+  if (error) {
+    let details = error.message || 'Failed to update role';
+    try {
+      if (error.context instanceof Response) {
+        const body = await error.context.json();
+        if (body?.error) details = body.error;
+      } else if (typeof error.context === 'object' && error.context?.error) {
+        details = error.context.error;
+      }
+    } catch {}
+    throw new Error(details);
+  }
+  return data;
 }

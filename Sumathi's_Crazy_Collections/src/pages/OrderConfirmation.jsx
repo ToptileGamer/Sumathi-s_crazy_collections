@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation, Link }   from "react-router-dom";
+import { useLocation, Link }   from "react-router";
 import { motion } from "framer-motion";
 import { getOrder }            from "../services/orderService";
 import "../styles/checkout.css";
