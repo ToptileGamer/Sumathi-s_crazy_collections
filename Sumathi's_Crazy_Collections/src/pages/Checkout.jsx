@@ -118,30 +118,30 @@ const Checkout = () => {
     }
 
     // Online payment via Razorpay
-    if (payMethod === "online") {
-      checkout({
-        cartItems: items.map((i) => ({
-          product_id: i.product?.id,
-          quantity: i.quantity,
-        })),
-        addressId: selectedAddr,
-        userProfile: {
-          full_name: profile?.full_name,
-          email: user.email,
-          phone: profile?.phone,
-        },
-        onSuccess: (orderId) => {
-          clear();
-          navigate("/order-confirmation", { state: { orderId } });
-        },
-        onFailure: (msg) => {
-          setError(msg);
-          setProcessing(false);
-        },
-      });
-      return;
-    }
-  };
+  //   if (payMethod === "online") {
+  //     checkout({
+  //       cartItems: items.map((i) => ({
+  //         product_id: i.product?.id,
+  //         quantity: i.quantity,
+  //       })),
+  //       addressId: selectedAddr,
+  //       userProfile: {
+  //         full_name: profile?.full_name,
+  //         email: user.email,
+  //         phone: profile?.phone,
+  //       },
+  //       onSuccess: (orderId) => {
+  //         clear();
+  //         navigate("/order-confirmation", { state: { orderId } });
+  //       },
+  //       onFailure: (msg) => {
+  //         setError(msg);
+  //         setProcessing(false);
+  //       },
+  //     });
+  //     return;
+  //   }
+   };
 
   // ── Guards ────────────────────────────────────────────────
   if (!user)
@@ -339,11 +339,11 @@ const Checkout = () => {
             <p className="pay-method-label">Payment Method</p>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
               {[
-                {
-                  id: "online",
-                  label: "💳 Online Payment",
-                  sub: "UPI, Cards, Net Banking & Wallets",
-                },
+                // {
+                //   id: "online",
+                //   label: "💳 Online Payment",
+                //   sub: "UPI, Cards, Net Banking & Wallets",
+                // },
                 {
                   id: "cod",
                   label: "💵 Cash on Delivery",
