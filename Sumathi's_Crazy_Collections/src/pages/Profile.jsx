@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "../hooks/useAuth";
 import { useWishlist } from "../hooks/useWishlist";
-import { signOut, updateProfile } from "../services/authService";
+import { signOut, updateProfile, changePassword } from "../services/authService";
 import {
   getOrders,
   getAddresses,
@@ -60,6 +60,10 @@ const Profile = () => {
   const [rateMsg, setRateMsg] = useState("");
   const [rating, setRating] = useState(false);
   const [rated, setRated] = useState([]);
+  const [showChangePw, setShowChangePw] = useState(false);
+  const [pwForm, setPwForm] = useState({ newPw: '', confirmPw: '' });
+  const [pwLoading, setPwLoading] = useState(false);
+  const [pwMsg, setPwMsg] = useState('');
 
   useEffect(() => {
     if (!loading && !user) navigate("/signup");
@@ -355,6 +359,45 @@ const Profile = () => {
               )}
             </div>
           </div>
+
+          {/* ── Change Password ── */}
+          <div style={{ marginTop: "1.5rem", paddingTop: "1.5rem", borderTop: "1px solid rgba(0,0,0,0.04)" }}>
+            <p style={{ fontSize: "0.8rem", color: "#bbb", marginBottom: "0.5rem", fontFamily: "DM Sans" }}>Security</p>
+            {!showChangePw ? (
+              <button className="hero-btn small" onClick={() => { setShowChangePw(true); setPwMsg(''); setPwForm({ newPw: '', confirmPw: '' }); }}>
+                🔒 Change Password
+              </button>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', maxWidth: 360 }}>
+                <input type="password" placeholder="New password (min 6 chars)" minLength={6} required
+                  value={pwForm.newPw} onChange={(e) => setPwForm(f => ({ ...f, newPw: e.target.value }))} />
+                <input type="password" placeholder="Confirm new password" minLength={6} required
+                  value={pwForm.confirmPw} onChange={(e) => setPwForm(f => ({ ...f, confirmPw: e.target.value }))} />
+                {pwMsg && <p style={{ color: pwMsg.startsWith('✅') ? '#10b981' : '#ef4444', fontSize: '0.84rem', margin: 0 }}>{pwMsg}</p>}
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <button className="hero-btn small" disabled={pwLoading}
+                    onClick={async () => {
+                      if (pwForm.newPw !== pwForm.confirmPw) { setPwMsg('❌ Passwords do not match.'); return; }
+                      if (pwForm.newPw.length < 6) { setPwMsg('❌ Password must be at least 6 characters.'); return; }
+                      setPwLoading(true); setPwMsg('');
+                      try {
+                        await changePassword(pwForm.newPw);
+                        setPwMsg('✅ Password updated successfully!');
+                        setTimeout(() => { setShowChangePw(false); setPwMsg(''); }, 2000);
+                      } catch (err) {
+                        setPwMsg('❌ ' + (err.message ?? 'Failed to update password.'));
+                      } finally {
+                        setPwLoading(false);
+                      }
+                    }}>
+                    {pwLoading ? 'Updating...' : 'Update Password'}
+                  </button>
+                  <button onClick={() => setShowChangePw(false)} style={{ padding: '0.4rem 1rem', border: '1.5px solid #e2e8f0', borderRadius: 10, background: 'none', cursor: 'pointer', color: '#555', fontSize: '0.82rem' }}>Cancel</button>
+                </div>
+              </div>
+            )}
+          </div>
+
           <div style={{ marginTop: "1.5rem", paddingTop: "1.5rem", borderTop: "1px solid rgba(0,0,0,0.04)" }}>
             <p style={{ fontSize: "0.8rem", color: "#bbb", marginBottom: "0.5rem", fontFamily: "DM Sans" }}>Danger Zone</p>
             <Link to="/delete-account" style={{ fontSize: "0.875rem", color: "#ef4444", fontWeight: 600, textDecoration: "none", fontFamily: "DM Sans" }}>

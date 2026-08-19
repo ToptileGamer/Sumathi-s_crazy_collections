@@ -36,23 +36,23 @@ export async function getOrder(orderId) {
   return data;
 }
 
-// // ── Initiate checkout via Supabase Edge Function ──────────
-// export async function initiateCheckout({ cartItems, addressId, notes }) {
-//   const { data, error } = await supabase.functions.invoke('create-razorpay-order', {
-//     body: { cartItems, addressId, notes },
-//   });
-//   if (error) throw new Error(error.message || 'Failed to create order');
-//   return data;
-// }
+// ── Initiate checkout via Supabase Edge Function ──────────
+export async function initiateCheckout({ cartItems, addressId, notes }) {
+  const { data, error } = await supabase.functions.invoke('create-razorpay-order', {
+    body: { cartItems, addressId, notes },
+  });
+  if (error) throw new Error(error.message || 'Failed to create order');
+  return data;
+}
 
-// // ── Verify payment via Supabase Edge Function ─────────────
-// export async function verifyPayment(payload) {
-//   const { data, error } = await supabase.functions.invoke('verify-razorpay-payment', {
-//     body: payload,
-//   });
-//   if (error) throw new Error(error.message || 'Payment verification failed');
-//   return data;
-// }
+// ── Verify payment via Supabase Edge Function ─────────────
+export async function verifyPayment(payload) {
+  const { data, error } = await supabase.functions.invoke('verify-razorpay-payment', {
+    body: payload,
+  });
+  if (error) throw new Error(error.message || 'Payment verification failed');
+  return data;
+}
 
 // ── Address management ────────────────────────────────────
 export async function getAddresses(userId) {

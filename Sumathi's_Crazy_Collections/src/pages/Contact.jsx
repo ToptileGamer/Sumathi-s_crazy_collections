@@ -56,10 +56,10 @@ const Contact = () => {
     }
     emailjs
       .sendForm(
-        import.meta.env.VITE_EMAILJS_SERVICE_ID ?? "service_hkmu9hw",
-        import.meta.env.VITE_EMAILJS_TEMPLATE_ID ?? "template_eoj7d9v",
+        emailjsServiceId,
+        emailjsTemplateId,
         e.target,
-        { publicKey: import.meta.env.VITE_EMAILJS_PUBLIC_KEY ?? "dTrFGG1s35hxdYEBP" }
+        { publicKey: emailjsPublicKey }
       )
       .then(
         () => {
@@ -89,10 +89,10 @@ const Contact = () => {
     }
     emailjs
       .sendForm(
-        import.meta.env.VITE_EMAILJS_SERVICE_ID ?? "service_hkmu9hw",
-        import.meta.env.VITE_EMAILJS_TEMPLATE_ID ?? "template_eoj7d9v",
+        emailjsServiceId,
+        emailjsTemplateId,
         e.target,
-        { publicKey: import.meta.env.VITE_EMAILJS_PUBLIC_KEY ?? "dTrFGG1s35hxdYEBP" }
+        { publicKey: emailjsPublicKey }
       )
       .then(
         () => {

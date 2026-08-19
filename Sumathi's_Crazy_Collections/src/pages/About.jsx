@@ -98,7 +98,7 @@ const About = () => (
           { name: "Design Studio", icon: "✨", desc: "Where colors meet creativity and new ideas are born." },
           { name: "Quality & Packaging", icon: "🎀", desc: "Ensuring every order is beautiful, secure, and ready to gift." },
           { name: "Customer Happiness", icon: "💖", desc: "Dedicated to bringing a smile to your face with every purchase." }
-        ].map((team, i) => (
+        ].map((team) => (
           <TiltCard key={team.name} tiltDegree={4} glare={true} scale={1.01}>
             <motion.div className="about-team-card" variants={fadeUp}>
               <span className="team-icon">{team.icon}</span>
@@ -116,8 +116,8 @@ const About = () => (
         { number: "100+", label: "Happy Customers" },
         { number: "100%", label: "Handmade" },
         { number: "200+", label: "Unique Designs" },
-      ].map((stat, i) => (
-        <TiltCard key={i} tiltDegree={3} glare={false} scale={1.01}>
+      ].map((stat, idx) => (
+        <TiltCard key={idx} tiltDegree={3} glare={false} scale={1.01}>
           <motion.div className="about-stat" variants={scaleIn}>
             <motion.strong
               initial={{ opacity: 0, scale: 0.5 }}

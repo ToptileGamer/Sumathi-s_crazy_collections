@@ -47,7 +47,7 @@ export function AuthProvider({ children }) {
       }
 
       setProfile(p);
-    } catch (_) {
+    } catch {
       setProfile(null);
     } finally {
       setLoading(false);
