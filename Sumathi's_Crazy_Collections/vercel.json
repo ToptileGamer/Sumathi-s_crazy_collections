@@ -11,7 +11,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' https://checkout.razorpay.com https://cdn.razorpay.com https://va.vercel-scripts.com https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https://*.supabase.co https://avatar.iran.liara.run https://www.gstatic.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.emailjs.com https://va.vercel-scripts.com https://api.razorpay.com; font-src 'self' data: https://fonts.gstatic.com; frame-src https://checkout.razorpay.com https://api.razorpay.com https://challenges.cloudflare.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'"
+          "value": "default-src 'self'; script-src 'self' https://va.vercel-scripts.com https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https://*.supabase.co https://avatar.iran.liara.run https://www.gstatic.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.emailjs.com https://va.vercel-scripts.com; font-src 'self' data: https://fonts.gstatic.com; frame-src https://challenges.cloudflare.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'"
         },
         {
           "key": "X-Frame-Options",

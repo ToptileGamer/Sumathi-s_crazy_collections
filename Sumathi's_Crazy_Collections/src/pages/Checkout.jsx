@@ -5,7 +5,6 @@ import { useCart } from "../hooks/useCart";
 import { useAuth } from "../hooks/useAuth";
 import { getAddresses, addAddress } from "../services/orderService";
 import { createCODOrder } from "../services/orderService";
-import { useRazorpay } from "../hooks/useRazorpay";
 import "../styles/checkout.css";
 
 const formatPrice = (n) =>
@@ -44,7 +43,7 @@ function SectionHeader({ subtitle, title }) {
 const Checkout = () => {
   const navigate = useNavigate();
   const { items, subtotal, clear } = useCart();
-  const { user, profile } = useAuth();
+  const { user } = useAuth();
   const [addresses, setAddresses] = useState([]);
   const [selectedAddr, setSelectedAddr] = useState(null);
   const [showAddrForm, setShowAddrForm] = useState(false);
@@ -52,8 +51,6 @@ const Checkout = () => {
   const [savingAddr, setSavingAddr] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState("");
-  const [payMethod, setPayMethod] = useState("cod");
-  const { checkout } = useRazorpay();
 
   const shipping = subtotal >= 999 ? 0 : 99;
   const tax = Math.round(subtotal * 0.03);
@@ -99,49 +96,21 @@ const Checkout = () => {
     setProcessing(true);
     setError("");
 
-    if (payMethod === "cod") {
-      try {
-        const order = await createCODOrder({
-          cartItems: items.map((i) => ({
-            product_id: i.product?.id,
-            quantity: i.quantity,
-          })),
-          addressId: selectedAddr,
-        });
-        clear();
-        navigate("/order-confirmation", { state: { orderId: order.id } });
-      } catch (err) {
-        setError(err.message ?? "Could not place order.");
-        setProcessing(false);
-      }
-      return;
+    try {
+      const order = await createCODOrder({
+        cartItems: items.map((i) => ({
+          product_id: i.product?.id,
+          quantity: i.quantity,
+        })),
+        addressId: selectedAddr,
+      });
+      clear();
+      navigate("/order-confirmation", { state: { orderId: order.id } });
+    } catch (err) {
+      setError(err.message ?? "Could not place order.");
+      setProcessing(false);
     }
-
-    // Online payment via Razorpay
-  //   if (payMethod === "online") {
-  //     checkout({
-  //       cartItems: items.map((i) => ({
-  //         product_id: i.product?.id,
-  //         quantity: i.quantity,
-  //       })),
-  //       addressId: selectedAddr,
-  //       userProfile: {
-  //         full_name: profile?.full_name,
-  //         email: user.email,
-  //         phone: profile?.phone,
-  //       },
-  //       onSuccess: (orderId) => {
-  //         clear();
-  //         navigate("/order-confirmation", { state: { orderId } });
-  //       },
-  //       onFailure: (msg) => {
-  //         setError(msg);
-  //         setProcessing(false);
-  //       },
-  //     });
-  //     return;
-  //   }
-   };
+  };
 
   // ── Guards ────────────────────────────────────────────────
   if (!user)
@@ -334,49 +303,8 @@ const Checkout = () => {
             <span>{formatPrice(total)}</span>
           </div>
 
-          {/* Payment Method */}
-          <div style={{ margin: "1rem 0" }}>
-            <p className="pay-method-label">Payment Method</p>
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-              {[
-                // {
-                //   id: "online",
-                //   label: "💳 Online Payment",
-                //   sub: "UPI, Cards, Net Banking & Wallets",
-                // },
-                {
-                  id: "cod",
-                  label: "💵 Cash on Delivery",
-                  sub: "Pay when your order arrives",
-                },
-              ].map((opt) => (
-                <label
-                  key={opt.id}
-                  className={`pay-method-option ${payMethod === opt.id ? "selected" : ""}`}
-                  style={{
-                    border: `1.5px solid ${payMethod === opt.id ? "#B8953A" : "rgba(0,0,0,0.06)"}`,
-                    background: payMethod === opt.id ? "rgba(184,149,58,0.04)" : "#fff",
-                  }}
-                >
-                  <input
-                    type="radio"
-                    name="payMethod"
-                    value={opt.id}
-                    checked={payMethod === opt.id}
-                    onChange={() => setPayMethod(opt.id)}
-                    style={{ marginTop: 3 }}
-                  />
-                  <div>
-                    <p className="pay-label">{opt.label}</p>
-                    <p className="pay-sub">{opt.sub}</p>
-                  </div>
-                </label>
-              ))}
-            </div>
-          </div>
-
           <button
-            className="hero-btn razorpay-btn"
+            className="hero-btn checkout-btn"
             onClick={handlePlaceOrder}
             disabled={processing}
           >

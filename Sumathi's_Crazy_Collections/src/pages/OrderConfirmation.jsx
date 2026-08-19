@@ -118,11 +118,7 @@ const OrderConfirmation = () => {
             <span>Total Paid</span>
             <span>{formatPrice(order.total_amount)}</span>
           </div>
-          {order.razorpay_payment_id && (
-            <p style={{ fontSize: "0.8rem", color: "#999", marginTop: "0.5rem", fontFamily: "DM Sans" }}>
-              Payment ID: {order.razorpay_payment_id}
-            </p>
-          )}
+
         </div>
       </motion.div>
 

@@ -1,6 +1,6 @@
 // supabase/functions/create-cod-order/index.ts
 // Server-side COD order creation — prices and stock are always read from the DB,
-// never trusted from the client. Mirrors the Razorpay order flow.
+// never trusted from the client.
 import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.105.0';
 import { corsResponse } from '../_shared/cors.ts';
@@ -98,7 +98,7 @@ serve(async (req) => {
     const productIds = cartItems.map((i) => i.product_id);
     const { data: products, error: prodErr } = await supabase
       .from('products')
-      .select('id, name, price, stock')
+      .select('id, name, price, stock, product_images(url, is_primary)')
       .in('id', productIds)
       .eq('is_active', true);
 
@@ -137,12 +137,18 @@ serve(async (req) => {
       }
       const lineTotal = product.price * item.quantity;
       subtotal += lineTotal;
+      // Pick the primary image URL, falling back to the first image
+      const images = product.product_images ?? [];
+      const primaryImg = images.find((img: any) => img.is_primary) ?? images[0];
+      const productImage = primaryImg?.url ?? null;
+
       orderItems.push({
-        product_id:   product.id,
-        product_name: product.name,
-        price:        product.price,
-        quantity:     item.quantity,
-        line_total:   lineTotal,
+        product_id:     product.id,
+        product_name:   product.name,
+        product_image:  productImage,
+        price:          product.price,
+        quantity:       item.quantity,
+        line_total:     lineTotal,
       });
     }
 
