@@ -8,10 +8,22 @@ export function corsResponse(req: Request): {
   allowed: boolean;
   headers: Record<string, string>;
 } {
-  const allowedOrigins = (Deno.env.get('ALLOWED_ORIGINS') ?? 'http://localhost:3000,http://127.0.0.1:3000,https://sumathi-s-crazy-collections.vercel.app')
+  // Always include production + local dev origins so the site works even if
+  // ALLOWED_ORIGINS on Supabase is out-of-date or only contains localhost.
+  const builtIn = [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'https://sumathi-s-crazy-collections.vercel.app',
+    'https://sumathiscrazycollections.vercel.app',
+  ];
+  const envOrigins = (Deno.env.get('ALLOWED_ORIGINS') ?? '')
     .split(',')
     .map((o) => o.trim())
     .filter(Boolean);
+  // De-duplicate while preserving order
+  const allowedOrigins = [...new Set([...builtIn, ...envOrigins])];
 
   const origin = req.headers.get('Origin') ?? '';
 
