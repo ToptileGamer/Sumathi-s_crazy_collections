@@ -174,24 +174,12 @@ const Contact = () => {
       alert("Please complete the human verification.");
       return;
     }
-    emailjs
-      .sendForm(
+    try {
+      await emailjs.sendForm(
         emailjsServiceId,
         emailjsTemplateId,
         e.target,
         { publicKey: emailjsPublicKey }
-      )
-      .then(
-        () => {
-          alert("Thank you! Your message has been sent successfully.");
-          e.target.reset();
-          setSendingMessage(false);
-        },
-        (err) => {
-          console.error(err);
-          alert("Oops! Something went wrong. Please try again.");
-          setSendingMessage(false);
-        }
       );
       alert("Thank you! Your message has been sent successfully.");
       form.reset();
@@ -213,27 +201,12 @@ const Contact = () => {
       if (!guard.silent) alert(guard.message);
       return;
     }
-    emailjs
-      .sendForm(
+    try {
+      await emailjs.sendForm(
         emailjsServiceId,
         emailjsTemplateId,
         e.target,
         { publicKey: emailjsPublicKey }
-      )
-      .then(
-        () => {
-          alert("Thank you! Your custom order has been sent successfully.");
-          e.target.reset();
-          setBeadColors(Array(TOTAL_BEADS).fill(EMPTY_BEAD));
-          setStyle("");
-          setPendantType("heart");
-          setSendingOrder(false);
-        },
-        (err) => {
-          console.error(err);
-          alert("Oops! Something went wrong. Please try again.");
-          setSendingOrder(false);
-        }
       );
       alert("Thank you! Your custom order has been sent successfully.");
       form.reset();
