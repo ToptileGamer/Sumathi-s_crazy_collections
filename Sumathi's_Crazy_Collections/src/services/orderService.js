@@ -41,7 +41,19 @@ export async function initiateCheckout({ cartItems, addressId, notes }) {
   const { data, error } = await supabase.functions.invoke('create-razorpay-order', {
     body: { cartItems, addressId, notes },
   });
-  if (error) throw new Error(error.message || 'Failed to create order');
+  if (error) {
+    let details = error.message || 'Failed to create order';
+    try {
+      if (error.context instanceof Response) {
+        const body = await error.context.json();
+        if (body?.details) details = `${body.error}: ${body.details}`;
+        else if (body?.error) details = body.error;
+      } else if (typeof error.context === 'object' && error.context?.error) {
+        details = error.context.error;
+      }
+    } catch {}
+    throw new Error(details);
+  }
   return data;
 }
 
@@ -50,7 +62,18 @@ export async function verifyPayment(payload) {
   const { data, error } = await supabase.functions.invoke('verify-razorpay-payment', {
     body: payload,
   });
-  if (error) throw new Error(error.message || 'Payment verification failed');
+  if (error) {
+    let details = error.message || 'Payment verification failed';
+    try {
+      if (error.context instanceof Response) {
+        const body = await error.context.json();
+        if (body?.error) details = body.error;
+      } else if (typeof error.context === 'object' && error.context?.error) {
+        details = error.context.error;
+      }
+    } catch {}
+    throw new Error(details);
+  }
   return data;
 }
 

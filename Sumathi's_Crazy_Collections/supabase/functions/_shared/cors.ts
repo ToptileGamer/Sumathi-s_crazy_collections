@@ -8,7 +8,7 @@ export function corsResponse(req: Request): {
   allowed: boolean;
   headers: Record<string, string>;
 } {
-  const allowedOrigins = (Deno.env.get('ALLOWED_ORIGINS') ?? 'http://localhost:3000,http://127.0.0.1:3000')
+  const allowedOrigins = (Deno.env.get('ALLOWED_ORIGINS') ?? 'http://localhost:3000,http://127.0.0.1:3000,https://sumathi-s-crazy-collections.vercel.app')
     .split(',')
     .map((o) => o.trim())
     .filter(Boolean);
