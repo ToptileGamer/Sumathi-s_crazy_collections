@@ -5,7 +5,7 @@ import { useCart }     from "../hooks/useCart";
 import { useAuth }     from "../hooks/useAuth";
 import { useWishlist } from "../hooks/useWishlist";
 import { getProductBySlug, getProducts } from "../services/productService";
-import { getReviews, addReview, hasUserPurchased } from "../services/reviewService";
+import { addReview, hasUserPurchased } from "../services/reviewService";
 import "../styles/productDetails.css";
 import defaultImg from "../assets/bracelets/bluewhite_panda.png";
 

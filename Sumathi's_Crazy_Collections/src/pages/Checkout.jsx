@@ -6,6 +6,7 @@ import { useAuth } from "../hooks/useAuth";
 import { useRazorpay } from "../hooks/useRazorpay";
 import { getAddresses, addAddress } from "../services/orderService";
 import { createCODOrder } from "../services/orderService";
+import { useRazorpay } from "../hooks/useRazorpay";
 import "../styles/checkout.css";
 
 const formatPrice = (n) =>
@@ -54,7 +55,8 @@ const Checkout = () => {
   const [savingAddr, setSavingAddr] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState("");
-  const [payMethod, setPayMethod] = useState("razorpay");
+  const [payMethod, setPayMethod] = useState("cod");
+  const { checkout } = useRazorpay();
 
   const shipping = subtotal >= 999 ? 0 : 99;
   const tax = Math.round(subtotal * 0.03);
@@ -118,28 +120,29 @@ const Checkout = () => {
       return;
     }
 
-    if (payMethod === "razorpay") {
-      razorpayCheckout({
+    // Online payment via Razorpay
+    if (payMethod === "online") {
+      checkout({
         cartItems: items.map((i) => ({
           product_id: i.product?.id,
           quantity: i.quantity,
         })),
         addressId: selectedAddr,
         userProfile: {
-          full_name: profile?.full_name ?? "",
-          email:     user?.email        ?? "",
-          phone:     profile?.phone     ?? "",
+          full_name: profile?.full_name,
+          email: user.email,
+          phone: profile?.phone,
         },
         onSuccess: (orderId) => {
-          setProcessing(false);
           clear();
           navigate("/order-confirmation", { state: { orderId } });
         },
-        onFailure: (errMsg) => {
-          setError(errMsg ?? "Payment failed. Please try again.");
+        onFailure: (msg) => {
+          setError(msg);
           setProcessing(false);
         },
       });
+      return;
     }
   };
 
@@ -340,9 +343,9 @@ const Checkout = () => {
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
               {[
                 {
-                  id: "razorpay",
-                  label: "💳 Pay Online (Razorpay)",
-                  sub: "Credit/Debit Card, UPI, Net Banking, Wallet",
+                  id: "online",
+                  label: "💳 Online Payment",
+                  sub: "UPI, Cards, Net Banking & Wallets",
                 },
                 {
                   id: "cod",

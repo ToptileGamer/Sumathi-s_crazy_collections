@@ -7,9 +7,7 @@ function loadRazorpayScript() {
   return new Promise((resolve) => {
     if (window.Razorpay) return resolve(true);
     const script = document.createElement('script');
-    script.src       = 'https://checkout.razorpay.com/v1/checkout.js';
-    script.integrity = 'sha384-pzxUooCIYIyGmv5clwwvu/JiIoRXuxoDinitEqcgk0cyic45MaRV89m9EJy3pJJM';
-    script.crossOrigin = 'anonymous';
+    script.src   = 'https://checkout.razorpay.com/v1/checkout.js';
     script.onload = () => resolve(true);
     script.onerror = () => resolve(false);
     document.body.appendChild(script);
@@ -37,7 +35,6 @@ export function useRazorpay() {
     try {
       orderData = await initiateCheckout({ cartItems, addressId, notes });
     } catch (err) {
-      console.error('❌ initiateCheckout failed:', err);
       onFailure?.(err.message ?? 'Could not create order.');
       return;
     }

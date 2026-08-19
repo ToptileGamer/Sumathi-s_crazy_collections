@@ -122,6 +122,12 @@ export async function resetPassword(email) {
   if (error) throw error;
 }
 
+// ── Change password (requires current session) ──────────────
+export async function changePassword(newPassword) {
+  const { error } = await supabase.auth.updateUser({ password: newPassword });
+  if (error) throw error;
+}
+
 export async function signInWithGoogle() {
   const isNative = Capacitor.isNativePlatform();
 

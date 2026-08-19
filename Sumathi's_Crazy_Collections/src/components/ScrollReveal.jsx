@@ -13,7 +13,7 @@ import useScrollReveal from "../hooks/useScrollReveal";
  * @param {boolean} [props.stagger=false] — if true, adds a default 200ms stagger delay
  */
 export default function ScrollReveal({
-  as: Tag = "div",
+  as: Tag = "div", // eslint-disable-line no-unused-vars -- Tag is used as JSX element <Tag>
   reveal = "",
   delay = 0,
   stagger = false,
