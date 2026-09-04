@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router";
 import { motion } from "framer-motion";
 import { useCart } from "../hooks/useCart";
 import { useAuth } from "../hooks/useAuth";
-import { getAddresses, addAddress } from "../services/orderService";
+import { getAddresses, addAddress, getOrderCount } from "../services/orderService";
 import { createCODOrder } from "../services/orderService";
 import "../styles/checkout.css";
 
@@ -51,10 +51,12 @@ const Checkout = () => {
   const [savingAddr, setSavingAddr] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState("");
+  const [orderCount, setOrderCount] = useState(null);
 
-  const shipping = subtotal >= 999 ? 0 : 99;
-  const tax = Math.round(subtotal * 0.03);
-  const total = subtotal + shipping + tax;
+  // Free shipping perk: first 5 orders ship free (cancelled orders don't count)
+  const freeShipPerk = (orderCount ?? 0) < 5;
+  const shipping     = freeShipPerk || subtotal >= 999 ? 0 : 99;
+  const total        = subtotal + shipping;
 
   // ── Load saved addresses ───────────────────────────────────
   useEffect(() => {
@@ -68,6 +70,14 @@ const Checkout = () => {
         else setShowAddrForm(true);
       })
       .catch(console.error);
+  }, [user]);
+
+  // ── Free shipping on first 5 orders ────────────────────────
+  useEffect(() => {
+    if (!user) return;
+    getOrderCount(user.id)
+      .then(setOrderCount)
+      .catch(() => setOrderCount(null));
   }, [user]);
 
   // ── Save new address ──────────────────────────────────────
@@ -293,14 +303,27 @@ const Checkout = () => {
               {shipping === 0 ? "Free 🎉" : formatPrice(shipping)}
             </span>
           </div>
-          <div className="summary-row">
-            <span>GST (3%)</span>
-            <span>{formatPrice(tax)}</span>
-          </div>
+          {freeShipPerk && (
+            <div style={{ background: "#ecfdf5", border: "1.5px solid rgba(16,185,129,0.3)", borderRadius: 10, padding: "0.6rem 0.8rem", fontSize: "0.78rem", color: "#047857", lineHeight: 1.5, fontFamily: "DM Sans", margin: "0.4rem 0" }}>
+              🎉 FREE shipping — you're on your first 5 orders!
+            </div>
+          )}
           <div className="summary-divider" />
           <div className="summary-row total">
             <span>Total</span>
             <span>{formatPrice(total)}</span>
+          </div>
+
+          {/* ── Plain-language privacy notice (DPDP Act 2023) ── */}
+          <div style={{ background: "#fdf6f0", border: "1.5px solid rgba(184,149,58,0.25)", borderRadius: 10, padding: "0.7rem 0.85rem", fontSize: "0.78rem", color: "#555", lineHeight: 1.6, fontFamily: "DM Sans", margin: "1rem 0" }}>
+            <p style={{ margin: 0 }}>
+              <strong style={{ color: "#1a1a1a" }}>🔒 Privacy Notice:</strong> Your name, phone and delivery address are
+              used only to deliver this order and for support. We never sell your data and never send marketing messages
+              unless you separately opt in.
+            </p>
+            <p style={{ margin: "0.35rem 0 0", color: "#B8953A" }}>
+              आपका नाम, फ़ोन और पता केवल इस ऑर्डर की डिलीवरी और सहायता के लिए उपयोग होते हैं। हम आपका डेटा नहीं बेचते।
+            </p>
           </div>
 
           <button

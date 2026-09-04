@@ -121,7 +121,7 @@ const Profile = () => {
     if (!cancelReason.trim()) return;
     setCancelling(true);
     try {
-      await cancelOrder(cancelModal.id, user.id);
+      await cancelOrder(cancelModal.id);
       setCancelMsg("✅ Order cancelled successfully.");
       setOrders(orders.map(o => o.id === cancelModal.id ? { ...o, status: 'cancelled' } : o));
       setTimeout(() => { setCancelModal(null); setCancelReason(""); setCancelMsg(""); }, 1500);

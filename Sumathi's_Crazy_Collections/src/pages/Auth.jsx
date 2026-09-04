@@ -36,6 +36,8 @@ const Auth = () => {
   const [form, setForm] = useState({ fullName: "", email: "", password: "" });
   const [resetMode, setResetMode] = useState(false);
   const [resetSent, setResetSent] = useState(false);
+  // DPDP Act 2023: consent + age confirmation required before signup
+  const [consent, setConsent] = useState({ agree: false, age: false });
 
   const handle = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
@@ -51,7 +53,26 @@ const Auth = () => {
           setLoading(false);
           return;
         }
-        await signUp({ email: form.email, password: form.password, fullName: form.fullName });
+        // DPDP Act 2023 — no personal data may be processed without clear,
+        // specific, informed and unambiguous consent (and no minors without
+        // verifiable parental consent).
+        if (!consent.agree) {
+          setError("You must consent to the Privacy Policy and data processing to create an account.");
+          setLoading(false);
+          return;
+        }
+        if (!consent.age) {
+          setError("You must confirm you are 18 or older, or have verifiable parental consent.");
+          setLoading(false);
+          return;
+        }
+        await signUp({
+          email: form.email,
+          password: form.password,
+          fullName: form.fullName,
+          consentGiven: consent.agree,
+          ageConfirmed: consent.age,
+        });
       } else {
         await signIn({ email: form.email, password: form.password });
       }
@@ -140,6 +161,37 @@ const Auth = () => {
                 value={form.email} onChange={handle} />
               <input name="password" type="password" placeholder="Password (min 8 chars, mixed case, number, special)" required
                 minLength={8} value={form.password} onChange={handle} />
+
+              {mode === "signup" && (
+                <div className="auth-consent" style={{ display: "flex", flexDirection: "column", gap: "0.6rem", marginTop: "0.25rem", textAlign: "left" }}>
+                  {/* ── Plain-language privacy notice (DPDP Act 2023) ── */}
+                  <div style={{ background: "#fdf6f0", border: "1.5px solid rgba(184,149,58,0.25)", borderRadius: 10, padding: "0.7rem 0.85rem", fontSize: "0.78rem", color: "#555", lineHeight: 1.6, fontFamily: "DM Sans" }}>
+                    <strong style={{ color: "#1a1a1a" }}>🔒 Privacy Notice:</strong> We collect your name, email, phone
+                    and delivery address only to process and deliver your orders and to support you. We never sell your
+                    data and never send marketing messages unless you separately opt in.
+                    <br />
+                    <span style={{ color: "#B8953A" }}>हम आपका नाम, ईमेल, फ़ोन और पता केवल ऑर्डर डिलीवरी और सहायता के लिए लेते हैं। हम आपका डेटा कभी नहीं बेचते।</span>
+                  </div>
+                  <label className="auth-check" style={{ display: "flex", gap: "0.55rem", alignItems: "flex-start", fontSize: "0.8rem", color: "#666", lineHeight: 1.5, cursor: "pointer", fontFamily: "DM Sans" }}>
+                    <input type="checkbox" checked={consent.agree}
+                      onChange={(e) => setConsent((c) => ({ ...c, agree: e.target.checked }))}
+                      style={{ marginTop: "0.2rem", accentColor: "#e91e8c", cursor: "pointer" }} />
+                    <span>
+                      I consent to Sumathi's Crazy Collections processing my personal data (name, email, phone, address) as described in the{" "}
+                      <a href="/privacy" target="_blank" rel="noopener noreferrer" style={{ color: "#e91e8c", fontWeight: 600 }}>Privacy Policy</a>,
+                      for order processing, delivery and support. I can withdraw consent at any time.
+                    </span>
+                  </label>
+                  <label className="auth-check" style={{ display: "flex", gap: "0.55rem", alignItems: "flex-start", fontSize: "0.8rem", color: "#666", lineHeight: 1.5, cursor: "pointer", fontFamily: "DM Sans" }}>
+                    <input type="checkbox" checked={consent.age}
+                      onChange={(e) => setConsent((c) => ({ ...c, age: e.target.checked }))}
+                      style={{ marginTop: "0.2rem", accentColor: "#e91e8c", cursor: "pointer" }} />
+                    <span>
+                      I confirm I am 18 years or older, or have verifiable consent from my parent or legal guardian (Digital Personal Data Protection Act, 2023).
+                    </span>
+                  </label>
+                </div>
+              )}
 
               {mode === "login" && (
                 <div style={{ textAlign: "right", marginTop: "-0.25rem" }}>

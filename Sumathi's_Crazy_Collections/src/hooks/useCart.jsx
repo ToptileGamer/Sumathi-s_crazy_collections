@@ -78,6 +78,10 @@ export function CartProvider({ children }) {
   );
 }
 
+// The hook is intentionally exported from the same file as CartProvider for
+// ergonomics. Context files don't benefit from fast refresh anyway, so the
+// react-refresh rule is disabled here on purpose.
+// eslint-disable-next-line react-refresh/only-export-components
 export function useCart() {
   const ctx = useContext(CartContext);
   if (!ctx) throw new Error('useCart must be used inside <CartProvider>');

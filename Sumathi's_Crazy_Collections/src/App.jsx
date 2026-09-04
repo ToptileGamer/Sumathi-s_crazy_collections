@@ -62,18 +62,21 @@ function AdminRoute({ children }) {
   return children;
 }
 
-function CookieBanner() {
-  const [show, setShow] = useState(() => localStorage.getItem("cookie_consent") !== "accepted");
-  const accept = () => { localStorage.setItem("cookie_consent", "accepted"); setShow(false); };
-  const decline = () => { localStorage.setItem("cookie_consent", "declined"); setShow(false); };
+function CookieBanner({ onConsent }) {
+  const [show, setShow] = useState(() => {
+    const v = localStorage.getItem("cookie_consent");
+    return v !== "accepted" && v !== "declined";
+  });
+  const accept = () => { localStorage.setItem("cookie_consent", "accepted"); setShow(false); onConsent?.("accepted"); };
+  const decline = () => { localStorage.setItem("cookie_consent", "declined"); setShow(false); onConsent?.("declined"); };
   if (!show) return null;
   return (
     <motion.div initial={{ opacity: 0, y: 40, x: "-50%" }} animate={{ opacity: 1, y: 0, x: "-50%" }} exit={{ opacity: 0, y: 20, x: "-50%" }} transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
       style={{ position: "fixed", bottom: "1.25rem", left: "50%", transform: "translateX(-50%)", width: "calc(100% - 2rem)", maxWidth: 560, background: "rgba(10, 10, 26, 0.95)", backdropFilter: "blur(20px)", color: "#fff", borderRadius: 16, padding: "1.25rem 1.5rem", boxShadow: "0 8px 40px rgba(0,0,0,0.25)", zIndex: 9999, display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap", border: "1px solid rgba(255,255,255,0.06)" }}>
       <motion.span animate={{ rotate: [0, 10, -10, 0] }} transition={{ duration: 1, repeat: Infinity, repeatDelay: 3 }} style={{ fontSize: "1.75rem", flexShrink: 0 }}>{String.fromCodePoint(0x1F36A)}</motion.span>
       <div style={{ flex: 1, minWidth: 180 }}>
-        <p style={{ margin: "0 0 0.2rem", fontWeight: 700, fontSize: "0.9rem" }}>We use cookies</p>
-        <p style={{ margin: 0, fontSize: "0.78rem", color: "rgba(255,255,255,0.65)", lineHeight: 1.5 }}>We use cookies to improve your experience. By using our site you agree to our <a href="/privacy" style={{ color: "#e91e8c", textDecoration: "none", fontWeight: 600 }}>Privacy Policy</a>.</p>
+        <p style={{ margin: "0 0 0.2rem", fontWeight: 700, fontSize: "0.9rem" }}>We care about your privacy</p>
+        <p style={{ margin: 0, fontSize: "0.78rem", color: "rgba(255,255,255,0.65)", lineHeight: 1.5 }}>We only run analytics/tracking after you accept. Learn how we handle your data in our <a href="/privacy" style={{ color: "#e91e8c", textDecoration: "none", fontWeight: 600 }}>Privacy Policy</a>.</p>
       </div>
       <div style={{ display: "flex", gap: "0.5rem", flexShrink: 0 }}>
         <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={decline} style={{ padding: "0.5rem 1.1rem", border: "1.5px solid rgba(255,255,255,0.15)", borderRadius: 8, background: "transparent", color: "rgba(255,255,255,0.65)", cursor: "pointer", fontSize: "0.82rem", fontWeight: 600 }}>Decline</motion.button>
@@ -96,6 +99,8 @@ function AppInner() {
   useBlinkingTitle();
   const location = useLocation();
   const isAdmin = location.pathname.startsWith("/admin");
+  // DPDP Act 2023: analytics only run after explicit, informed consent.
+  const [consent, setConsent] = useState(() => localStorage.getItem("cookie_consent"));
 
   return (
     <>
@@ -129,8 +134,8 @@ function AppInner() {
         </AnimatePresence>
       </main>
       {!isAdmin && <Footer />}
-      <CookieBanner />
-      <Analytics />
+      <CookieBanner onConsent={setConsent} />
+      {consent === "accepted" && <Analytics />}
     </>
   );
 }

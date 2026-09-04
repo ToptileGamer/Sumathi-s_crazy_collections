@@ -4,6 +4,7 @@
 import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
 import { corsResponse } from '../_shared/cors.ts';
 import { rateLimit, getRateLimitKey } from '../_shared/rateLimit.ts';
+import { errorMessage } from '../_shared/errors.ts';
 
 const rl = rateLimit('verify-turnstile', { maxRequests: 30, windowMs: 60_000 }); // 30 per min per IP
 
@@ -68,7 +69,7 @@ serve(async (req) => {
       headers: { ...cors.headers, 'Content-Type': 'application/json' },
     });
   } catch (err) {
-    return new Response(JSON.stringify({ success: false, error: err.message ?? 'Internal error' }), {
+    return new Response(JSON.stringify({ success: false, error: errorMessage(err) }), {
       status: 500,
       headers: { ...cors.headers, 'Content-Type': 'application/json' },
     });

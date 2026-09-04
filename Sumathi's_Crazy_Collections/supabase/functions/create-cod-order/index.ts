@@ -5,6 +5,7 @@ import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.105.0';
 import { corsResponse } from '../_shared/cors.ts';
 import { rateLimit, getRateLimitKey } from '../_shared/rateLimit.ts';
+import { errorMessage } from '../_shared/errors.ts';
 
 interface CartItem {
   product_id: number;
@@ -142,19 +143,31 @@ serve(async (req) => {
       const primaryImg = images.find((img: any) => img.is_primary) ?? images[0];
       const productImage = primaryImg?.url ?? null;
 
+      // NOTE: line_total is a GENERATED column in the DB (price * quantity),
+      // so it must NOT be inserted explicitly — Postgres would reject the row.
       orderItems.push({
         product_id:     product.id,
         product_name:   product.name,
         product_image:  productImage,
         price:          product.price,
         quantity:       item.quantity,
-        line_total:     lineTotal,
       });
     }
 
-    const shippingAmount = subtotal >= 999 ? 0 : 99;
-    const gstAmount      = Math.round(subtotal * 0.03);
-    const totalAmount    = subtotal + shippingAmount + gstAmount;
+    // ── Free shipping on the customer's first 5 orders ──────
+    // Cancelled orders don't count toward the perk, so a customer
+    // doesn't lose a free-shipping slot for something they returned.
+    const { count: placedCount, error: countErr } = await supabase
+      .from('orders')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .neq('status', 'cancelled');
+
+    const FREE_SHIPPING_ORDER_LIMIT = 5;
+    const orderCount                = countErr ? 0 : (placedCount ?? 0);
+    const freeShippingPerk          = orderCount < FREE_SHIPPING_ORDER_LIMIT;
+    const shippingAmount            = freeShippingPerk || subtotal >= 999 ? 0 : 99;
+    const totalAmount               = subtotal + shippingAmount;
 
     // ── Create order ─────────────────────────────────────
     const { data: order, error: orderErr } = await supabase
@@ -165,7 +178,7 @@ serve(async (req) => {
         status:          'pending',
         subtotal,
         shipping_amount: shippingAmount,
-        gst_amount:      gstAmount,
+        gst_amount:      0,
         total_amount:    totalAmount,
         payment_method:  'cod',
         notes:           notes ?? null,
@@ -188,11 +201,46 @@ serve(async (req) => {
 
     if (itemsErr) {
       console.error('ITEMS_ERR: ' + JSON.stringify(itemsErr));
+      await supabase.from('order_items').delete().eq('order_id', order.id);
       await supabase.from('orders').delete().eq('id', order.id);
       return new Response(JSON.stringify({ error: 'Failed to create order items' }), {
         status: 500,
         headers: { ...cors.headers, 'Content-Type': 'application/json' },
       });
+    }
+
+    // ── Reserve stock (atomic, server-side) ─────────────
+    // decrement_stock is defined in the stock_management migration and is
+    // service-role only. If it is missing (migration not yet applied), fall
+    // back to a guarded manual update. On any failure, roll the order back.
+    for (const item of orderItems) {
+      const { error: stockErr } = await supabase.rpc('decrement_stock', {
+        p_product_id: item.product_id,
+        p_quantity:   item.quantity,
+      });
+
+      if (stockErr) {
+        const { data: product } = await supabase
+          .from('products')
+          .select('stock')
+          .eq('id', item.product_id)
+          .single();
+
+        if (!product || product.stock < item.quantity) {
+          console.error('STOCK_ERR: ' + JSON.stringify(stockErr));
+          await supabase.from('order_items').delete().eq('order_id', order.id);
+          await supabase.from('orders').delete().eq('id', order.id);
+          return new Response(JSON.stringify({ error: 'Insufficient stock. Please try again.' }), {
+            status: 400,
+            headers: { ...cors.headers, 'Content-Type': 'application/json' },
+          });
+        }
+
+        await supabase
+          .from('products')
+          .update({ stock: product.stock - item.quantity })
+          .eq('id', item.product_id);
+      }
     }
 
     // ── Clear the user's cart ───────────────────────────
@@ -203,7 +251,7 @@ serve(async (req) => {
       headers: { ...cors.headers, 'Content-Type': 'application/json' },
     });
   } catch (err) {
-    return new Response(JSON.stringify({ error: err.message ?? 'Internal error' }), {
+    return new Response(JSON.stringify({ error: errorMessage(err) }), {
       status: 500,
       headers: { ...cors.headers, 'Content-Type': 'application/json' },
     });

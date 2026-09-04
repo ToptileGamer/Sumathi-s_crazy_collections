@@ -81,7 +81,7 @@ const Products = () => {
   useEffect(() => {
     const cat = searchParams.get("category");
     if (cat) setCategory(cat);
-  }, []);
+  }, [searchParams]);
 
   useEffect(() => { fetchProducts(); }, [fetchProducts]);
   useEffect(() => { setPage(1); }, [category, query, sort]);

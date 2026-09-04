@@ -5,6 +5,7 @@ import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.105.0';
 import { corsResponse } from '../_shared/cors.ts';
 import { rateLimit, getRateLimitKey } from '../_shared/rateLimit.ts';
+import { errorMessage } from '../_shared/errors.ts';
 
 interface ReqBody {
   userId: string;
@@ -116,7 +117,7 @@ serve(async (req) => {
       headers: { ...cors.headers, 'Content-Type': 'application/json' },
     });
   } catch (err) {
-    return new Response(JSON.stringify({ error: err.message ?? 'Internal error' }), {
+    return new Response(JSON.stringify({ error: errorMessage(err) }), {
       status: 500,
       headers: { ...cors.headers, 'Content-Type': 'application/json' },
     });

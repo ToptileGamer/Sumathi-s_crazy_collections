@@ -80,7 +80,7 @@ export async function setAdminRole(userId, role = 'admin') {
       } else if (typeof error.context === 'object' && error.context?.error) {
         details = error.context.error;
       }
-    } catch {}
+    } catch { /* parsing the error body failed — fall back to the generic message */ }
     throw new Error(details);
   }
   return data;

@@ -36,6 +36,18 @@ export async function getOrder(orderId) {
   return data;
 }
 
+// ── Count the user's non-cancelled orders ─────────────────
+// Used for the "free shipping on first 5 orders" perk.
+export async function getOrderCount(userId) {
+  const { count, error } = await supabase
+    .from('orders')
+    .select('id', { count: 'exact', head: true })
+    .eq('user_id', userId)
+    .neq('status', 'cancelled');
+  if (error) throw error;
+  return count ?? 0;
+}
+
 // ── Address management ────────────────────────────────────
 export async function getAddresses(userId) {
   const { data, error } = await supabase
@@ -91,14 +103,16 @@ export async function createCODOrder({ cartItems, addressId }) {
       } else if (typeof error.context === 'object' && error.context?.error) {
         details = error.context.error;
       }
-    } catch {}
+    } catch { /* parsing the error body failed — fall back to the generic message */ }
     throw new Error(details);
   }
   return data.order;
 }
 
 // ── Cancel order (server-side with stock restoration) ─────
-export async function cancelOrder(orderId, userId) {
+// The edge function authenticates the caller from their session, so no
+// userId is needed from the client.
+export async function cancelOrder(orderId) {
   const { data, error } = await supabase.functions.invoke('cancel-order', {
     body: { orderId },
   });
@@ -111,7 +125,7 @@ export async function cancelOrder(orderId, userId) {
       } else if (typeof error.context === 'object' && error.context?.error) {
         details = error.context.error;
       }
-    } catch {}
+    } catch { /* parsing the error body failed — fall back to the generic message */ }
     throw new Error(details);
   }
   return data;

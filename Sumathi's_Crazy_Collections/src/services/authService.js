@@ -12,14 +12,28 @@ function getDeterministicGender(name) {
 }
 
 // ── Sign Up ───────────────────────────────────────────────
-export async function signUp({ email, password, fullName }) {
+// consentGiven / ageConfirmed implement the DPDP Act 2023: personal data is
+// only processed after clear, specific, informed and unambiguous consent,
+// and minors require verifiable parental consent (confirmed at signup).
+// The consent record is stored in the user's metadata for auditability.
+export async function signUp({ email, password, fullName, consentGiven = false, ageConfirmed = false }) {
   const gender = getDeterministicGender(fullName);
   const avatar_url = `https://avatar.iran.liara.run/public/${gender}?username=${encodeURIComponent(fullName)}`;
 
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: { data: { full_name: fullName, avatar_url } },
+    options: {
+      data: {
+        full_name: fullName,
+        avatar_url,
+        // ── DPDP Act 2023 consent record ──
+        consent_given: consentGiven,
+        consent_version: consentGiven ? '1.0' : null,
+        consent_at: consentGiven ? new Date().toISOString() : null,
+        age_confirmed: ageConfirmed,
+      },
+    },
   });
   if (error) throw error;
   return data;

@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import { TOTAL_BEADS } from "./braceletConfig";
 
-export const TOTAL_BEADS = 10;
 const SVG_W = 560;
 const SVG_H = 260;
 const BEAD_R = 20;
@@ -12,14 +12,6 @@ const PRESET_COLORS = [
   "#e91e8c", "#ff6b6b", "#ffa94d", "#ffd43b",
   "#69db7c", "#38d9a9", "#4dabf7", "#748ffc",
   "#9775fa", "#f783ac", "#fff", "#000",
-];
-
-export const PENDANT_OPTIONS = [
-  { id: "heart", label: "Heart", icon: "♥" },
-  { id: "star", label: "Star", icon: "★" },
-  { id: "circle", label: "Circle", icon: "○" },
-  { id: "diamond", label: "Diamond", icon: "◇" },
-  { id: "dollar", label: "Dollar", icon: "$" },
 ];
 
 const PENDANT_SYMBOLS = {

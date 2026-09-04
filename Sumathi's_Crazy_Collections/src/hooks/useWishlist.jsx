@@ -49,6 +49,10 @@ export function WishlistProvider({ children }) {
   );
 }
 
+// The hook is intentionally exported from the same file as WishlistProvider for
+// ergonomics. Context files don't benefit from fast refresh anyway, so the
+// react-refresh rule is disabled here on purpose.
+// eslint-disable-next-line react-refresh/only-export-components
 export function useWishlist() {
   const ctx = useContext(WishlistContext);
   if (!ctx) throw new Error('useWishlist must be used inside <WishlistProvider>');

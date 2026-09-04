@@ -1,7 +1,9 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { useCart } from "../hooks/useCart";
 import { useAuth } from "../hooks/useAuth";
+import { getOrderCount } from "../services/orderService";
 import "../styles/cart.css";
 
 import defaultImg from "../assets/bracelets/bluewhite_panda.png";
@@ -40,10 +42,19 @@ function CartHeader({ subtitle, title }) {
 const Cart = () => {
   const { items, update, remove, subtotal, loading } = useCart();
   const { user } = useAuth();
+  const [orderCount, setOrderCount] = useState(null);
 
-  const shipping = subtotal > 0 && subtotal < 999 ? 99 : 0;
-  const tax      = Math.round(subtotal * 0.03);
-  const total    = subtotal + shipping + tax;
+  // Free shipping perk: first 5 orders ship free (cancelled orders don't count)
+  useEffect(() => {
+    if (!user) return;
+    getOrderCount(user.id)
+      .then(setOrderCount)
+      .catch(() => setOrderCount(null));
+  }, [user]);
+
+  const freeShipPerk = (orderCount ?? 0) < 5;
+  const shipping     = subtotal > 0 && !freeShipPerk && subtotal < 999 ? 99 : 0;
+  const total        = subtotal + shipping;
 
   // ── Not logged in ─────────────────────────────────────────
   if (!user) {
@@ -155,16 +166,16 @@ const Cart = () => {
               {shipping === 0 ? "🎉 Free" : formatPrice(shipping)}
             </span>
           </div>
-          <div className="summary-row">
-            <span>GST (3%)</span>
-            <span>{formatPrice(tax)}</span>
-          </div>
           <div className="summary-row total">
             <span>Total</span>
             <span>{formatPrice(total)}</span>
           </div>
 
-          {subtotal < 999 && subtotal > 0 && (
+          {freeShipPerk && subtotal > 0 ? (
+            <p className="free-shipping-nudge" style={{ color: "#10b981" }}>
+              🎉 FREE shipping — you're on your first 5 orders!
+            </p>
+          ) : subtotal < 999 && subtotal > 0 && (
             <p className="free-shipping-nudge">
               Add {formatPrice(999 - subtotal)} more for free shipping!
             </p>

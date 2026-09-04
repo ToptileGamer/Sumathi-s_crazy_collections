@@ -15,18 +15,6 @@ ALTER TABLE public.orders
 ALTER TABLE public.orders
   ADD COLUMN IF NOT EXISTS notes text;
 
--- razorpay_order_id: Razorpay order reference
-ALTER TABLE public.orders
-  ADD COLUMN IF NOT EXISTS razorpay_order_id text;
-
--- razorpay_payment_id: Razorpay payment reference
-ALTER TABLE public.orders
-  ADD COLUMN IF NOT EXISTS razorpay_payment_id text;
-
--- razorpay_signature: HMAC signature for payment verification
-ALTER TABLE public.orders
-  ADD COLUMN IF NOT EXISTS razorpay_signature text;
-
 -- order_number: human-readable order number (e.g. SCC-00001)
 DO $$
 BEGIN

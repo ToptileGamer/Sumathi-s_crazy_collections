@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import emailjs from "@emailjs/browser";
 import { supabase } from "../lib/supabaseClient";
-import BraceletPreview, { TOTAL_BEADS, PENDANT_OPTIONS } from "../components/BraceletPreview";
+import BraceletPreview from "../components/BraceletPreview";
+import { TOTAL_BEADS, PENDANT_OPTIONS } from "../components/braceletConfig";
 import "../styles/contact.css";
 
 const STYLE_OPTIONS = ["Classic", "Elegant", "Cute", "Trendy", "Festive"];
@@ -13,6 +14,11 @@ const RATE_LIMIT_KEY = "scc_contact_last_submit";
 
 const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY ?? "";
 const TURNSTILE_SCRIPT_SRC = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+
+// ── EmailJS config (used by both forms below) ────────────────
+const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID ?? "";
+const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID ?? "";
+const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY ?? "";
 
 const fadeUp = { hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } } };
 
@@ -90,7 +96,7 @@ function TurnstileWidget({ formId, onTokenChange }) {
     script.async = true;
     script.onload = init;
     document.head.appendChild(script);
-    return () => { if (widgetRef.current) { try { window.turnstile?.remove?.(widgetRef.current); } catch {} widgetRef.current = null; } };
+    return () => { if (widgetRef.current) { try { window.turnstile?.remove?.(widgetRef.current); } catch { /* turnstile may already be gone — safe to ignore */ } widgetRef.current = null; } };
   }, [formId, onTokenChange]);
 
   if (!TURNSTILE_SITE_KEY) return null;
@@ -123,11 +129,7 @@ const Contact = () => {
     if (form.elements["website"]?.value) return { blocked: true, silent: true };
 
     // EmailJS must be configured
-    if (
-      !import.meta.env.VITE_EMAILJS_SERVICE_ID ||
-      !import.meta.env.VITE_EMAILJS_TEMPLATE_ID ||
-      !import.meta.env.VITE_EMAILJS_PUBLIC_KEY
-    ) {
+    if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
       return {
         blocked: true,
         message: "Email service is not configured. Please set up environment variables.",
@@ -176,10 +178,10 @@ const Contact = () => {
     }
     try {
       await emailjs.sendForm(
-        emailjsServiceId,
-        emailjsTemplateId,
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
         e.target,
-        { publicKey: emailjsPublicKey }
+        { publicKey: EMAILJS_PUBLIC_KEY }
       );
       alert("Thank you! Your message has been sent successfully.");
       form.reset();
@@ -203,10 +205,10 @@ const Contact = () => {
     }
     try {
       await emailjs.sendForm(
-        emailjsServiceId,
-        emailjsTemplateId,
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
         e.target,
-        { publicKey: emailjsPublicKey }
+        { publicKey: EMAILJS_PUBLIC_KEY }
       );
       alert("Thank you! Your custom order has been sent successfully.");
       form.reset();
