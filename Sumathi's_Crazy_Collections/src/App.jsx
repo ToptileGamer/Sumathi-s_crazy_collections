@@ -6,6 +6,7 @@ import { useAuth } from "./hooks/useAuth";
 import { Analytics } from "@vercel/analytics/react";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -32,6 +33,7 @@ const Terms = lazy(() => import("./pages/Terms"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const DeleteAccount = lazy(() => import("./pages/DeleteAccount"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
@@ -122,6 +124,7 @@ function AppInner() {
               <Route path="/terms" element={<AnimatedPage><Terms /></AnimatedPage>} />
               <Route path="/login" element={<AnimatedPage><Auth /></AnimatedPage>} />
               <Route path="/signup" element={<AnimatedPage><Auth /></AnimatedPage>} />
+              <Route path="/auth/reset-password" element={<AnimatedPage><ResetPassword /></AnimatedPage>} />
               <Route path="/cart" element={<AnimatedPage><ProtectedRoute><Cart /></ProtectedRoute></AnimatedPage>} />
               <Route path="/checkout" element={<AnimatedPage><ProtectedRoute><Checkout /></ProtectedRoute></AnimatedPage>} />
               <Route path="/order-confirmation" element={<AnimatedPage><ProtectedRoute><OrderConfirmation /></ProtectedRoute></AnimatedPage>} />

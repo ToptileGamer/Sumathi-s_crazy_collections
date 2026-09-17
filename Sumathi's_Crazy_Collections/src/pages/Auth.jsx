@@ -103,6 +103,129 @@ const Auth = () => {
     }
   };
 
+  // If the user reloads /auth/reset-password with a valid recovery token,
+  // redirect them into the dedicated ResetPassword flow instead of the
+  // generic login/signup card.
+  const isResetRecovery = location.pathname === "/auth/reset-password";
+  
+  return (
+    <div className="auth-reset-wrapper">
+      {isResetRecovery ? (
+        <ResetPassword />
+      ) : (
+        <section className="profile-section">
+          <motion.div className="auth-card" variants={fadeUp} initial="hidden" animate="visible">
+            {/* ── Forgot Password Screen ── */}
+            { resetMode ? (
+              <>
+                <h2>Reset Password</h2>
+                <p className = "auth-sub">Enter your email and we'll send a reset link</p>
+
+                { resetSent ? (
+                  <div style = {{ background: "#f0fdf4", border: "1.5px solid #86efac", borderRadius: 12, padding: "1rem", textAlign: "center" }}>
+                    <p style = {{ color: "#16a34a", fontWeight: 600, margin: "0 0 0.25rem" }}> Email sent!</p>
+                    <p style = {{ color: "#166534", fontSize: "0.85rem", margin: 0, fontFamily: "DM Sans" }}>Check your inbox for the reset link</p>
+                  </div>
+                ) : (
+                  <form onSubmit={handleReset} className="auth-form">
+                      <input name="email" type="email" placeholder="Email Address" required
+                        value={form.email} onChange={handle} />
+                      {error && <p className="auth-error">{error}</p>}
+                      <button type="submit" className="hero-btn" disabled={loading}>
+                        {loading ? "Sending..." : "Send Reset Link"}
+                    </button>
+                      {error && <p className="auth-error">{error}</p>}
+                      <button type="submit" className="hero-btn" disabled={loading}>
+                        {loading ? "Sending..." : "Send Reset Link"}
+                      </button>
+                  </form>                    )}
+                    <p className="auth-switch">
+                      Remember your password? 
+                      <button onClick={() => { setResetMode(false); setResetSent(false); setError(""); }}>
+                        Back to Login
+                      </button>
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <h2 style={{ fontFamily: "Playfair Display", color: "#1a1a1a" }}>
+                  { mode === "login" ? "Welcome Back" : "Join Us"}
+                  <span style = {{ marginLeft: "0.3rem" }}>{ mode === "login" ? "🌸" : "💖"}</span>
+                </h2>
+                <p className = "auth-sub">
+                  { mode === "login" ? "Log in to your account" : "Create your account"}
+                </p>
+
+                <button className="auth-google-btn" onClick={handleGoogle}>
+                  <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" width={18} />
+                  Continue with Google
+                </button>
+
+                <div className = "auth-divider"><span>or</span></div>                 <form onSubmit={handleSubmit} className="auth-form">
+                   {mode === "signup" && (
+                     <input name="fullName" type="text" placeholder="Full Name" required
+                       value={form.fullName} onChange={handle} />
+                   )}
+                   <input name="email" type="email" placeholder="Email Address" required
+                     value={form.email} onChange={handle} />
+                   <input name="password" type="password" placeholder="Password (min 8 chars, mixed case, number, special)" required
+                     minLength={8} value={form.password} onChange={handle} />
+
+                   {mode === "signup" && (
+                     <div className="auth-consent" style={{ display: "flex", flexDirection: "column", gap: "0.6rem", marginTop: "0.25rem", textAlign: "left" }}>
+                      {/* ── Plain-language privacy notice (DPDP Act 2023) ── */}
+                      <div style = {{ background: "#fdf6f0", border: "1.5px solid rgba(184,149,58,0.25)", borderRadius: 10, padding: "0.7rem 0.85rem", fontSize: "0.78rem", color: "#555", lineHeight: 1.6, fontFamily: "DM Sans" }}>
+                        <strong style = {{ color: "#1a1a1a" }}>🔒 Privacy Notice:</strong> We collect your name, email, phone
+                        and delivery address only to process and deliver your orders and to support you. We never sell your
+                        data and never send marketing messages unless you separately opt in.
+                        <br />
+                        <span style = {{ color: "#B8953A" }}> हम आपका नाम, ईमेल, फ़ोन और पता केवल ऑर्डर डिलीवरी और सहायता के लिए लेते हैं। हम आपका डेटा कभी नहीं बेचते।</span>
+                      </div>
+                      <label className="auth-check" style={{ display: "flex", gap: "0.55rem", alignItems: "flex-start", fontSize: "0.8rem", color: "#666", lineHeight: 1.5, cursor: "pointer", fontFamily: "DM Sans" }}>                         <input type="checkbox" checked={consent.agree}
+                           onChange={(e) => setConsent((c) => ({ ...c, agree: e.target.checked }))}
+                           style={{ marginTop: "0.2rem", accentColor: "#e91e8c", cursor: "pointer" }} />
+                       <span>
+                        I consent to Sumathi's Crazy Collections processing my personal data (name, email, phone, address) as described in the{" "}
+                        <a href="/privacy" target="_blank" rel="noopener noreferrer" style={{ color: "#e91e8c", fontWeight: 600 }}>Privacy Policy</a>,                         for order processing, delivery and support. I can withdraw consent at any time.
+                       </span>
+                     </label>
+                     <label className="auth-check" style={{ display: "flex", gap: "0.55rem", alignItems: "flex-start", fontSize: "0.8rem", color: "#666", lineHeight: 1.5, cursor: "pointer", fontFamily: "DM Sans" }}>
+                         <input type="checkbox" checked={consent.age}
+                           onChange={(e) => setConsent((c) => ({ ...c, age: e.target.checked }))}
+                           style={{ marginTop: "0.2rem", accentColor: "#e91e8c", cursor: "pointer" }} />                        <span>
+                          I confirm I am 18 years or older, or have verifiable consent from my parent or legal guardian (Digital Personal Data Protection Act, 2023).
+                        </span>
+                      </label>)
+
+                   {mode === "login" && (
+                     <div style={{ textAlign: "right", marginTop: "-0.25rem" }}>                        <button type="button" onClick={() => { setResetMode(true); setResetSent(false); setError(""); }}>
+                          Forgot password?                      </button>
+                    </div>
+                   )}
+                   {error && <p className="auth-error">{error}</p>}
+                   <button type="submit" className="hero-btn" disabled={loading}>
+                     {loading ? "Please wait..." : mode === "login" ? "Log In" : "Create Account"}
+                   </button>
+                  </form>
+                 <p className="auth-switch">
+                   {mode === "login" ? (
+                     <>Don't have an account? 
+                       <button onClick={() => { setMode("signup"); setError(""); }}>Sign Up</button></>
+                   ) : (
+                     <>Already have an account? 
+                       <button onClick={() => { setMode("login"); setError(""); }}>Log In</button></>
+                   )}
+                 </p>
+               </>
+             )}
+           </motion.div>
+         </section>
+       )}
+     </div>
+   );
+ }
+
+
   return (
     <section className="profile-section">
       <motion.div className="auth-card" variants={fadeUp} initial="hidden" animate="visible">
@@ -122,17 +245,16 @@ const Auth = () => {
                 <input name="email" type="email" placeholder="Email Address" required
                   value={form.email} onChange={handle} />
                 {error && <p className="auth-error">{error}</p>}
-                <button type="submit" className="hero-btn" disabled={loading}>
-                  {loading ? "Sending..." : "Send Reset Link"}
-                </button>
-              </form>
-            )}
+                <button type="submit" className="hero-btn" disabled={loading}>                      {loading ? "Sending..." : "Send Reset Link"}
+                    </button>
+                  </form>
+                )}
 
-            <p className="auth-switch">
-              Remember your password?{" "}
-              <button onClick={() => { setResetMode(false); setResetSent(false); setError(""); }}>
-                Back to Login
-              </button>
+                <p className="auth-switch">
+                  Remember your password? 
+                  <button onClick={() => { setResetMode(false); setResetSent(false); setError(""); }}>
+                    Back to Login
+                  </button>
             </p>
           </>
         ) : (
@@ -174,8 +296,7 @@ const Auth = () => {
                   </div>
                   <label className="auth-check" style={{ display: "flex", gap: "0.55rem", alignItems: "flex-start", fontSize: "0.8rem", color: "#666", lineHeight: 1.5, cursor: "pointer", fontFamily: "DM Sans" }}>
                     <input type="checkbox" checked={consent.agree}
-                      onChange={(e) => setConsent((c) => ({ ...c, agree: e.target.checked }))}
-                      style={{ marginTop: "0.2rem", accentColor: "#e91e8c", cursor: "pointer" }} />
+                      onChange={(e) => setConsent((c) => ({ ...c, agree: e.target.checked }))}                          style={{ marginTop: "0.2rem", accentColor: "#e91e8c", cursor: "pointer" }} />
                     <span>
                       I consent to Sumathi's Crazy Collections processing my personal data (name, email, phone, address) as described in the{" "}
                       <a href="/privacy" target="_blank" rel="noopener noreferrer" style={{ color: "#e91e8c", fontWeight: 600 }}>Privacy Policy</a>,
@@ -184,8 +305,7 @@ const Auth = () => {
                   </label>
                   <label className="auth-check" style={{ display: "flex", gap: "0.55rem", alignItems: "flex-start", fontSize: "0.8rem", color: "#666", lineHeight: 1.5, cursor: "pointer", fontFamily: "DM Sans" }}>
                     <input type="checkbox" checked={consent.age}
-                      onChange={(e) => setConsent((c) => ({ ...c, age: e.target.checked }))}
-                      style={{ marginTop: "0.2rem", accentColor: "#e91e8c", cursor: "pointer" }} />
+                      onChange={(e) => setConsent((c) => ({ ...c, age: e.target.checked }))}                          style={{ marginTop: "0.2rem", accentColor: "#e91e8c", cursor: "pointer" }} />
                     <span>
                       I confirm I am 18 years or older, or have verifiable consent from my parent or legal guardian (Digital Personal Data Protection Act, 2023).
                     </span>
@@ -195,8 +315,9 @@ const Auth = () => {
 
               {mode === "login" && (
                 <div style={{ textAlign: "right", marginTop: "-0.25rem" }}>
-                  <button type="button"
-                    onClick={() => { setResetMode(true); setError(""); }}
+                  <button
+                    type="button"
+                    onClick={() => { setResetMode(true); setResetSent(false); setResetLinkError(''); }}
                     className="auth-forgot-btn">
                     Forgot password?
                   </button>

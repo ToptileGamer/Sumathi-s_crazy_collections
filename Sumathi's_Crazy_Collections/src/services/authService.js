@@ -130,8 +130,19 @@ export async function deleteAccount() {
 
 // ── Forgot password ───────────────────────────────────────
 export async function resetPassword(email) {
+  const resetUrl = typeof window === 'undefined'
+    ? null
+    : (window.location.origin === 'http://localhost:5173'
+        || window.location.origin === 'http://127.0.0.1:5173'
+        || window.location.origin === 'http://localhost:3000'
+        || window.location.origin === 'http://127.0.0.1:3000')
+      ? `${window.location.origin}/auth/reset-password`
+      : `https://sumathiscrazycollections.vercel.app/auth/reset-password`;
+
+  if (!resetUrl) throw new Error('No safe redirect URL configured for password resets.');
+
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${window.location.origin}/auth/reset-password`,
+    redirectTo: resetUrl,
   });
   if (error) throw error;
 }
